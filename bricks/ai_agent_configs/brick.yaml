@@ -1,0 +1,18 @@
+name: ai_agent_configs
+description: A brick to add AI agent rules and skills to a project.
+version: 0.1.0+1
+
+environment:
+  mason: ^0.1.2
+
+vars:
+  antigravity:
+    type: boolean
+    description: Add rules and skills for Antigravity.
+    default: true
+    prompt: Do you want to add Antigravity configurations?
+  kilo_code:
+    type: boolean
+    description: Add rules and skills for Kilo Code.
+    default: true
+    prompt: Do you want to add Kilo Code configurations?
