@@ -870,6 +870,53 @@ version: 0.1.0
         expect(File(path.join(targetDir.path, 'file.txt')).existsSync(), isTrue);
       });
 
+      test('constructs an instance with ! prefix (ifNotExists)', () async {
+        final brickDir = Directory.systemTemp.createTempSync();
+        File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
+name: skip_brick
+description: test
+version: 0.1.0
+''');
+        final brickFiles = Directory(path.join(brickDir.path, '__brick__'))
+          ..createSync();
+        File(path.join(brickFiles.path, '!file.txt')).writeAsStringSync('new');
+
+        final targetDir = Directory.systemTemp.createTempSync();
+        final targetFile = File(path.join(targetDir.path, 'file.txt'))
+          ..writeAsStringSync('old');
+
+        final generator =
+            await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+        await generator.generate(DirectoryGeneratorTarget(targetDir));
+
+        expect(targetFile.readAsStringSync(), equals('old'));
+      });
+
+      test('constructs an instance with ~ prefix (temporary)', () async {
+        final brickDir = Directory.systemTemp.createTempSync();
+        File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
+name: temp_brick
+description: test
+version: 0.1.0
+''');
+        final brickFiles = Directory(path.join(brickDir.path, '__brick__'))
+          ..createSync();
+        File(path.join(brickFiles.path, '~file.txt')).writeAsStringSync('temp');
+
+        final targetDir = Directory.systemTemp.createTempSync();
+
+        final generator =
+            await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+        final files =
+            await generator.generate(DirectoryGeneratorTarget(targetDir));
+
+        expect(files.first.status, equals(GeneratedFileStatus.temporary));
+        expect(
+          File(path.join(targetDir.path, 'file.txt')).existsSync(),
+          isFalse,
+        );
+      });
+
       test('constructs an instance with %snippet% prefix', () async {
         final brickDir = Directory.systemTemp.createTempSync();
         File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
@@ -878,7 +925,7 @@ description: test
 version: 0.1.0
 inFileGenerations:
   file.txt:
-    my_id: "{{value}}"
+    my_id: "test"
 ''');
         final brickFiles = Directory(path.join(brickDir.path, '__brick__'))
           ..createSync();
@@ -887,7 +934,7 @@ inFileGenerations:
 
         final targetDir = Directory.systemTemp.createTempSync();
         final targetFile = File(path.join(targetDir.path, 'file.txt'))
-          ..writeAsStringSync('existing my_id content');
+          ..writeAsStringSync("@GenerateAfter('my_id')");
 
         final generator =
             await MasonGenerator.fromBrick(Brick.path(brickDir.path));
@@ -897,8 +944,9 @@ inFileGenerations:
         );
 
         final content = targetFile.readAsStringSync();
-        expect(content, contains('existing my_id content'));
+        expect(content, contains("@GenerateAfter('my_id')"));
         expect(content, contains('injected_content'));
+        expect(content, contains('// test'));
       });
 
       test('constructs an instance w/skip and no conflicts (hello_world)',

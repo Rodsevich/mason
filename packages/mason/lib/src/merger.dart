@@ -87,7 +87,8 @@ class YamlMerger extends Merger {
 
     final mergedYaml = _merge(existingYaml, newYaml);
     if (mergedYaml is Map) {
-      return utf8.encode(Yaml.encode(mergedYaml.cast<dynamic, dynamic>()));
+      return utf8.encode(
+          MasonYamlEncoder.encode(mergedYaml.cast<dynamic, dynamic>()));
     }
     // For non-map YAMLs, we use the simple conversion
     return utf8.encode(_toYamlString(mergedYaml));
@@ -238,8 +239,8 @@ class DartRecursiveMerger extends DartMerger {
     final existingSource = utf8.decode(existingContent);
     final newSource = utf8.decode(newContent);
 
-    final existingUnit = parseString(content: existingSource).unit;
-    final newUnit = parseString(content: newSource).unit;
+    final existingUnit = parseString(content: existingSource, throwIfDiagnostics: false).unit;
+    final newUnit = parseString(content: newSource, throwIfDiagnostics: false).unit;
 
     final existingVariables = _getAllVariables(existingUnit);
     final existingDeclarations = _getTopLevelDeclarations(existingUnit);

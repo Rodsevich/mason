@@ -10,17 +10,12 @@ import 'package:path/path.dart' as p;
 class InFileGenerationBuilder implements Builder {
   @override
   final buildExtensions = const {
-    r'$lib$': ['brick.yaml']
+    r'$lib$': ['inFileGenerations.json']
   };
 
   @override
   Future<void> build(BuildStep buildStep) async {
     final inFileGenerations = <String, Map<String, String>>{};
-    final annotationCheckers = [
-      TypeChecker.fromRuntime(GenerateBefore),
-      TypeChecker.fromRuntime(GenerateAfter),
-      TypeChecker.fromRuntime(GenerationMerge),
-    ];
 
     final assets = buildStep.findAssets(Glob('**/*.dart'));
     await for (final asset in assets) {
@@ -46,25 +41,8 @@ class InFileGenerationBuilder implements Builder {
     }
 
     if (inFileGenerations.isNotEmpty) {
-      final brickYamlAsset = AssetId(buildStep.inputId.package, 'brick.yaml');
-      if (await buildStep.canRead(brickYamlAsset)) {
-        final content = await buildStep.readAsString(brickYamlAsset);
-        // Assuming brick.yaml is YAML, but BrickYaml.fromJson handles it
-        // We use a simple YAML modification to preserve other fields if possible,
-        // or just re-serialize if that's acceptable.
-        final brickYaml = BrickYaml.fromJson(loadYaml(content) as Map);
-        final updatedBrickYaml = brickYaml.copyWith(
-          inFileGenerations: {
-            ...brickYaml.inFileGenerations,
-            ...inFileGenerations,
-          },
-        );
-
-        await buildStep.writeAsString(
-          brickYamlAsset,
-          updatedBrickYaml.toYaml(),
-        );
-      }
+      final outputAsset = buildStep.allowedOutputs.first;
+      await buildStep.writeAsString(outputAsset, json.encode(inFileGenerations));
     }
   }
 }

@@ -74,7 +74,7 @@ Use `package:masonex_annotations` to mark points in your source code where templ
    @GenerateAfter('plugins'): // {{new_plugin_config}}
    final plugins = [];
    ```
-2. Run `mustachex build` to scan the repo and update your `brick.yaml`.
+2. Run `masonex build` to scan the repo and update your `brick.yaml`.
 3. When the brick is generated, `masonex` will inject snippets marked with `%id%` into the corresponding annotated points.
 
 ## Usage

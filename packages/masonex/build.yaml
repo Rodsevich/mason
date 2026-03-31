@@ -2,6 +2,6 @@ builders:
   inFileGenerationBuilder:
     import: "package:masonex/builders.dart"
     builder_factories: ["inFileGenerationBuilder"]
-    build_extensions: {r"$lib$": ["brick.yaml"]}
+    build_extensions: {r"$lib$": ["inFileGenerations.json"]}
     auto_apply: root_package
     build_to: source

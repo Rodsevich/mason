@@ -108,7 +108,7 @@ class BrickYaml {
   int get hashCode => name.hashCode;
 
   /// Returns a YAML representation of this [BrickYaml].
-  String toYaml() => Yaml.encode(toJson());
+  String toYaml() => MasonYamlEncoder.encode(toJson());
 }
 
 /// The type of brick variable.
