@@ -274,6 +274,7 @@ extension on GeneratedFile {
       case GeneratedFileStatus.created:
       case GeneratedFileStatus.overwritten:
       case GeneratedFileStatus.appended:
+      case GeneratedFileStatus.merged:
         return true;
       case GeneratedFileStatus.skipped:
       case GeneratedFileStatus.identical:
