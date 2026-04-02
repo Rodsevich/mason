@@ -32,6 +32,7 @@ class MasonexCommandRunner extends CompletionCommandRunner<int> {
         super(executableName, '🧱  masonex \u{2022} lay the foundation!') {
     argParser.addFlags();
     addCommand(AddCommand(logger: _logger));
+    addCommand(BuildCommand(logger: _logger));
     addCommand(CacheCommand(logger: _logger));
     addCommand(BundleCommand(logger: _logger));
     addCommand(GetCommand(logger: _logger));

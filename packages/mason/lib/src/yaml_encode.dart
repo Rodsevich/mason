@@ -1,5 +1,5 @@
 /// Yaml Utilities
-class Yaml {
+class MasonYamlEncoder {
   /// Encodes a [Map<String, dynamic>] as `yaml` similar to `json.encode`.
   static String encode(Map<dynamic, dynamic> json, [int nestingLevel = 0]) {
     return json.entries
@@ -14,7 +14,7 @@ String _formatEntry(MapEntry<dynamic, dynamic> entry, int nesting) {
 
 String _formatValue(dynamic value, int nesting) {
   if (value is Map<String, dynamic>) {
-    return '\n${Yaml.encode(value, nesting + 1)}';
+    return '\n${MasonYamlEncoder.encode(value, nesting + 1)}';
   }
   if (value is List<dynamic>) {
     return '\n${_formatList(value, nesting + 1)}';
