@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:checked_yaml/checked_yaml.dart';
 import 'package:mason/mason.dart';
 import 'package:mason/src/path.dart';
+import 'package:mason/src/yaml_encode.dart';
 import 'package:path/path.dart' as path;
 
 final _binaryFileTypes = RegExp(
@@ -31,7 +32,7 @@ void unpackBundle(MasonBundle bundle, Directory target) {
     publishTo: bundle.publishTo,
   );
   File(path.join(target.path, BrickYaml.file)).writeAsStringSync(
-    Yaml.encode(brickYaml.toJson()),
+    MasonYamlEncoder.encode(brickYaml.toJson()),
   );
 
   final readme = bundle.readme;

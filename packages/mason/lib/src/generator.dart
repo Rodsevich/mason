@@ -9,6 +9,7 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:mason/mason.dart';
+import 'package:mason/src/render.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:pool/pool.dart';
@@ -55,11 +56,15 @@ class MasonGenerator extends Generator {
     List<TemplateFile?> files = const <TemplateFile>[],
     GeneratorHooks hooks = const GeneratorHooks(),
     this.vars = const <String>[],
+    this.brickYaml,
   }) : super(id, description, hooks) {
     for (final file in files) {
       addTemplateFile(file);
     }
   }
+
+  @override
+  final BrickYaml? brickYaml;
 
   /// Factory which creates a [MasonGenerator] based on
   /// a local [MasonBundle].
@@ -119,6 +124,7 @@ class MasonGenerator extends Generator {
       vars: brickYaml.vars.keys.toList(),
       files: await Future.wait(brickFiles),
       hooks: await GeneratorHooks.fromBrickYaml(brickYaml),
+      brickYaml: brickYaml,
     );
   }
 
@@ -138,8 +144,14 @@ enum GeneratedFileStatus {
   /// File already existed and new content was appended.
   appended,
 
+  /// File already existed and new content was prepended.
+  prepended,
+
   /// File already existed and new content was merged.
   merged,
+
+  /// File was temporary and was deleted after generation.
+  temporary,
 
   /// File already existed and previous contents were left unmodified.
   skipped,
@@ -168,8 +180,16 @@ class GeneratedFile {
       : this._(path: path, status: GeneratedFileStatus.appended);
 
   /// {@macro generated_file}
+  const GeneratedFile.prepended({required String path})
+      : this._(path: path, status: GeneratedFileStatus.prepended);
+
+  /// {@macro generated_file}
   const GeneratedFile.merged({required String path})
       : this._(path: path, status: GeneratedFileStatus.merged);
+
+  /// {@macro generated_file}
+  const GeneratedFile.temporary({required String path})
+      : this._(path: path, status: GeneratedFileStatus.temporary);
 
   /// {@macro generated_file}
   const GeneratedFile.skipped({required String path})
@@ -193,6 +213,9 @@ class GeneratedFile {
 abstract class Generator implements Comparable<Generator> {
   /// {@macro generator}
   Generator(this.id, this.description, [this.hooks = const GeneratorHooks()]);
+
+  /// The [BrickYaml] associated with this generator.
+  BrickYaml? get brickYaml => null;
 
   /// Unique identifier for the generator.
   final String id;
@@ -229,10 +252,46 @@ abstract class Generator implements Comparable<Generator> {
   }) async {
     final overwriteRule = fileConflictResolution?.toOverwriteRule();
     final generatedFiles = <GeneratedFile>[];
-    await Future.forEach<TemplateFile>(files, (TemplateFile file) async {
+    final templateFiles = [...files];
+
+    // Handle *iterator* prefix
+    final resolvedFiles = <_FileWithVars>[];
+    for (final file in templateFiles) {
+      final fileName = p.basename(file.path);
+      if (fileName.startsWith('*')) {
+        final parts = fileName.split('*');
+        if (parts.length >= 3) {
+          final variableName = parts[1];
+          final remainingName = parts.sublist(2).join('*');
+          final iterable = vars[variableName];
+          if (iterable is Iterable) {
+            for (final item in iterable) {
+              final itemVars = {...vars, 'item': item};
+              final newPath = p.join(
+                p.dirname(file.path),
+                remainingName,
+              ).render(itemVars);
+              resolvedFiles.add(
+                _FileWithVars(
+                  TemplateFile.fromBytes(newPath, file.content),
+                  itemVars,
+                ),
+              );
+            }
+            continue;
+          }
+        }
+      }
+      resolvedFiles.add(_FileWithVars(file, vars));
+    }
+
+    await Future.forEach<_FileWithVars>(resolvedFiles,
+        (_FileWithVars fileWithVars) async {
+      final file = fileWithVars.file;
+      final fileVars = fileWithVars.vars;
       final fileMatch = _fileRegExp.firstMatch(file.path);
       if (fileMatch != null) {
-        final resultFile = await _fetch(vars[fileMatch[1]] as String);
+        final resultFile = await _fetch(fileVars[fileMatch[1]] as String);
         if (resultFile.path.isEmpty) return;
         final generatedFile = await target.createFile(
           p.basename(resultFile.path),
@@ -244,7 +303,7 @@ abstract class Generator implements Comparable<Generator> {
       } else {
         final resultFiles = await _runSubstitutionAsync(
           file,
-          Map<String, dynamic>.of(vars),
+          Map<String, dynamic>.of(fileVars),
           Map<String, List<int>>.of(partials),
         );
         final root = RegExp(r'\w:\\|\w:\/');
@@ -257,22 +316,156 @@ abstract class Generator implements Comparable<Generator> {
           if (file.path.isEmpty) continue;
           if (file.path.split(separator).contains('')) continue;
 
-          final fileName = p.basename(file.path);
-          final isMerge = fileName.startsWith('>>>');
-          final path = isMerge
-              ? p.join(p.dirname(file.path), fileName.substring(3))
-              : file.path;
+          var fileName = p.basename(file.path);
+          var rule = overwriteRule;
+
+          while (true) {
+            if (fileName.startsWith('?')) {
+              final parts = fileName.split('?');
+              if (parts.length >= 3) {
+                final variableName = parts[1];
+                final isTrue = fileVars[variableName] == true ||
+                    (fileVars[variableName] is Iterable &&
+                        (fileVars[variableName] as Iterable).isNotEmpty);
+                if (!isTrue) return;
+                fileName = parts.sublist(2).join('?');
+                continue;
+              }
+            }
+            break;
+          }
+
+          var isPrefixed = true;
+          if (fileName.startsWith('>>>')) {
+            rule = OverwriteRule.alwaysMerge;
+            fileName = fileName.substring(3);
+          } else if (fileName.startsWith('>>')) {
+            rule = OverwriteRule.alwaysAppend;
+            fileName = fileName.substring(2);
+          } else if (fileName.startsWith('<<')) {
+            rule = OverwriteRule.alwaysPrepend;
+            fileName = fileName.substring(2);
+          } else if (fileName.startsWith('>')) {
+            rule = OverwriteRule.alwaysOverwrite;
+            fileName = fileName.substring(1);
+          } else if (fileName.startsWith('!')) {
+            rule = OverwriteRule.ifNotExists;
+            fileName = fileName.substring(1);
+          } else if (fileName.startsWith('~')) {
+            rule = OverwriteRule.temporary;
+            fileName = fileName.substring(1);
+          } else {
+            isPrefixed = false;
+          }
+
+          if (isPrefixed) {
+            final templateFile = TemplateFile.fromBytes(fileName, file.content);
+            final fileContent = templateFile.runSubstitution(
+              Map<String, dynamic>.of(fileVars),
+              Map<String, List<int>>.of(partials),
+            );
+            for (final f in fileContent) {
+              final finalPath =
+                  p.normalize(p.join(p.dirname(file.path), f.path));
+              final generatedFile = await target.createFile(
+                finalPath,
+                f.content,
+                logger: logger,
+                overwriteRule: rule,
+              );
+              generatedFiles.add(generatedFile);
+            }
+            continue;
+          }
+
+          if (fileName.startsWith('%')) {
+            final idMatch = RegExp(r"%(.+?)%").firstMatch(fileName);
+            if (idMatch != null) {
+              final id = idMatch.group(1)!;
+              final brickYaml = this.brickYaml;
+              if (brickYaml != null) {
+                for (final entry in brickYaml.inFileGenerations.entries) {
+                  final targetPath = entry.key;
+                  final generations = entry.value;
+                  if (generations.containsKey(id)) {
+                    final template = generations[id]!;
+                    final snippetContent =
+                        utf8.decode(file.content).render(fileVars);
+                    final targetFile = target is DirectoryGeneratorTarget
+                        ? File(p.join(target.dir.path, targetPath))
+                        : null;
+
+                    if (targetFile != null && targetFile.existsSync()) {
+                      var content = targetFile.readAsStringSync();
+                      // Safely look for annotation markers
+                      final beforeMarker = "@GenerateBefore('$id')";
+                      final beforeMarkerDouble = '@GenerateBefore("$id")';
+                      final afterMarker = "@GenerateAfter('$id')";
+                      final afterMarkerDouble = '@GenerateAfter("$id")';
+                      final mergeMarker = "@GenerationMerge('$id')";
+                      final mergeMarkerDouble = '@GenerationMerge("$id")';
+
+                      if (content.contains(beforeMarker) ||
+                          content.contains(beforeMarkerDouble)) {
+                        final marker = content.contains(beforeMarker)
+                            ? beforeMarker
+                            : beforeMarkerDouble;
+                        content = content.replaceFirst(
+                          marker,
+                          '// $template\n$snippetContent\n$marker',
+                        );
+                      } else if (content.contains(afterMarker) ||
+                          content.contains(afterMarkerDouble)) {
+                        final marker = content.contains(afterMarker)
+                            ? afterMarker
+                            : afterMarkerDouble;
+                        content = content.replaceFirst(
+                          marker,
+                          '$marker\n// $template\n$snippetContent',
+                        );
+                      } else if (content.contains(mergeMarker) ||
+                          content.contains(mergeMarkerDouble)) {
+                        final marker = content.contains(mergeMarker)
+                            ? mergeMarker
+                            : mergeMarkerDouble;
+                        content = content.replaceFirst(
+                          marker,
+                          '$marker\n// $template\n$snippetContent',
+                        );
+                      }
+
+                      targetFile.writeAsStringSync(content);
+                      logger?.delayed(
+                        '  ${lightBlue.wrap('injected')} $targetPath',
+                      );
+                    }
+                  }
+                }
+              }
+            }
+            continue;
+          }
+
+          final finalPath = p.normalize(p.join(p.dirname(file.path), fileName));
 
           final generatedFile = await target.createFile(
-            path,
+            finalPath,
             file.content,
             logger: logger,
-            overwriteRule: isMerge ? OverwriteRule.alwaysMerge : overwriteRule,
+            overwriteRule: rule,
           );
           generatedFiles.add(generatedFile);
         }
       }
     });
+
+    for (final file in generatedFiles) {
+      if (file.status == GeneratedFileStatus.temporary) {
+        final f = File(p.join(target is DirectoryGeneratorTarget ? target.dir.path : '', file.path));
+        if (f.existsSync()) f.deleteSync(recursive: true);
+      }
+    }
+
     return generatedFiles;
   }
 
@@ -326,8 +519,17 @@ enum OverwriteRule {
   /// Always append the existing file.
   alwaysAppend,
 
+  /// Always prepend the existing file.
+  alwaysPrepend,
+
   /// Always merge the existing file.
   alwaysMerge,
+
+  /// Only generate if the file does not exist.
+  ifNotExists,
+
+  /// The file is temporary and should be deleted after generation.
+  temporary,
 
   /// Overwrite one time.
   overwriteOnce,
@@ -340,6 +542,9 @@ enum OverwriteRule {
 
   /// Merge one time
   mergeOnce,
+
+  /// Prepend one time
+  prependOnce,
 }
 
 /// {@template directory_generator_target}
@@ -373,9 +578,13 @@ class DirectoryGeneratorTarget extends GeneratorTarget {
           .create(recursive: true)
           .then<File>((_) => file.writeAsBytes(contents))
           .whenComplete(
-            () => logger?.delayed('  ${green.wrap('created')} $filePath'),
+            () => logger?.delayed(
+              '  ${_overwriteRule == OverwriteRule.temporary ? darkGray.wrap('temporary') : green.wrap('created')} $filePath',
+            ),
           );
-      return GeneratedFile.created(path: file.path);
+      return _overwriteRule == OverwriteRule.temporary
+          ? GeneratedFile.temporary(path: file.path)
+          : GeneratedFile.created(path: file.path);
     }
 
     final existingContents = file.readAsBytesSync();
@@ -389,7 +598,10 @@ class DirectoryGeneratorTarget extends GeneratorTarget {
         (_overwriteRule != OverwriteRule.alwaysOverwrite &&
             _overwriteRule != OverwriteRule.alwaysSkip &&
             _overwriteRule != OverwriteRule.alwaysAppend &&
-            _overwriteRule != OverwriteRule.alwaysMerge);
+            _overwriteRule != OverwriteRule.alwaysPrepend &&
+            _overwriteRule != OverwriteRule.alwaysMerge &&
+            _overwriteRule != OverwriteRule.ifNotExists &&
+            _overwriteRule != OverwriteRule.temporary);
 
     if (shouldPrompt) {
       logger.info('${red.wrap(styleBold.wrap('conflict'))} $filePath');
@@ -416,10 +628,25 @@ class DirectoryGeneratorTarget extends GeneratorTarget {
               () => logger?.delayed('${lightBlue.wrap('merged')} $filePath'),
             );
         return GeneratedFile.merged(path: file.path);
+      case OverwriteRule.alwaysPrepend:
+      case OverwriteRule.prependOnce:
+        final existing = fileExists ? await file.readAsBytes() : <int>[];
+        await file.create(recursive: true);
+        await file.writeAsBytes([...contents, ...existing]);
+        logger?.delayed(
+          '  ${fileExists ? lightBlue.wrap('modified') : green.wrap('created')} $filePath',
+        );
+        return GeneratedFile.prepended(path: file.path);
+
+      case OverwriteRule.ifNotExists:
+        logger?.delayed('  ${yellow.wrap('skipped')} $filePath');
+        return GeneratedFile.skipped(path: file.path);
+
       case OverwriteRule.alwaysOverwrite:
       case OverwriteRule.overwriteOnce:
-      case OverwriteRule.appendOnce:
       case OverwriteRule.alwaysAppend:
+      case OverwriteRule.appendOnce:
+      case OverwriteRule.temporary:
       case null:
         final shouldAppend = _overwriteRule == OverwriteRule.appendOnce ||
             _overwriteRule == OverwriteRule.alwaysAppend;
@@ -434,12 +661,23 @@ class DirectoryGeneratorTarget extends GeneratorTarget {
             .whenComplete(
               () => shouldAppend
                   ? logger?.delayed('  ${lightBlue.wrap('modified')} $filePath')
-                  : logger?.delayed('  ${green.wrap('created')} $filePath'),
+                  : _overwriteRule == OverwriteRule.temporary
+                      ? logger
+                          ?.delayed('  ${darkGray.wrap('temporary')} $filePath')
+                      : logger?.delayed(
+                          '  ${fileExists ? lightBlue.wrap('overwritten') : green.wrap('created')} $filePath',
+                        ),
             );
+
+        if (_overwriteRule == OverwriteRule.temporary) {
+          return GeneratedFile.temporary(path: file.path);
+        }
 
         return shouldAppend
             ? GeneratedFile.appended(path: file.path)
-            : GeneratedFile.overwritten(path: file.path);
+            : fileExists
+                ? GeneratedFile.overwritten(path: file.path)
+                : GeneratedFile.created(path: file.path);
     }
   }
 }
@@ -692,4 +930,10 @@ extension on HookFile {
       ),
     );
   }
+}
+
+class _FileWithVars {
+  _FileWithVars(this.file, this.vars);
+  final TemplateFile file;
+  final Map<String, dynamic> vars;
 }
