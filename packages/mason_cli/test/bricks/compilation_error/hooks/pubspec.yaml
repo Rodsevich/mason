@@ -6,5 +6,5 @@ environment:
 dependencies:
   mason:
     git:
-      url: https://github.com/felangel/mason
+      url: https://github.com/Rodsevich/mason
       path: packages/mason

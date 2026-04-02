@@ -6,5 +6,5 @@ environment:
 dependencies:
   masonex:
     git:
-      url: https://github.com/felangel/masonex
+      url: https://github.com/Rodsevich/masonex
       path: packages/masonex
