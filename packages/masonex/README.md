@@ -13,7 +13,7 @@
 
 A template generator which helps teams generate files quickly and consistently.
 
-`package:masonex` contains the core generator that powers [package:masonex_cli](https://pub.dev/packages/masonex_cli) and can be used to build custom code generation tools.
+`package:masonex` contains both the core generator and a command-line interface to build custom code generation tools and reusable templates.
 
 > [!NOTE]
 > This is a fork originally developed by **Jules** and **Antigravity**.
@@ -61,7 +61,7 @@ When using the `>>>` prefix for `.dart` files:
 
 ## In-File Generations
 
-Use `package:masonex_annotations` to mark points in your source code where templates should be injected.
+Use `package:masonex` to mark points in your source code where templates should be injected.
 
 ### Annotations
 - `@GenerateBefore('id')`
@@ -76,6 +76,16 @@ Use `package:masonex_annotations` to mark points in your source code where templ
    ```
 2. Run `masonex build` to scan the repo and update your `brick.yaml`.
 3. When the brick is generated, `masonex` will inject snippets marked with `%id%` into the corresponding annotated points.
+
+## Installation
+
+```sh
+# Activate masonex
+dart pub global activate masonex
+
+# See usage
+masonex --help
+```
 
 ## Usage
 
