@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:mustache_recase/mustache_recase.dart' as mustache_recase;
 import 'package:mustachex/mustache.dart';
-import 'package:mustachex/src/variable_recase_decomposer.dart';
 import 'package:mustachex/src/variables_resolver.dart';
 import 'package:quiver/collection.dart';
 import 'package:recase/recase.dart';
 
 import 'mustache_template/template_exception.dart';
+import 'mustachex_exceptions.dart';
 
 typedef FulfillmentFunction = FutureOr<String> Function(
     MissingVariableException variable);
@@ -18,11 +18,6 @@ typedef PartialResolverFunction = FutureOr<String>? Function(
     MissingPartialException missingPartial);
 
 typedef _PartialsResolver = Template Function(String partialName);
-
-class MissingPartialsResolverFunction implements Exception {
-  @override
-  String toString() => 'No partial resolver function provided';
-}
 
 class MustachexProcessor {
   FulfillmentFunction? missingVarFulfiller;
@@ -41,6 +36,8 @@ class MustachexProcessor {
       : variablesResolver =
             variablesResolver ?? VariablesResolver(initialVariables);
 
+  @Deprecated(' Will be removed on version 2.0.0'
+      'Use processBytes instead (maybe with String.fromList(await processBytes(source), encoding: utf8)).')
   Future<String> process(String source) async {
     return await _processMustacheThrowingIfAbsent(
         source, variablesResolver.getAll,
@@ -156,7 +153,7 @@ class MustachexProcessor {
         //     "There is a missing value for '${ex.humanReadableVariable}' mustache "
         //     'section tag. Trying to solve this...');
         Future<String> handleMissingSection(
-            String variable, _MustacheMissingException ex) {
+            String variable, MustacheMissingException ex) {
           if (variable.startsWith('has')) {
             var recasedName = ReCase(variable.substring(3)).camelCase;
             var iterations = _getMustacheIterations(ex, recasedName);
@@ -275,7 +272,7 @@ class MustachexProcessor {
   }
 
   _MustacheIteration _getPrimigenicMustacheIteration(
-      _MustacheMissingException e, String recasedName) {
+      MustacheMissingException e, String recasedName) {
     var collection = e.parentCollections!.first;
     var resolvedVar = variablesResolver[collection];
     return _MustacheIteration(resolvedVar.cast<Map>(), [collection!]);
@@ -290,7 +287,7 @@ class MustachexProcessor {
 
   /// procesa las _MustacheIterations que encuentra según la excepción
   List<_MustacheIteration> _getMustacheIterations(
-      _MustacheMissingException e, String recasedName) {
+      MustacheMissingException e, String recasedName) {
     var iterations = <_MustacheIteration>[];
     var request = <String>[];
     var elements = List<String>.from(e.parentCollections!);
@@ -323,177 +320,6 @@ class MustachexProcessor {
     }
     return iterations;
   }
-}
-
-class MissingPartialException implements Exception {
-  String? partialName;
-  final TemplateException? templateException;
-  MissingPartialException({this.templateException, this.partialName}) {
-    partialName ??= templateException!.message
-        .substring(19, templateException!.message.length - 1);
-  }
-
-  @override
-  String toString() => "Missing partial: Partial '$partialName' not found";
-}
-
-/// Indicates that the `request` value wasn't provided
-/// Note that `request` is automatically decomposed from `varName`(_`recasing`)?
-class MissingVariableException extends _MustacheMissingException {
-  @override
-  VariableRecaseDecomposer? _d;
-  @override
-  List<String?>? _parentCollections;
-
-  MissingVariableException(TemplateException e, Map? sourceVariables)
-      : super(e.message.substring(36, e.message.length - 1), e,
-            sourceVariables ?? {});
-
-  @override
-  String toString() => 'Should process {{${_d!.request}}} but lacks both '
-      'the value for "${_d!.varName}" and the function to fulfill missing values.';
-}
-
-/// Indicates that the `request` value wasn't provided
-class MissingSectionTagException extends _MustacheMissingException {
-  @override
-  VariableRecaseDecomposer? _d;
-  @override
-  List<String?>? _parentCollections;
-
-  MissingSectionTagException(TemplateException e, Map? sourceVariables)
-      : super(e.message.substring(35, e.message.length - 1), e,
-            sourceVariables ?? {});
-
-  @override
-  String toString() {
-    var ret = 'Missing section tag "{{#$request}}"';
-    if (parentCollections!.isEmpty) {
-      ret += ', from $humanReadableVariable';
-    }
-    return ret;
-  }
-}
-
-/// Indicates that the `request` value wasn't provided in a {{^foo}} tag
-class MissingInverseSectionTagException extends _MustacheMissingException {
-  @override
-  VariableRecaseDecomposer? _d;
-  @override
-  List<String?>? _parentCollections;
-
-  MissingInverseSectionTagException(TemplateException e, Map? sourceVariables)
-      : super(e.message.substring(39, e.message.length - 1), e,
-            sourceVariables ?? {});
-
-  @override
-  String toString() {
-    var ret = 'Missing inverse section tag "{{^$request}}"';
-    if (parentCollections!.isEmpty) {
-      ret += ', from $humanReadableVariable';
-    }
-    return ret;
-  }
-}
-
-/// The parent class that does the computations
-class _MustacheMissingException {
-  VariableRecaseDecomposer? _d;
-  List<String?>? _parentCollections;
-
-  _MustacheMissingException(
-      String missing, TemplateException e, Map sourceVariables) {
-    _d = VariableRecaseDecomposer(missing);
-    var sourceBefore = e.source!.substring(0, e.offset);
-    //cambiar las variables si estás en un {{#mapa|lista}}
-    _parentCollections = _processParentMaps(sourceBefore);
-    if (_parentCollections!.isNotEmpty) {
-      _parentCollections!.forEach((pc) {
-        if (sourceVariables[pc] is Map) {
-          sourceVariables = sourceVariables[pc];
-        } else if (sourceVariables[pc] is List) {
-          sourceVariables = sourceVariables[pc].toMap();
-        }
-      });
-      final val = sourceVariables[varName];
-      if (val != null && val is Map) {
-        var ret = val.entries.firstWhereOrNull((e) => e.value == null);
-        if (ret != null) {
-          _parentCollections!.add(ret.key.toString());
-        }
-      }
-    }
-
-    // this._parentCollections = _processParentMaps(_d.varName, sourceVariables) ?? [];
-  }
-
-  /// The complete requested variable string, like varName_constantCase
-  String get request => _d!.request;
-
-  /// The variable part of the request, like varName
-  String? get varName => _d!.varName;
-
-  /// The eventual recasing part of the request, like camelCase
-  String? get recasing => _d!.recasing;
-
-  /// The maps that contains the missing value. For example, \[a,b\] means that
-  /// the missing variable with `varName` 'missing' should be stored in
-  /// variablesResolver\["a"\]\["b"\]\["missing"\]
-  List<String?>? get parentCollections => _parentCollections;
-
-  /// Same as `parentCollections` but with the varName added at the end
-  List<String?> get parentCollectionsWithVarName {
-    var vals = List<String?>.from(_parentCollections!);
-    vals.add(_d!.varName);
-    return vals;
-  }
-
-  /// for logging or informing the user which variable is missing beneath maps
-  String get humanReadableVariable {
-    var ret = parentCollectionsWithVarName.join("'],['");
-    if (parentCollectionsWithVarName.length > 1) {
-      ret = "['$ret']";
-    }
-    return ret;
-  }
-
-  /// Same as `parentCollections` but with the request added at the end
-  List<String> get parentCollectionsWithRequest {
-    var vals = List<String>.from(_parentCollections!);
-    vals.add(_d!.request);
-    return vals;
-  }
-
-  /// usado para escanear el código mustache por tokens que nombren a los maps
-  final _beginToken = RegExp(r'{{ ?# ?(.*?)}}'),
-      _endToken = RegExp(r'{{ ?\/ ?(.*?)}}');
-
-  /// Escanea el código mustache y devuelve una lista con los maps que quedaron
-  /// abiertos. Ej: {{#uno}} {{#dos}}{{/dos}} {{#tres}} devuelve [uno,tres]
-  List<String?>? _processParentMaps(String source) {
-    var open = _beginToken.allMatches(source).map((m) => m.group(1)).toList(),
-        close = _endToken.allMatches(source).map((m) => m.group(1)).toList();
-    var ret = open.where((e) => !close.remove(e)).toList();
-    return ret;
-  }
-  // List<String> _processParentMaps(String varName, Map sourceVariables) {
-  //   // Hace un BFS para encontrar las keys de los mapas padres del varName q busca
-  //   List<String> ret = [];
-  //   if (sourceVariables.entries.any((e) => e.key == varName)) {
-  //     return ret;
-  //   } else {
-  //     var maps = sourceVariables.entries.where((e) => e.value is Map);
-  //     for (var map in maps) {
-  //       var res = _processParentMaps(varName, map.value);
-  //       if (res != null) {
-  //         ret.add(map.key);
-  //         ret.addAll(res);
-  //         return ret;
-  //       }
-  //     }
-  //     return null;
-  //   }
-  // }
 }
 
 TemplateException? _failing_gathering(Template template, Map vars,
@@ -564,20 +390,6 @@ List<Map> _recursivelyProcessHasX(
   }
 }
 
-///A wrapper for a [MissingVariableException] that alerts in a friendly manner
-///the specific error it represents
-class MissingNestedVariableException {
-  final MissingVariableException missingVariableException;
-
-  MissingNestedVariableException(this.missingVariableException);
-
-  @override
-  String toString() => "Can't recase "
-      "${missingVariableException.parentCollectionsWithRequest.join('->')} "
-      "because there is no '${missingVariableException.varName}' value to "
-      'recase. Maybe a typo?';
-}
-
 /// Las `iteration`s son los valores de los primeros List<Map> del varsResolver
 /// el exception, `e` es la data del recasing que falta hacer
 /// Esta función devuelve el map más primigenio de las iterations con
@@ -585,6 +397,7 @@ class MissingNestedVariableException {
 /// (en los maps del menos primigenio)
 List<Map> _recursivelyProcessRecasing(
     _MustacheIteration iteration, MissingVariableException e,
+    // ignore: unused_element_parameter
     [Map? submap]) {
   //
   // función auxiliar para recasear los mapas recursivamente
