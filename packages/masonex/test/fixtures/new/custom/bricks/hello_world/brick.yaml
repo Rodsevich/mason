@@ -11,9 +11,9 @@ description: A new brick created with the Masonexex CLI.
 version: 0.1.0+1
 
 # The following defines the environment for the current brick.
-# It includes the version of masonexex that the brick requires.
+# It includes the version of masonex that the brick requires.
 environment:
-  masonexex: ^0.1.2
+  masonex: ^0.1.2
 
 # Variables specify dynamic values that your brick depends on.
 # Zero or more variables can be specified for a given brick.

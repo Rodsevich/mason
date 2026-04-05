@@ -12,8 +12,9 @@ void setUpTestingEnvironment(Directory cwd, {String suffix = ''}) {
     if (testDir.existsSync()) testDir.deleteSync(recursive: true);
     testDir.createSync(recursive: true);
     Directory.current = testDir.path;
-    File(
+    final bricksJson = File(
       path.join(Directory.current.path, '.masonex', 'bricks.json'),
-    ).deleteSync();
+    );
+    if (bricksJson.existsSync()) bricksJson.deleteSync();
   } catch (_) {}
 }

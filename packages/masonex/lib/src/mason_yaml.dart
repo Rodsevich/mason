@@ -59,6 +59,7 @@ class BrickLocation {
 
   /// Converts a [Map] to a [BrickLocation].
   factory BrickLocation.fromJson(dynamic json) {
+    if (json is BrickLocation) return json;
     if (json is String) return BrickLocation(version: json);
     return _$BrickLocationFromJson(json as Map);
   }
@@ -88,8 +89,10 @@ class GitPath {
   const GitPath(this.url, {String? path, this.ref}) : path = path ?? '';
 
   /// Converts [Map] to [MasonexYaml]
-  factory GitPath.fromJson(Map<dynamic, dynamic> json) =>
-      _$GitPathFromJson(json);
+  factory GitPath.fromJson(dynamic json) {
+    if (json is GitPath) return json;
+    return _$GitPathFromJson(json as Map);
+  }
 
   /// Converts [GitPath] to [Map]
   Map<dynamic, dynamic> toJson() => _$GitPathToJson(this);

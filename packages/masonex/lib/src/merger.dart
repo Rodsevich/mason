@@ -131,6 +131,17 @@ class YamlMerger extends Merger {
         } catch (_) {
           // Key doesn't exist, will be updated below
         }
+      } else if (valueNode is YamlList) {
+        try {
+          final existing = _getNestedValue(editor, currentPath);
+          if (existing is YamlList) {
+            final mergedList = [...existing.nodes, ...valueNode.nodes];
+            editor.update(currentPath, _toYamlNode(mergedList));
+            continue;
+          }
+        } catch (_) {
+          // Key doesn't exist, fall through to update
+        }
       }
 
       editor.update(currentPath, _toYamlNode(valueNode));

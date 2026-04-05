@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:mason/mason.dart';
+import 'package:masonex/masonex.dart';
 import 'package:path/path.dart' as path;
 
 void main(List<String> args) async {
