@@ -141,6 +141,21 @@ extension RenderTemplate on String {
     PartialResolverFunction? partialsResolver,
     FutureOr<String> Function(String variable)? onMissingVariable,
   }) async {
+    final renderedBytes = await renderBytes(
+      vars,
+      partialsResolver: partialsResolver,
+      onMissingVariable: onMissingVariable,
+    );
+    return _sanitizeOutput(utf8.decode(renderedBytes));
+  }
+
+  /// Processes the [String] template and returns the rendered result as raw bytes ([List<int>]).
+  /// Binary values (Uint8List / List<int>) in [vars] are written directly without string conversion.
+  Future<List<int>> renderBytes(
+    Map<String, dynamic> vars, {
+    PartialResolverFunction? partialsResolver,
+    FutureOr<String> Function(String variable)? onMissingVariable,
+  }) async {
     // Transpile Mason's dot/pipe lambda syntax into standard mustache sections
     // BEFORE handing off to MustachexProcessor. This ensures
     // `{{name.pascalCase()}}` becomes `{{#pascalCase}}{{name}}{{/pascalCase}}`
@@ -162,11 +177,10 @@ extension RenderTemplate on String {
     );
 
     try {
-      final rendered = await processor.process(transpiled);
-      return _sanitizeOutput(rendered);
+      return await processor.processBytes(transpiled);
     } catch (e, st) {
       print('Render error for $this: $e\n$st');
-      return this;
+      return utf8.encode(this);
     }
   }
 }
