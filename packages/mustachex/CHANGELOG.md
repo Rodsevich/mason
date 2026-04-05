@@ -3,6 +3,7 @@
 - When a variable's value is `Uint8List` or `List<int>`, raw bytes are written directly without string conversion
 - Text portions are UTF-8 encoded, producing a single `List<int>` output
 - Existing `process()` method remains unchanged for backward compatibility
+- Minimal code order improvement with own exceptions file.
 
 ## 1.0.0
 - Introduced mustache_template code. All test passing.
