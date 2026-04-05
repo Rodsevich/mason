@@ -85,7 +85,7 @@ class AddCommand extends MasonexCommand with InstallBrickMixin {
 
       final bricks = Map.of(masonexYaml.bricks)
         ..removeWhere((key, value) => key == brick.name);
-      masonexYamlFile.writeAsStringSync(Yaml.encode(MasonexYaml(bricks).toJson()));
+      masonexYamlFile.writeAsStringSync(MasonexYamlEncoder.encode(MasonexYaml(bricks).toJson()));
 
       final lockedBricks = {...masonexLockJson.bricks}
         ..removeWhere((key, value) => key == brick.name);
@@ -127,9 +127,9 @@ class AddCommand extends MasonexCommand with InstallBrickMixin {
     final bricks = Map.of(masonexYaml.bricks)..addAll({name: location});
     progress.update('Adding ${brickYaml.name}');
     try {
-      await masonexYamlFile.writeAsString(
-        Yaml.encode(MasonexYaml(bricks).toJson()),
-      );
+      final newMasonYaml = MasonexYaml(bricks);
+      final masonYamlContent = MasonexYamlEncoder.encode(newMasonYaml.toJson());
+      await masonexYamlFile.writeAsString(masonYamlContent);
       progress.complete('Added ${brickYaml.name}');
     } catch (_) {
       progress.fail();

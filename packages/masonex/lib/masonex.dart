@@ -42,9 +42,11 @@ export 'src/generator.dart'
 export 'src/mason_bundle.dart' show MasonexBundle, MasonexBundledFile;
 export 'src/mason_lock_json.dart' show MasonexLockJson;
 export 'src/mason_yaml.dart' show BrickLocation, GitPath, MasonexYaml;
+export 'src/merger.dart'
+    show AppendMerger, DartRecursiveMerger, JsonMerger, Merger, YamlMerger;
 export 'src/path.dart' show canonicalize;
 export 'src/render.dart' show RenderTemplate;
 export 'src/string_case_extensions.dart' show StringCaseExtensions;
 export 'src/version.dart' show packageVersion;
-export 'src/yaml_encode.dart' show Yaml;
+export 'src/yaml_encode.dart' show MasonexYamlEncoder;
 export 'src/annotations.dart';

@@ -6,7 +6,7 @@ part 'mason_lock_json.g.dart';
 /// {@template masonex_lock_json}
 /// Masonex lock file which contains locked brick locations.
 /// {@endtemplate}
-@JsonSerializable()
+@JsonSerializable(anyMap: true)
 class MasonexLockJson {
   /// {@macro masonex_lock_json}
   const MasonexLockJson({Map<String, BrickLocation>? bricks})

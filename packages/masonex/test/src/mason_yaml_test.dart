@@ -63,7 +63,7 @@ void main() {
     test('can be (de)serialized (gitPath)', () {
       final instance = BrickLocation(
         git: GitPath(
-          'https://github.com/felangel/masonex',
+          'https://github.com/felangel/mason',
           ref: 'main',
           path: 'bricks/simple',
         ),
@@ -81,7 +81,7 @@ void main() {
   group('GitPath', () {
     test('can be (de)serialized', () {
       final instance = GitPath(
-        'https://github.com/felangel/masonex',
+        'https://github.com/felangel/mason',
         ref: 'main',
         path: 'bricks/simple',
       );

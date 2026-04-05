@@ -271,12 +271,16 @@ class _MakeCommand extends MasonexCommand {
 extension on GeneratedFile {
   bool get hasChanged {
     switch (status) {
+      case GeneratedFileStatus.appended:
+      case GeneratedFileStatus.prepended:
+      case GeneratedFileStatus.merged:
       case GeneratedFileStatus.created:
       case GeneratedFileStatus.overwritten:
-      case GeneratedFileStatus.appended:
         return true;
-      case GeneratedFileStatus.skipped:
       case GeneratedFileStatus.identical:
+      case GeneratedFileStatus.skipped:
+      case GeneratedFileStatus.temporary:
+      case GeneratedFileStatus.conditionNotMet:
         return false;
     }
   }

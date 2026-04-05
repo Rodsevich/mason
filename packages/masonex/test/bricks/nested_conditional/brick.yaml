@@ -1,10 +1,10 @@
 name: nested_conditional
-description: A new brick created with the Masonex CLI.
+description: A new brick created with the Masonexex CLI.
 
 version: 0.1.0+1
 
 environment:
-  masonex: ^0.1.0
+  masonexex: ^0.1.0
 
 vars:
   name:

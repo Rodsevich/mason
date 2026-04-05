@@ -53,7 +53,7 @@ void main() {
       final instance = MasonexBundle(
         name: 'name',
         description: 'description',
-        repository: 'https://github.com/felangel/masonex',
+        repository: 'https://github.com/felangel/mason',
         version: '1.0.0',
         vars: {},
         files: [],

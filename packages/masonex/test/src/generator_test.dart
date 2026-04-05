@@ -901,7 +901,7 @@ void main() {
         const name = 'Dash';
         final brick = Brick.git(
           const GitPath(
-            'https://github.com/felangel/masonex',
+            'https://github.com/felangel/mason',
             path: 'bricks/greeting',
           ),
         );

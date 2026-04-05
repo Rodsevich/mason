@@ -39,7 +39,7 @@ void main() {
           name: 'A',
           description: 'descriptionA',
           version: '1.0.0',
-          repository: 'https://github.com/felangel/masonex',
+          repository: 'https://github.com/felangel/mason',
         );
         expect(BrickYaml.fromJson(instance.toJson()), equals(instance));
       });

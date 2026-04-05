@@ -10,7 +10,7 @@ part 'brick_yaml.g.dart';
 /// a `MasonexGenerator` from a brick template.
 /// {@endtemplate}
 @immutable
-@JsonSerializable()
+@JsonSerializable(anyMap: true)
 class BrickYaml {
   /// {@macro masonex_yaml}
   const BrickYaml({
@@ -20,6 +20,7 @@ class BrickYaml {
     this.publishTo,
     this.environment = const BrickEnvironment(),
     this.vars = const <String, BrickVariableProperties>{},
+    this.inFileGenerations = const <String, Map<String, String>>{},
     this.repository,
     this.path,
   });
@@ -53,6 +54,7 @@ class BrickYaml {
   final String version;
 
   /// Environment of the brick.
+  @BrickEnvironmentConverter()
   final BrickEnvironment environment;
 
   /// Optional url pointing to the brick's source code repository.
@@ -70,17 +72,25 @@ class BrickYaml {
   @VarsConverter()
   final Map<String, BrickVariableProperties> vars;
 
+  /// Map of in-file generations.
+  @JsonKey(name: 'in_file_generations')
+  final Map<String, Map<String, String>> inFileGenerations;
+
   /// Path to the [BrickYaml] file.
   final String? path;
 
   /// Returns a copy of the current [BrickYaml] with
   /// an overridden [path].
-  BrickYaml copyWith({String? path}) {
+  BrickYaml copyWith({
+    String? path,
+    Map<String, Map<String, String>>? inFileGenerations,
+  }) {
     return BrickYaml(
       name: name,
       description: description,
       version: version,
       vars: vars,
+      inFileGenerations: inFileGenerations ?? this.inFileGenerations,
       environment: environment,
       repository: repository,
       path: path ?? this.path,
@@ -128,7 +138,7 @@ enum BrickVariableType {
 /// An object representing a brick variable.
 /// {@endtemplate}
 @immutable
-@JsonSerializable()
+@JsonSerializable(anyMap: true)
 class BrickVariableProperties {
   /// {@macro brick_variable_properties}
   @internal
@@ -297,7 +307,9 @@ class VarsConverter
       return _value.map(
         (dynamic key, dynamic value) => MapEntry(
           key as String,
-          BrickVariableProperties.fromJson(_value[key] as Map),
+          BrickVariableProperties.fromJson(
+            Map<String, dynamic>.from(value as Map),
+          ),
         ),
       );
     }
@@ -309,14 +321,19 @@ class VarsConverter
 /// An object representing the environment for a given brick.
 /// {@endtemplate}
 @immutable
-@JsonSerializable()
+@JsonSerializable(anyMap: true)
 class BrickEnvironment {
   /// {@macro brick_environment}
   const BrickEnvironment({this.masonex = 'any'});
 
   /// Converts [Map] to [BrickYaml]
-  factory BrickEnvironment.fromJson(Map<dynamic, dynamic> json) =>
-      _$BrickEnvironmentFromJson(json);
+  factory BrickEnvironment.fromJson(dynamic json) {
+    if (json is String) {
+      return BrickEnvironment(masonex: json);
+    }
+    final Map<dynamic, dynamic> map = json as Map;
+    return _$BrickEnvironmentFromJson(map);
+  }
 
   /// Converts [BrickEnvironment] to [Map]
   Map<dynamic, dynamic> toJson() => _$BrickEnvironmentToJson(this);
@@ -324,4 +341,18 @@ class BrickEnvironment {
   /// Masonex version constraint (semver).
   /// Defaults to 'any'.
   final String masonex;
+}
+class BrickEnvironmentConverter
+    implements JsonConverter<BrickEnvironment, dynamic> {
+  const BrickEnvironmentConverter();
+
+  @override
+  BrickEnvironment fromJson(dynamic json) {
+    return BrickEnvironment.fromJson(json);
+  }
+
+  @override
+  dynamic toJson(BrickEnvironment environment) {
+    return environment.toJson();
+  }
 }

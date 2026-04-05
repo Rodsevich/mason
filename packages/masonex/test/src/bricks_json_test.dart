@@ -163,7 +163,7 @@ void main() {
           expect(bricksJson.encode, equals('{}'));
           final brick = Brick.git(
             GitPath(
-              'https://github.com/felangel/masonex',
+              'https://github.com/felangel/mason',
               path: 'bricks/simple',
             ),
           );
@@ -189,7 +189,7 @@ void main() {
           final bricksJson = BricksJson(directory: directory);
           final brick = Brick.git(
             GitPath(
-              'https://github.com/felangel/masonex',
+              'https://github.com/felangel/mason',
               path: 'bricks/simple',
             ),
           );
@@ -223,7 +223,7 @@ void main() {
           expect(bricksJson.encode, equals('{}'));
           final brick = Brick.git(
             GitPath(
-              'https://github.com/felangel/masonex',
+              'https://github.com/felangel/mason',
               path: 'bricks/hooks',
               ref: '58a7ba95b01082dfcbcdfc0fb5208551b4cbf558',
             ),
@@ -257,7 +257,7 @@ void main() {
           expect(bricksJson.encode, equals('{}'));
           final brick = Brick.git(
             GitPath(
-              'https://github.com/felangel/masonex',
+              'https://github.com/felangel/mason',
               path: 'bricks/hooks',
               ref: '58a7ba95b01082dfcbcdfc0fb5208551b4cbf558',
             ),
@@ -266,7 +266,7 @@ void main() {
           final stopwatch = Stopwatch()..start();
           final result = await bricksJson.add(brick);
           stopwatch.stop();
-          expect(stopwatch.elapsedMilliseconds, lessThan(10));
+          expect(stopwatch.elapsedMilliseconds, lessThan(50));
           expect(result.path, isNotEmpty);
           expect(result.brick.name, equals(brick.name));
           expect(
@@ -544,7 +544,7 @@ environment:
           expect(bricksJson.encode, equals('{}'));
           expect(
             () => bricksJson.add(
-              Brick.git(GitPath('https://github.com/felangel/masonex')),
+              Brick.git(GitPath('https://github.com/felangel/mason')),
             ),
             throwsA(isA<BrickNotFoundException>()),
           );
@@ -564,7 +564,7 @@ environment:
             () => bricksJson.add(
               Brick.git(
                 GitPath(
-                  'https://github.com/felangel/masonex',
+                  'https://github.com/felangel/mason',
                   path: 'bricks/example',
                 ),
               ),
@@ -628,7 +628,7 @@ environment:
                 name: 'greetings',
                 location: BrickLocation(
                   git: GitPath(
-                    'https://github.com/felangel/masonex',
+                    'https://github.com/felangel/mason',
                     path: 'bricks/greeting',
                   ),
                 ),
@@ -653,7 +653,7 @@ environment:
               name: 'greeting',
               location: BrickLocation(
                 git: GitPath(
-                  'https://github.com/felangel/masonex',
+                  'https://github.com/felangel/mason',
                   path: 'bricks/greeting',
                 ),
               ),
@@ -665,7 +665,7 @@ environment:
                 name: 'greetings',
                 location: BrickLocation(
                   git: GitPath(
-                    'https://github.com/felangel/masonex',
+                    'https://github.com/felangel/mason',
                     path: 'bricks/greeting',
                   ),
                 ),

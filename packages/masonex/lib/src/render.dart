@@ -1,13 +1,54 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:masonex/masonex.dart';
 import 'package:mustachex/mustachex.dart';
+import 'package:masonex/src/recase.dart';
 
 final _newlineInRegExp = RegExp(r'(\\\r\n|\\\r|\\\n)');
 final _newlineOutRegExp = RegExp(r'(\r\n|\r|\n)');
 final _unicodeInRegExp = RegExp(r'\\[^\x00-\x7F]');
 final _unicodeOutRegExp = RegExp(r'[^\x00-\x7F]');
+
+/// The set of built-in lambda names supported by Mason.
+const _lambdaNames = {
+  'camelCase',
+  'constantCase',
+  'dotCase',
+  'headerCase',
+  'lowerCase',
+  'mustacheCase',
+  'pascalCase',
+  'pascalDotCase',
+  'paramCase',
+  'pathCase',
+  'sentenceCase',
+  'snakeCase',
+  'titleCase',
+  'upperCase',
+};
+
+/// Regex that matches Mason's `{{varName.lambdaName()}}` or `{{varName | lambdaName}}` syntax.
+/// Captures: group(1) = varName, group(2) = lambdaName (without trailing ())
+final _masonLambdaRegExp = RegExp(
+  r'\{\{\s*([\w]+)\s*(?:\.\s*([\w]+)\s*\(\s*\)|\|\s*([\w]+)\s*)\s*\}\}',
+);
+
+/// Transpiles Mason extended lambda syntax into standard mustache section lambdas.
+///
+/// `{{name.pascalCase()}}` → `{{#pascalCase}}{{name}}{{/pascalCase}}`
+/// `{{name | snakeCase}}` → `{{#snakeCase}}{{name}}{{/snakeCase}}`
+String _transpileMasonSyntax(String source) {
+  return source.replaceAllMapped(_masonLambdaRegExp, (match) {
+    final varName = match.group(1)!;
+    // group(2) = dot style lambda, group(3) = pipe style lambda
+    final lambdaName = match.group(2) ?? match.group(3);
+    if (lambdaName == null || !_lambdaNames.contains(lambdaName)) {
+      // Not a known lambda — leave it alone so mustachex handles it.
+      return match.group(0)!;
+    }
+    return '{{#$lambdaName}}{{$varName}}{{/$lambdaName}}';
+  });
+}
 
 String _sanitizeInput(String input) {
   return input.replaceAllMapped(
@@ -16,6 +57,12 @@ String _sanitizeInput(String input) {
   );
 }
 
+final _builtInVars = <String, dynamic>{
+  '__LEFT_CURLY_BRACKET__': '{',
+  '__RIGHT_CURLY_BRACKET__': '}',
+  'now': DateTime.now().toIso8601String(),
+};
+
 String _sanitizeOutput(String output) {
   return output.replaceAllMapped(
     RegExp('${_newlineInRegExp.pattern}|${_unicodeInRegExp.pattern}'),
@@ -23,55 +70,48 @@ String _sanitizeOutput(String output) {
   );
 }
 
-/// [Map] of all the built-in lambda functions.
 final _builtInLambdas = <String, LambdaFunction>{
   /// camelCase
-  'camelCase': (ctx) => ctx.renderString().camelCase,
+  'camelCase': (ctx) => ReCase(ctx.renderString()).camelCase,
 
   /// CONSTANT_CASE
-  'constantCase': (ctx) => ctx.renderString().constantCase,
+  'constantCase': (ctx) => ReCase(ctx.renderString()).constantCase,
 
   /// dot.case
-  'dotCase': (ctx) => ctx.renderString().dotCase,
+  'dotCase': (ctx) => ReCase(ctx.renderString()).dotCase,
 
   /// Header-Case
-  'headerCase': (ctx) => ctx.renderString().headerCase,
+  'headerCase': (ctx) => ReCase(ctx.renderString()).headerCase,
 
   /// lower case
-  'lowerCase': (ctx) => ctx.renderString().lowerCase,
+  'lowerCase': (ctx) => ctx.renderString().toLowerCase(),
 
   /// {{ mustache case }}
-  'mustacheCase': (ctx) => ctx.renderString().mustacheCase,
+  'mustacheCase': (ctx) => '{{ ${ctx.renderString()} }}',
 
   /// PascalCase
-  'pascalCase': (ctx) => ctx.renderString().pascalCase,
+  'pascalCase': (ctx) => ReCase(ctx.renderString()).pascalCase,
 
   /// Pascal.Dot.Case
-  'pascalDotCase': (ctx) => ctx.renderString().pascalDotCase,
+  'pascalDotCase': (ctx) => ReCase(ctx.renderString()).pascalDotCase,
 
   /// param-case
-  'paramCase': (ctx) => ctx.renderString().paramCase,
+  'paramCase': (ctx) => ReCase(ctx.renderString()).paramCase,
 
   /// path/case
-  'pathCase': (ctx) => ctx.renderString().pathCase,
+  'pathCase': (ctx) => ReCase(ctx.renderString()).pathCase,
 
   /// Sentence case
-  'sentenceCase': (ctx) => ctx.renderString().sentenceCase,
+  'sentenceCase': (ctx) => ReCase(ctx.renderString()).sentenceCase,
 
   /// snake_case
-  'snakeCase': (ctx) => ctx.renderString().snakeCase,
+  'snakeCase': (ctx) => ReCase(ctx.renderString()).snakeCase,
 
   /// Title Case
-  'titleCase': (ctx) => ctx.renderString().titleCase,
+  'titleCase': (ctx) => ReCase(ctx.renderString()).titleCase,
 
   /// UPPER CASE
-  'upperCase': (ctx) => ctx.renderString().upperCase,
-};
-
-/// [Map] of all the built-in variables.
-const _builtInVars = <String, dynamic>{
-  '__LEFT_CURLY_BRACKET__': '{',
-  '__RIGHT_CURLY_BRACKET__': '}',
+  'upperCase': (ctx) => ctx.renderString().toUpperCase(),
 };
 
 /// {@template render_template}
@@ -98,72 +138,36 @@ extension RenderTemplate on String {
   /// {@macro render_template}
   Future<String> render(
     Map<String, dynamic> vars, {
-    Map<String, List<int>>? partials = const {},
+    PartialResolverFunction? partialsResolver,
     FutureOr<String> Function(String variable)? onMissingVariable,
   }) async {
+    // Transpile Mason's dot/pipe lambda syntax into standard mustache sections
+    // BEFORE handing off to MustachexProcessor. This ensures
+    // `{{name.pascalCase()}}` becomes `{{#pascalCase}}{{name}}{{/pascalCase}}`
+    // so the built-in lambda functions handle it correctly.
+    final transpiled = _transpileMasonSyntax(this);
+
+    final allVars = <String, dynamic>{
+      ...vars,
+      ..._builtInLambdas,
+      ..._builtInVars,
+    };
+
     final processor = MustachexProcessor(
-      initialVariables: <String, dynamic>{
-        ...vars,
-        ..._builtInLambdas,
-        ..._builtInVars,
-      },
+      initialVariables: allVars,
       missingVarFulfiller: onMissingVariable != null
-          ? (exception) async => await onMissingVariable(exception.request)
+          ? (exception) async => await onMissingVariable(exception.varName!)
           : null,
-      partialsResolver: (exception) {
-        final name = exception.partialName;
-        if (name == null) return null;
-        final content = partials?['{{~ $name }}'];
-        if (content == null) return null;
-        final decoded = utf8.decode(content);
-        return _sanitizeInput(decoded.transpiled());
-      },
+      partialsResolver: partialsResolver,
     );
 
-    return _sanitizeOutput(
-      await processor.process(_sanitizeInput(transpiled())),
-    );
-  }
-}
-
-extension on String {
-  String transpiled() {
-    final builtInLambdaNamesEscaped =
-        _builtInLambdas.keys.map(RegExp.escape).join('|');
-    final lambdaPattern = RegExp(
-      '{?{{ *([^{}]*?)(?:\\.($builtInLambdaNamesEscaped)\\(\\) *| *\\| *([a-zA-Z0-9_]+) *)}}}?',
-    );
-
-    var currentIteration = this;
-
-    while (lambdaPattern.hasMatch(currentIteration)) {
-      currentIteration =
-          currentIteration.replaceAllMapped(lambdaPattern, (match) {
-        final expression = match.group(0)!;
-        final variable = match.group(1)!.trim();
-        final lambda = match.group(2) ?? match.group(3);
-
-        if (lambda == null) return expression;
-
-        final startsWithTriple = expression.startsWith('{{{');
-        final endsWithTriple = expression.endsWith('}}}');
-        final isTriple = startsWithTriple && endsWithTriple;
-
-        final output = isTriple ? '{{{$variable}}}' : '{{$variable}}';
-
-        if (startsWithTriple && !isTriple) {
-          return '{{__LEFT_CURLY_BRACKET__}}{{#$lambda}}$output{{/$lambda}}';
-        }
-
-        if (endsWithTriple && !isTriple) {
-          return '{{#$lambda}}$output{{/$lambda}}{{__RIGHT_CURLY_BRACKET__}}';
-        }
-
-        return '{{#$lambda}}$output{{/$lambda}}';
-      });
+    try {
+      final rendered = await processor.process(transpiled);
+      return _sanitizeOutput(rendered);
+    } catch (e, st) {
+      print('Render error for $this: $e\n$st');
+      return this;
     }
-
-    return currentIteration;
   }
 }
 
@@ -177,7 +181,7 @@ extension ResolvePartial on Map<String, List<int>> {
     final content = this['{{~ $name }}'];
     if (content == null) return null;
     final decoded = utf8.decode(content);
-    final sanitized = _sanitizeInput(decoded.transpiled());
+    final sanitized = _sanitizeInput(decoded);
     return Template(sanitized, name: name, lenient: true);
   }
 }

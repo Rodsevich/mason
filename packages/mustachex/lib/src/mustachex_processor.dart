@@ -85,9 +85,21 @@ class MustachexProcessor {
         throw MissingPartialException(templateException: error);
       } else {
         var e = error.message;
-        var name = nameRegExp.firstMatch(e)!.group(1);
+        var nameStr = nameRegExp.firstMatch(e)!.group(1)!;
+        var name = nameStr.split('|').first.trim();
         if (e.contains('for variable tag')) {
-          vars[name] = '%ValueOf$name%';
+          if (name.contains('.')) {
+            var parts = name.split('.');
+            var current = vars;
+            for (var i = 0; i < parts.length - 1; i++) {
+              var p = parts[i];
+              if (current[p] is! Map) current[p] = <String, dynamic>{};
+              current = current[p];
+            }
+            current[parts.last] = '%ValueOf$nameStr%';
+          } else {
+            vars[name] = '%ValueOf$name%';
+          }
         } else {
           //up to this version, if not a variable, only a Section is possible
           var inSectionSrc = RegExp('{{([#^])$name}}([\\s\\S]*?){{/$name}}');

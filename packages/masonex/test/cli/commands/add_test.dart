@@ -216,7 +216,7 @@ void main() {
 
       group('git', () {
         test('exits with code 64 when brick does not exist', () async {
-          const url = 'https://github.com/felangel/masonex';
+          const url = 'https://github.com/felangel/mason';
           final result = await commandRunner.run(
             ['add', 'example', '--git-url', url],
           );
@@ -225,7 +225,7 @@ void main() {
         });
 
         test('exits with code 64 when brick does not exist (path)', () async {
-          const url = 'https://github.com/felangel/masonex';
+          const url = 'https://github.com/felangel/mason';
           const path = 'bricks/example';
           final result = await commandRunner.run(
             ['add', 'example', '--git-url', url, '--git-path', path],
@@ -237,7 +237,7 @@ void main() {
         });
 
         test('exits with code 64 when name does not match', () async {
-          const url = 'https://github.com/felangel/masonex';
+          const url = 'https://github.com/felangel/mason';
           final result = await commandRunner.run(
             ['add', 'example', '--git-url', url, '--git-path', 'bricks/widget'],
           );
@@ -250,7 +250,7 @@ void main() {
         });
 
         test('adds brick successfully when brick exists', () async {
-          const url = 'https://github.com/felangel/masonex';
+          const url = 'https://github.com/felangel/mason';
           final result = await commandRunner.run(
             ['add', 'widget', '--git-url', url, '--git-path', 'bricks/widget'],
           );
@@ -421,7 +421,7 @@ void main() {
 
       group('git', () {
         test('exits with code 64 when brick does not exist', () async {
-          const url = 'https://github.com/felangel/masonex';
+          const url = 'https://github.com/felangel/mason';
           final result = await commandRunner.run(
             ['add', '--global', 'example', '--git-url', url],
           );
@@ -430,7 +430,7 @@ void main() {
         });
 
         test('adds brick successfully when brick exists', () async {
-          const url = 'https://github.com/felangel/masonex';
+          const url = 'https://github.com/felangel/mason';
           final result = await commandRunner.run(
             [
               'add',

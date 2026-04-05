@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:masonex/masonex.dart';
+import 'package:mason/mason.dart';
 
 void run(HookContext context) {
   final file = File('.post_gen.txt');

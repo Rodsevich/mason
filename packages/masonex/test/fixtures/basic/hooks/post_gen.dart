@@ -1,3 +1,3 @@
-import 'package:masonex/masonex.dart';
+import 'package:mason/mason.dart';
 
 void run(HookContext context) {}

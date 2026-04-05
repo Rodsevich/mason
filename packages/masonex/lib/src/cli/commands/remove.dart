@@ -48,7 +48,7 @@ class RemoveCommand extends MasonexCommand {
       final bricks = Map.of(masonexYaml.bricks)
         ..removeWhere((key, value) => key == brickName);
 
-      masonexYamlFile.writeAsStringSync(Yaml.encode(MasonexYaml(bricks).toJson()));
+      masonexYamlFile.writeAsStringSync(MasonexYamlEncoder.encode(MasonexYaml(bricks).toJson()));
 
       await bricksJson.flush();
 

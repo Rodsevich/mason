@@ -87,7 +87,7 @@ void main() {
           }
         });
         when(() => logger.progress(any())).thenReturn(progress);
-        const url = 'https://github.com/felangel/masonex';
+        const url = 'https://github.com/felangel/mason';
         final addResult = await commandRunner.run(
           [
             'add',
@@ -128,7 +128,7 @@ void main() {
       });
 
       test('removes successfully when brick exists', () async {
-        const url = 'https://github.com/felangel/masonex';
+        const url = 'https://github.com/felangel/mason';
         final addResult = await commandRunner.run(
           [
             'add',
@@ -196,7 +196,7 @@ void main() {
       });
 
       test('removes successfully when brick exists', () async {
-        const url = 'https://github.com/felangel/masonex';
+        const url = 'https://github.com/felangel/mason';
         final addResult = await commandRunner.run(
           [
             'add',
