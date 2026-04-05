@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:mason/mason.dart';
+import 'package:masonex/masonex.dart';
 
 const colors = [
   'Red',

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:mason/mason.dart';
+import 'package:masonex/masonex.dart';
 
 void run(HookContext context) {
   final file = File('.pre_gen.txt');

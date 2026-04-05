@@ -328,6 +328,7 @@ class BrickEnvironment {
 
   /// Converts [Map] to [BrickYaml]
   factory BrickEnvironment.fromJson(dynamic json) {
+    if (json is BrickEnvironment) return json;
     if (json is String) {
       return BrickEnvironment(masonex: json);
     }

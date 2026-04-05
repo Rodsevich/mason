@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:mason/mason.dart';
+import 'package:masonex/masonex.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
@@ -33,7 +33,7 @@ var list = ['banana', 'manzana'];
 var list = ['naranja'];
 ''');
 
-      final generator = await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       expect(targetFile.readAsStringSync(), contains("var list = ['naranja', 'banana', 'manzana'];"));
@@ -57,7 +57,7 @@ var map = {'b': 2, 'c': 3};
 var map = {'a': 1, 'b': 0};
 ''');
 
-      final generator = await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -90,10 +90,11 @@ version: 0.1.0
 }
 ''');
 
-      final generator = await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
+      // Use contains to be less sensitive to formatting if needed, but masonex uses json.encode
       expect(content, contains('"list":[1,2,3]'));
       expect(content, contains('"map":{"a":1,"b":2}'));
     });
@@ -124,7 +125,7 @@ map:
   b: 0
 ''');
 
-      final generator = await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -156,7 +157,7 @@ var oldVar = 'old';
 ''');
 
       final generator =
-          await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -200,7 +201,7 @@ void main() {
 ''');
 
       final generator =
-          await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -236,7 +237,7 @@ class MyClass {
 ''');
 
       final generator =
-          await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -264,7 +265,7 @@ class Clazz {}
 ''');
 
       final generator =
-          await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -293,7 +294,7 @@ class ExistingClass {}
 ''');
 
       final generator =
-          await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -326,7 +327,7 @@ var list = ['naranja'];
 ''');
 
       final generator =
-          await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -364,7 +365,7 @@ class MyClass {
 ''');
 
       final generator =
-          await MasonGenerator.fromBrick(Brick.path(brickDir.path));
+          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:mason/mason.dart';
+import 'package:masonex/masonex.dart';
 
 void preGen(HookContext context) {
   File('.pre_gen.txt').writeAsStringSync('pre_gen: ${context.vars['name']}');

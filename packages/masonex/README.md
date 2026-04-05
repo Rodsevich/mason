@@ -29,7 +29,7 @@ A template generator which helps teams generate files quickly and consistently.
    - **Path Substitution**: File paths are rendered using Mustache, supporting dynamic names and loops for multiple file generation.
    - **Binary Data Protection**: Before rendering, `masonex` detects binary variables (`List<int>` or `Uint8List`) and replaces them with text markers. This prevents the binary data from being corrupted during the UTF-8 rendering process.
    - **Syntax Transpilation**: Supports extended syntax like pipes (`{{ var | pascalCase }}`), dot notation (`{{ var.camelCase() }}`), and alternative closing tags (`{{%name}}`).
-   - **Mustache Rendering**: The content is rendered using the [mustachex](https://gitlab.com/Rodsevich/mustachex) engine, enabling advanced Lambdas and Partials.
+   - **Mustache Rendering**: The content is rendered using the [mustachex](https://gitlab.com/Rodsevich/mustachex) engine, enabling advanced Lambdas and Partials, has guards, easy recasing
    - **Binary Restoration**: After rendering, the original raw bytes are re-injected into the positions of the markers.
 3. **Output Generation**: The `GeneratorTarget` writes the final files to disk, handling conflict resolutions (overwrite, skip, or append).
 

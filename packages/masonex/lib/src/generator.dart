@@ -435,7 +435,9 @@ abstract class Generator implements Comparable<Generator> {
 
                     var found = false;
                     for (final marker in markers) {
+                      print('DEBUG: Checking marker "$marker" in content...');
                       if (content.contains(marker)) {
+                        print('DEBUG: Found marker "$marker"!');
                         content = content.replaceFirst(
                           marker,
                           '// $template\n$snippetContent\n$marker',

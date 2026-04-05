@@ -111,6 +111,13 @@ bricks:
       expect(File(expectedMasonexLockJsonPath).existsSync(), isFalse);
 
       final result = await commandRunner.run(['get']);
+      if (result != 0) {
+        // Since logger is a mock, we can't easily see its calls without verify.
+        // But we can verify it here for debugging.
+        try {
+          verify(() => logger.err(any())).captured.forEach(print);
+        } catch (_) {}
+      }
       expect(result, equals(ExitCode.success.code));
 
       expect(File(expectedBrickJsonPath).existsSync(), isTrue);

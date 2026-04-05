@@ -7,6 +7,8 @@ import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import '../bundles/bundles.dart';
+import '../bundles/photos_bundle.dart';
+import '../bundles/relative_imports_bundle.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -25,11 +27,12 @@ void main() {
           ..writeAsStringSync(
             'name: malformed\ndescription: example\nversion: 0.1.0+1',
           );
-        final lockedFile = File(
-          path.join(tempDir.path, 'malformed', '__brick__', 'locked.txt'),
-        )
-          ..createSync(recursive: true)
-          ..writeAsStringSync('secret');
+        final lockedFile =
+            File(
+                path.join(tempDir.path, 'malformed', '__brick__', 'locked.txt'),
+              )
+              ..createSync(recursive: true)
+              ..writeAsStringSync('secret');
         lockedFile.openSync(mode: FileMode.write).lockSync();
         try {
           await Process.run('chmod', ['000', lockedFile.path]);
@@ -85,9 +88,7 @@ void main() {
       });
 
       test('constructs an instance (todos)', () async {
-        final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'todos'),
-        );
+        final brick = Brick.path(path.join('..', '..', 'bricks', 'todos'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
 
@@ -115,9 +116,7 @@ void main() {
       });
 
       test('constructs an instance (loops)', () async {
-        final brick = Brick.path(
-          path.join('test', 'bricks', 'loop'),
-        );
+        final brick = Brick.path(path.join('test', 'bricks', 'loop'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
 
@@ -136,8 +135,9 @@ void main() {
           isTrue,
         );
 
-        final development =
-            File(path.join(tempDir.path, 'main_development.txt'));
+        final development = File(
+          path.join(tempDir.path, 'main_development.txt'),
+        );
         final staging = File(path.join(tempDir.path, 'main_staging.txt'));
         final production = File(path.join(tempDir.path, 'main_production.txt'));
 
@@ -151,9 +151,7 @@ void main() {
       });
 
       test('constructs an instance (loops) with extra empty list', () async {
-        final brick = Brick.path(
-          path.join('test', 'bricks', 'loop'),
-        );
+        final brick = Brick.path(path.join('test', 'bricks', 'loop'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
 
@@ -173,8 +171,9 @@ void main() {
           isTrue,
         );
 
-        final development =
-            File(path.join(tempDir.path, 'main_development.txt'));
+        final development = File(
+          path.join(tempDir.path, 'main_development.txt'),
+        );
         final staging = File(path.join(tempDir.path, 'main_staging.txt'));
         final production = File(path.join(tempDir.path, 'main_production.txt'));
 
@@ -191,9 +190,7 @@ void main() {
         'constructs an instance (loops stress test)',
         () async {
           const fileCount = 1000;
-          final brick = Brick.path(
-            path.join('test', 'bricks', 'loop'),
-          );
+          final brick = Brick.path(path.join('test', 'bricks', 'loop'));
           final generator = await MasonexGenerator.fromBrick(brick);
           final tempDir = Directory.systemTemp.createTempSync();
           final files = await generator.generate(
@@ -223,10 +220,7 @@ void main() {
 
         final files = await generator.generate(
           DirectoryGeneratorTarget(tempDir),
-          vars: <String, dynamic>{
-            'name': 'brick masonex',
-            'generate': true,
-          },
+          vars: <String, dynamic>{'name': 'brick masonex', 'generate': true},
         );
 
         expect(files.length, equals(1));
@@ -253,10 +247,7 @@ void main() {
 
         final files = await generator.generate(
           DirectoryGeneratorTarget(tempDir),
-          vars: <String, dynamic>{
-            'name': 'brick masonex',
-            'generate': false,
-          },
+          vars: <String, dynamic>{'name': 'brick masonex', 'generate': false},
         );
 
         expect(files, isEmpty);
@@ -264,9 +255,7 @@ void main() {
 
       test('constructs an instance with hooks', () async {
         const name = 'Dash';
-        final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'hooks'),
-        );
+        final brick = Brick.path(path.join('..', '..', 'bricks', 'hooks'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
 
@@ -378,8 +367,7 @@ void main() {
         );
       });
 
-      test(
-          'constructs an instance multiple times '
+      test('constructs an instance multiple times '
           '(identical) (hello_world)', () async {
         const name = 'Dash';
         final brick = Brick.path(
@@ -411,11 +399,10 @@ void main() {
             '_made with 💖 by masonex_',
           ),
         );
-        verify(() => logger.delayed(any(that: contains(createdString))))
-            .called(1);
-        verifyNever(
-          () => logger.delayed(any(that: contains(identicalString))),
-        );
+        verify(
+          () => logger.delayed(any(that: contains(createdString))),
+        ).called(1);
+        verifyNever(() => logger.delayed(any(that: contains(identicalString))));
 
         final files2 = await generator.generate(
           DirectoryGeneratorTarget(tempDir),
@@ -445,8 +432,7 @@ void main() {
         verifyNever(() => logger.delayed(any(that: contains(createdString))));
       });
 
-      test(
-          'constructs an instance multiple '
+      test('constructs an instance multiple '
           'times w/skip (hello_world)', () async {
         const name = 'Dash';
         const otherName = 'Other Dash';
@@ -513,8 +499,7 @@ void main() {
         verifyNever(() => logger.delayed(any(that: contains(createdString))));
       });
 
-      test(
-          'constructs an instance multiple '
+      test('constructs an instance multiple '
           'times w/append (hello_world)', () async {
         const name = 'Dash';
         const otherName = 'Other Dash';
@@ -578,8 +563,7 @@ void main() {
         );
       });
 
-      test(
-          'constructs an instance multiple '
+      test('constructs an instance multiple '
           'times w/prompt - Y (documentation)', () async {
         final brick = Brick.path(
           path.join('..', '..', 'bricks', 'documentation'),
@@ -621,8 +605,7 @@ void main() {
         verify(() => logger.prompt(any())).called(1);
       });
 
-      test(
-          'constructs an instance multiple '
+      test('constructs an instance multiple '
           'times w/prompt - Y (hello_world)', () async {
         const name = 'Dash';
         const otherName = 'Other Dash';
@@ -683,8 +666,7 @@ void main() {
         verify(() => logger.prompt(any())).called(1);
       });
 
-      test(
-          'constructs an instance multiple times '
+      test('constructs an instance multiple times '
           'and overwrites by default', () async {
         const name = 'Dash';
         const otherName = 'Other Dash';
@@ -739,38 +721,40 @@ void main() {
         );
       });
 
-      test('constructs an instance w/skip and no conflicts (hello_world)',
-          () async {
-        const name = 'Dash';
-        final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'hello_world'),
-        );
-        final generator = await MasonexGenerator.fromBrick(brick);
-        final tempDir = Directory.systemTemp.createTempSync();
+      test(
+        'constructs an instance w/skip and no conflicts (hello_world)',
+        () async {
+          const name = 'Dash';
+          final brick = Brick.path(
+            path.join('..', '..', 'bricks', 'hello_world'),
+          );
+          final generator = await MasonexGenerator.fromBrick(brick);
+          final tempDir = Directory.systemTemp.createTempSync();
 
-        final files = await generator.generate(
-          DirectoryGeneratorTarget(tempDir),
-          vars: <String, dynamic>{'name': name},
-          fileConflictResolution: FileConflictResolution.skip,
-        );
+          final files = await generator.generate(
+            DirectoryGeneratorTarget(tempDir),
+            vars: <String, dynamic>{'name': name},
+            fileConflictResolution: FileConflictResolution.skip,
+          );
 
-        final file = File(path.join(tempDir.path, 'HELLO.md'));
-        final generatedFile = files.first;
-        expect(files.length, equals(1));
-        expect(generatedFile.status, equals(GeneratedFileStatus.created));
-        expect(generatedFile.path, equals(file.path));
-        expect(file.existsSync(), isTrue);
-        expect(
-          file.readAsNormalizedStringSync(),
-          equals(
-            '# 🧱 $name\n'
-            '\n'
-            'Hello $name!\n'
-            '\n'
-            '_made with 💖 by masonex_',
-          ),
-        );
-      });
+          final file = File(path.join(tempDir.path, 'HELLO.md'));
+          final generatedFile = files.first;
+          expect(files.length, equals(1));
+          expect(generatedFile.status, equals(GeneratedFileStatus.created));
+          expect(generatedFile.path, equals(file.path));
+          expect(file.existsSync(), isTrue);
+          expect(
+            file.readAsNormalizedStringSync(),
+            equals(
+              '# 🧱 $name\n'
+              '\n'
+              'Hello $name!\n'
+              '\n'
+              '_made with 💖 by masonex_',
+            ),
+          );
+        },
+      );
     });
 
     group('.fromBundle', () {
@@ -1012,9 +996,7 @@ void main() {
       test('generates app_icon from remote url', () async {
         const url =
             'https://raw.githubusercontent.com/felangel/masonex/master/assets/masonex_logo.png';
-        final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'app_icon'),
-        );
+        final brick = Brick.path(path.join('..', '..', 'bricks', 'app_icon'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
 
@@ -1033,9 +1015,7 @@ void main() {
 
       test('generates app_icon from local url', () async {
         final url = path.join('..', '..', 'assets', 'masonex_logo.png');
-        final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'app_icon'),
-        );
+        final brick = Brick.path(path.join('..', '..', 'bricks', 'app_icon'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
 
@@ -1053,9 +1033,7 @@ void main() {
       });
 
       test('generates photos', () async {
-        final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'photos'),
-        );
+        final brick = Brick.path(path.join('..', '..', 'bricks', 'photos'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
 
@@ -1073,9 +1051,7 @@ void main() {
       });
 
       test('generates bio', () async {
-        final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'bio'),
-        );
+        final brick = Brick.path(path.join('..', '..', 'bricks', 'bio'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
 
