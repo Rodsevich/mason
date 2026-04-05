@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:masonex/masonex.dart';
 import 'package:masonex/src/cli/command.dart';
 import 'package:masonex/src/cli/install_brick.dart';
+import 'package:path/path.dart' as p;
 
 /// {@template init_command}
 /// `masonex init` command which initializes a new `masonex.yaml`.
@@ -17,8 +20,8 @@ class InitCommand extends MasonexCommand with InstallBrickMixin {
 
   @override
   Future<int> run() async {
-    if (masonexInitialized) {
-      logger.err('Existing ${MasonexYaml.file} at ${localMasonexYamlFile.path}');
+    if (File(p.join(cwd.path, MasonexYaml.file)).existsSync()) {
+      logger.err('Existing ${MasonexYaml.file} at ${p.join(cwd.path, MasonexYaml.file)}');
       return ExitCode.usage.code;
     }
     final progress = logger.progress('Initializing');

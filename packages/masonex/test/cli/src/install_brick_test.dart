@@ -28,7 +28,7 @@ void main() {
 
     test('returns original location when locked location is null (git)', () {
       final location = BrickLocation(
-        git: GitPath('https://github.com/felangel/masonex'),
+        git: GitPath('https://github.com/felangel/mason'),
       );
       final lockedLocation = BrickLocation();
       expect(
@@ -44,13 +44,13 @@ void main() {
         () {
       final location = BrickLocation(
         git: GitPath(
-          'https://github.com/felangel/masonex',
+          'https://github.com/felangel/mason',
           path: 'bricks/hello',
         ),
       );
       final lockedLocation = BrickLocation(
         git: GitPath(
-          'https://github.com/felangel/masonex',
+          'https://github.com/felangel/mason',
           path: 'bricks/widget',
         ),
       );
@@ -66,13 +66,13 @@ void main() {
     test('returns locked location when locations are similar (git)', () {
       final location = BrickLocation(
         git: GitPath(
-          'https://github.com/felangel/masonex',
+          'https://github.com/felangel/mason',
           path: 'bricks/hello',
         ),
       );
       final lockedLocation = BrickLocation(
         git: GitPath(
-          'https://github.com/felangel/masonex',
+          'https://github.com/felangel/mason',
           path: 'bricks/hello',
           ref: 'test-ref',
         ),

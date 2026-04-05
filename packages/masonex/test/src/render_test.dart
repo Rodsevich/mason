@@ -6,37 +6,37 @@ import 'package:test/test.dart';
 
 void main() {
   group('render', () {
-    test('outputs unchanged string when there are no variables', () {
+    test('outputs unchanged string when there are no variables', () async {
       const input = 'hello world';
-      expect(input.render(<String, dynamic>{}), equals(input));
+      expect(await input.render(<String, dynamic>{}), equals(input));
     });
 
-    test('outputs correct string when there is a single variable', () {
+    test('outputs correct string when there is a single variable', () async {
       const name = 'dash';
       const input = 'hello {{name}}';
       const expected = 'hello $name';
-      expect(input.render(<String, dynamic>{'name': name}), equals(expected));
+      expect(await input.render(<String, dynamic>{'name': name}), equals(expected));
     });
 
-    test('outputs correct string when there is are multiple variables', () {
+    test('outputs correct string when there is are multiple variables', () async {
       const name = 'dash';
       const age = 42;
       const input = 'hello {{name}}! Age is {{age}}';
       const expected = 'hello $name! Age is $age';
       expect(
-        input.render(<String, dynamic>{'name': name, 'age': age}),
+        await input.render(<String, dynamic>{'name': name, 'age': age}),
         equals(expected),
       );
     });
 
-    test('outputs correct string when variable is missing', () {
+    test('outputs correct string when variable is missing', () async {
       const input = 'hello {{name}}!';
       const expected = 'hello !';
-      expect(input.render(<String, dynamic>{}), equals(expected));
+      expect(await input.render(<String, dynamic>{}), equals(expected));
     });
 
     group('partials', () {
-      test('resolve outputs correct template', () {
+      test('resolve outputs correct template', () async {
         const name = 'header';
         const content = 'Hello world!';
         final source = utf8.encode(content);
@@ -48,7 +48,7 @@ void main() {
         );
       });
 
-      test('resolve outputs correct template w/lambda', () {
+      test('resolve outputs correct template w/lambda', () async {
         const name = 'header';
         const content = 'Hello {{#upperCase}}{{name}}{{/upperCase}}!';
         final source = utf8.encode(content);
@@ -60,7 +60,7 @@ void main() {
         );
       });
 
-      test('resolve outputs correct template w/lambda shorthand', () {
+      test('resolve outputs correct template w/lambda shorthand', () async {
         const name = 'header';
         const content = 'Hello {{name.upperCase()}}!';
         final source = utf8.encode(content);
@@ -75,310 +75,310 @@ void main() {
     });
 
     group('lambdas', () {
-      test('camelCase outputs correct string', () {
+      test('camelCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{#camelCase}}{{greeting}}{{/camelCase}}!';
         const expected = 'Greeting: helloWorld!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('constantCase outputs correct string', () {
+      test('constantCase outputs correct string', () async {
         const greeting = 'hello world';
         const input =
             'Greeting: {{#constantCase}}{{greeting}}{{/constantCase}}!';
         const expected = 'Greeting: HELLO_WORLD!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('dotCase outputs correct string', () {
+      test('dotCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{#dotCase}}{{greeting}}{{/dotCase}}!';
         const expected = 'Greeting: hello.world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('headerCase outputs correct string', () {
+      test('headerCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{#headerCase}}{{greeting}}{{/headerCase}}!';
         const expected = 'Greeting: Hello-World!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('lowerCase outputs correct string', () {
+      test('lowerCase outputs correct string', () async {
         const greeting = 'Hello World';
         const input = 'Greeting: {{#lowerCase}}{{greeting}}{{/lowerCase}}!';
         const expected = 'Greeting: hello world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('mustacheCase outputs correct string', () {
+      test('mustacheCase outputs correct string', () async {
         const greeting = 'Hello World';
         const input =
             'Greeting: {{#mustacheCase}}{{greeting}}{{/mustacheCase}}!';
         const expected = 'Greeting: {{ Hello World }}!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('pascalCase outputs correct string', () {
+      test('pascalCase outputs correct string', () async {
         const greeting = 'Hello World';
         const input = 'Greeting: {{#pascalCase}}{{greeting}}{{/pascalCase}}!';
         const expected = 'Greeting: HelloWorld!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('paramCase outputs correct string', () {
+      test('paramCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{#paramCase}}{{greeting}}{{/paramCase}}!';
         const expected = 'Greeting: hello-world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('pathCase outputs correct string', () {
+      test('pathCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{#pathCase}}{{greeting}}{{/pathCase}}!';
         const expected = 'Greeting: hello/world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('sentenceCase outputs correct string', () {
+      test('sentenceCase outputs correct string', () async {
         const greeting = 'hello world';
         const input =
             'Greeting: {{#sentenceCase}}{{greeting}}{{/sentenceCase}}!';
         const expected = 'Greeting: Hello world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('snakeCase outputs correct string', () {
+      test('snakeCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{#snakeCase}}{{greeting}}{{/snakeCase}}!';
         const expected = 'Greeting: hello_world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('titleCase outputs correct string', () {
+      test('titleCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{#titleCase}}{{greeting}}{{/titleCase}}!';
         const expected = 'Greeting: Hello World!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('upperCase outputs correct string', () {
+      test('upperCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{#upperCase}}{{greeting}}{{/upperCase}}!';
         const expected = 'Greeting: HELLO WORLD!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
     });
 
     group('lambda shortcuts', () {
-      test('camelCase outputs correct string', () {
+      test('camelCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.camelCase()}}!';
         const expected = 'Greeting: helloWorld!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('constantCase outputs correct string', () {
+      test('constantCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.constantCase()}}!';
         const expected = 'Greeting: HELLO_WORLD!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('dotCase outputs correct string', () {
+      test('dotCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.dotCase()}}!';
         const expected = 'Greeting: hello.world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('headerCase outputs correct string', () {
+      test('headerCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.headerCase()}}!';
         const expected = 'Greeting: Hello-World!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('lowerCase outputs correct string', () {
+      test('lowerCase outputs correct string', () async {
         const greeting = 'Hello World';
         const input = 'Greeting: {{greeting.lowerCase()}}!';
         const expected = 'Greeting: hello world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('pascalCase outputs correct string', () {
+      test('pascalCase outputs correct string', () async {
         const greeting = 'Hello World';
         const input = 'Greeting: {{greeting.pascalCase()}}!';
         const expected = 'Greeting: HelloWorld!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('pascalDotCase outputs correct string', () {
+      test('pascalDotCase outputs correct string', () async {
         const greeting = 'Hello World';
         const input = 'Greeting: {{greeting.pascalDotCase()}}!';
         const expected = 'Greeting: Hello.World!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('paramCase outputs correct string', () {
+      test('paramCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.paramCase()}}!';
         const expected = 'Greeting: hello-world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('pathCase outputs correct string', () {
+      test('pathCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.pathCase()}}!';
         const expected = 'Greeting: hello/world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('sentenceCase outputs correct string', () {
+      test('sentenceCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.sentenceCase()}}!';
         const expected = 'Greeting: Hello world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('snakeCase outputs correct string', () {
+      test('snakeCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.snakeCase()}}!';
         const expected = 'Greeting: hello_world!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('titleCase outputs correct string', () {
+      test('titleCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.titleCase()}}!';
         const expected = 'Greeting: Hello World!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('upperCase outputs correct string', () {
+      test('upperCase outputs correct string', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.upperCase()}}!';
         const expected = 'Greeting: HELLO WORLD!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('support chaining', () {
+      test('support chaining', () async {
         const greeting = 'hello world';
         const input = 'Greeting: {{greeting.dotCase().upperCase()}}!';
         const expected = 'Greeting: HELLO.WORLD!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('support unescaped chaining', () {
+      test('support unescaped chaining', () async {
         const greeting = '"hello world"';
         const input = 'Greeting: {{{greeting.dotCase().upperCase()}}}!';
         const expected = 'Greeting: "HELLO.WORLD"!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting}),
+          await input.render(<String, dynamic>{'greeting': greeting}),
           equals(expected),
         );
       });
 
-      test('support multiple unescaped lambdas', () {
+      test('support multiple unescaped lambdas', () async {
         const greeting = '"hello world"';
         const name = '"dash"';
         const input =
             '''Greeting: {{{greeting.upperCase()}}} Name: {{{name.upperCase()}}}!''';
         const expected = 'Greeting: "HELLO WORLD" Name: "DASH"!';
         expect(
-          input.render(<String, dynamic>{'greeting': greeting, 'name': name}),
+          await input.render(<String, dynamic>{'greeting': greeting, 'name': name}),
           equals(expected),
         );
       });
 
-      test('mixed with regular mustache syntax after', () {
+      test('mixed with regular mustache syntax after', () async {
         const greeting = 'hello world';
         const input =
             'Greeting: {{greeting.upperCase()}}{{#is_suffixed}}!{{/is_suffixed}}';
         var expected = 'Greeting: HELLO WORLD!';
         expect(
-          input.render(
+          await input.render(
             <String, dynamic>{
               'greeting': greeting,
               'is_suffixed': true,
@@ -388,7 +388,7 @@ void main() {
         );
         expected = 'Greeting: HELLO WORLD';
         expect(
-          input.render(
+          await input.render(
             <String, dynamic>{
               'greeting': greeting,
               'is_suffixed': false,
@@ -398,13 +398,13 @@ void main() {
         );
       });
 
-      test('mixed with regular mustache syntax before', () {
+      test('mixed with regular mustache syntax before', () async {
         const greeting = 'hello world';
         const input =
             '{{#is_prefixed}}Greeting: {{/is_prefixed}}{{greeting.upperCase()}}!';
         var expected = 'Greeting: HELLO WORLD!';
         expect(
-          input.render(
+          await input.render(
             <String, dynamic>{
               'greeting': greeting,
               'is_prefixed': true,
@@ -414,7 +414,7 @@ void main() {
         );
         expected = 'HELLO WORLD!';
         expect(
-          input.render(
+          await input.render(
             <String, dynamic>{
               'greeting': greeting,
               'is_prefixed': false,
@@ -424,24 +424,24 @@ void main() {
         );
       });
 
-      test('mixed within loop (List<String>)', () {
+      test('mixed within loop (List<String>)', () async {
         const values = 'RED,GREEN,BLUE,';
         const input = 'Greeting: {{#colors}}{{..upperCase()}},{{/colors}}!';
         const expected = 'Greeting: $values!';
         expect(
-          input.render(<String, dynamic>{
+          await input.render(<String, dynamic>{
             'colors': ['red', 'green', 'blue'],
           }),
           equals(expected),
         );
       });
 
-      test('mixed within loop (List<Map>)', () {
+      test('mixed within loop (List<Map>)', () async {
         const values = 'RED,GREEN,BLUE,';
         const input = 'Greeting: {{#colors}}{{name.upperCase()}},{{/colors}}!';
         const expected = 'Greeting: $values!';
         expect(
-          input.render(<String, dynamic>{
+          await input.render(<String, dynamic>{
             'colors': [
               {'name': 'red'},
               {'name': 'green'},
@@ -452,11 +452,11 @@ void main() {
         );
       });
 
-      test('handles nested variables', () {
+      test('handles nested variables', () async {
         const input = '{{greeting.name.upperCase()}}';
         const expected = 'HELLO WORLD';
         expect(
-          input.render(<String, dynamic>{
+          await input.render(<String, dynamic>{
             'greeting': {
               'name': 'hello world',
             },
@@ -465,44 +465,44 @@ void main() {
         );
       });
 
-      test('allows whitespace', () {
+      test('allows whitespace', () async {
         const input = '{{ greeting.upperCase() }}';
         const expected = 'HELLO WORLD';
         expect(
-          input.render(<String, dynamic>{
+          await input.render(<String, dynamic>{
             'greeting': 'hello world',
           }),
           equals(expected),
         );
       });
 
-      test('nested lambdas with whitespace', () {
+      test('nested lambdas with whitespace', () async {
         const input = '{{ greeting.dotCase().upperCase() }}';
         const expected = 'HELLO.WORLD';
         expect(
-          input.render(<String, dynamic>{
+          await input.render(<String, dynamic>{
             'greeting': 'hello world',
           }),
           equals(expected),
         );
       });
 
-      test('asymmetrical curly brackets (prefix)', () {
+      test('asymmetrical curly brackets (prefix)', () async {
         const input = '{{{greeting.dotCase()}}';
         const expected = '{hello.world';
         expect(
-          input.render(<String, dynamic>{
+          await input.render(<String, dynamic>{
             'greeting': 'hello world',
           }),
           equals(expected),
         );
       });
 
-      test('asymmetrical curly brackets (suffix)', () {
+      test('asymmetrical curly brackets (suffix)', () async {
         const input = '{{greeting.dotCase()}}}';
         const expected = 'hello.world}';
         expect(
-          input.render(<String, dynamic>{
+          await input.render(<String, dynamic>{
             'greeting': 'hello world',
           }),
           equals(expected),

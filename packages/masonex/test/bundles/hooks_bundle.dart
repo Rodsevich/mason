@@ -1,9 +1,9 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, implicit_dynamic_list_literal, implicit_dynamic_map_literal, inference_failure_on_collection_literal
 
-import 'package:masonex/masonex.dart';
+import 'package:mason/mason.dart';
 
-final hooksBundle = MasonexBundle.fromJson(<String, dynamic>{
+final hooksBundle = MasonBundle.fromJson(<String, dynamic>{
   "files": [
     {"path": "hooks.md", "data": "SGkge3tuYW1lfX0h", "type": "text"}
   ],
@@ -30,7 +30,7 @@ final hooksBundle = MasonexBundle.fromJson(<String, dynamic>{
   "name": "hooks",
   "description": "A Hooks Example Template",
   "version": "0.1.0+1",
-  "environment": {"masonex": "any"},
+  "environment": {"mason": "any"},
   "vars": {
     "name": {
       "type": "string",

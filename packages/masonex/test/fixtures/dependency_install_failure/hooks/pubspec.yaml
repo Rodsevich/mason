@@ -6,7 +6,7 @@ environment:
 dependencies:
   foo:
     path: ./foo
-  masonex:
+  masonexex:
     git:
-      url: https://github.com/Rodsevich/masonex
-      path: packages/masonex
+      url: https://github.com/felangel/mason
+      path: packages/masonexex

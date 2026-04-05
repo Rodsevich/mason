@@ -333,7 +333,7 @@ void main() {
           )..createSync(recursive: true);
           Directory.current = testDir.path;
 
-          const url = 'https://github.com/felangel/masonex';
+          const url = 'https://github.com/felangel/mason';
           final result = await commandRunner.run([
             'bundle',
             url,
@@ -399,7 +399,7 @@ void main() {
         });
 
         test('exits with code 64 when no brick exists at git url', () async {
-          const url = 'https://github.com/felangel/masonex';
+          const url = 'https://github.com/felangel/mason';
           final result = await commandRunner.run([
             'bundle',
             url,

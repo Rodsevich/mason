@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:masonex/masonex.dart';
+import 'package:mason/mason.dart';
 import 'package:path/path.dart' as path;
 
 void main(List<String> args) async {
@@ -8,7 +8,7 @@ void main(List<String> args) async {
   final workingDirectory = args.first;
   final name = args.last;
   final brick = Brick.path(path.join('test', 'fixtures', 'hooks'));
-  final generator = await MasonexGenerator.fromBrick(brick);
+  final generator = await MasonGenerator.fromBrick(brick);
   final target = DirectoryGeneratorTarget(Directory(workingDirectory));
   final vars = {'name': name};
   await generator.hooks.preGen(vars: vars, workingDirectory: workingDirectory);

@@ -78,7 +78,7 @@ bricks:
     path: ../../../../../bricks/todos
   widget:
     git:
-      url: https://github.com/felangel/masonex
+      url: https://github.com/felangel/mason
       path: bricks/widget
       ref: 997bc878c93534fad17d965be7cafe948a1dbb53
 ''',
@@ -111,7 +111,7 @@ bricks:
               '├── ${styleBold.wrap('todos')} 0.1.0+1 -> $todosPath',
             ),
         () => logger.info(
-              '''└── ${styleBold.wrap('widget')} 0.1.0+1 -> https://github.com/felangel/masonex#997bc878c93534fad17d965be7cafe948a1dbb53''',
+              '''└── ${styleBold.wrap('widget')} 0.1.0+1 -> https://github.com/felangel/mason#997bc878c93534fad17d965be7cafe948a1dbb53''',
             ),
       ]);
     });
@@ -136,7 +136,7 @@ bricks:
     path: ../../../../../bricks/documentation
   hello_world:
     git:
-      url: https://github.com/felangel/masonex
+      url: https://github.com/felangel/mason
       path: bricks/hello_world
       ref: 997bc878c93534fad17d965be7cafe948a1dbb53
 ''',
@@ -163,7 +163,7 @@ bricks:
               '''├── ${styleBold.wrap('documentation')} 0.1.0+1 -> $documentationPath''',
             ),
         () => logger.info(
-              '''├── ${styleBold.wrap('hello_world')} 0.1.0+1 -> https://github.com/felangel/masonex#997bc878c93534fad17d965be7cafe948a1dbb53''',
+              '''├── ${styleBold.wrap('hello_world')} 0.1.0+1 -> https://github.com/felangel/mason#997bc878c93534fad17d965be7cafe948a1dbb53''',
             ),
         () => logger.info(
               '└── ${styleBold.wrap('todos')} 0.1.0+1 -> $todosPath',
@@ -186,7 +186,7 @@ bricks:
     path: ../../../../../bricks/todos
   widget:
     git:
-      url: https://github.com/felangel/masonex
+      url: https://github.com/felangel/mason
       path: bricks/widget
 ''',
       );

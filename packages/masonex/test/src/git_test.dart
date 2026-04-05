@@ -8,7 +8,7 @@ void main() {
     group('run', () {
       test('throws when operation fails', () async {
         expect(
-          () => Git.run(['clone', 'https://github.com/felangel/masonexs']),
+          () => Git.run(['clone', 'https://github.com/felangel/masons']),
           throwsA(isA<ProcessException>()),
         );
       });

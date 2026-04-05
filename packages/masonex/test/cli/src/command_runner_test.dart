@@ -47,7 +47,7 @@ final changelogLink = lightCyan.wrap(
   styleUnderlined.wrap(
     link(
       uri: Uri.parse(
-        'https://github.com/felangel/masonex/releases/tag/masonex_cli-v$latestVersion',
+        'https://github.com/felangel/mason/releases/tag/masonex_cli-v$latestVersion',
       ),
     ),
   ),

@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Directory, File, FileMode, FileSystemEntity, Process;
-import 'dart:typed_data';
+import 'dart:io';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:checked_yaml/checked_yaml.dart';
 import 'package:collection/collection.dart';
@@ -56,6 +57,7 @@ class MasonexGenerator extends Generator {
     List<TemplateFile?> files = const <TemplateFile>[],
     GeneratorHooks hooks = const GeneratorHooks(),
     this.vars = const <String>[],
+    this.inFileGenerations = const <String, Map<String, String>>{},
   }) : super(id, description, hooks) {
     for (final file in files) {
       addTemplateFile(file);
@@ -93,10 +95,9 @@ class MasonexGenerator extends Generator {
     ).copyWith(path: file.path);
     final brickDirectory = Directory(p.join(path, BrickYaml.dir));
     final brickFiles = brickDirectory.existsSync()
-        ? brickDirectory
-            .listSync(recursive: true)
-            .whereType<File>()
-            .map((file) {
+        ? brickDirectory.listSync(recursive: true).whereType<File>().map((
+            file,
+          ) {
             return () async {
               final resource = await _descriptorPool.request();
               try {
@@ -114,18 +115,28 @@ class MasonexGenerator extends Generator {
           })
         : <Future<TemplateFile?>>[];
 
-    return MasonexGenerator(
+    final generator = MasonexGenerator(
       brickYaml.name,
       brickYaml.description,
       vars: brickYaml.vars.keys.toList(),
+      inFileGenerations: brickYaml.inFileGenerations,
       files: await Future.wait(brickFiles),
       hooks: await GeneratorHooks.fromBrickYaml(brickYaml),
     );
+    for (final file in generator.files) {
+      if (_partialRegExp.hasMatch(file.path)) {
+        generator.partials[file.path] = file.content;
+      }
+    }
+    return generator;
   }
 
   /// Optional list of variables which will be used to populate
   /// the corresponding mustache variables within the template.
   final List<String> vars;
+
+  @override
+  final Map<String, Map<String, String>> inFileGenerations;
 }
 
 /// The status of a generated file.
@@ -136,14 +147,26 @@ enum GeneratedFileStatus {
   /// File already existed and previous contents were overwritten.
   overwritten,
 
-  /// File already existed and new content was appended.
+  /// Appended to an existing file.
   appended,
+
+  /// Prepended to an existing file.
+  prepended,
+
+  /// Merged with an existing file.
+  merged,
+
+  /// File was temporary and was deleted after generation.
+  temporary,
 
   /// File already existed and previous contents were left unmodified.
   skipped,
 
   /// File already exists and contents were identical.
   identical,
+
+  /// File generation was skipped because a condition was not met.
+  conditionNotMet,
 }
 
 /// {@template generated_file}
@@ -155,23 +178,39 @@ class GeneratedFile {
 
   /// {@macro generated_file}
   const GeneratedFile.created({required String path})
-      : this._(path: path, status: GeneratedFileStatus.created);
+    : this._(path: path, status: GeneratedFileStatus.created);
 
   /// {@macro generated_file}
   const GeneratedFile.overwritten({required String path})
-      : this._(path: path, status: GeneratedFileStatus.overwritten);
+    : this._(path: path, status: GeneratedFileStatus.overwritten);
 
   /// {@macro generated_file}
   const GeneratedFile.appended({required String path})
-      : this._(path: path, status: GeneratedFileStatus.appended);
+    : this._(path: path, status: GeneratedFileStatus.appended);
+
+  /// {@macro generated_file}
+  const GeneratedFile.prepended({required String path})
+    : this._(path: path, status: GeneratedFileStatus.prepended);
+
+  /// {@macro generated_file}
+  const GeneratedFile.merged({required String path})
+    : this._(path: path, status: GeneratedFileStatus.merged);
+
+  /// {@macro generated_file}
+  const GeneratedFile.temporary({required String path})
+    : this._(path: path, status: GeneratedFileStatus.temporary);
 
   /// {@macro generated_file}
   const GeneratedFile.skipped({required String path})
-      : this._(path: path, status: GeneratedFileStatus.skipped);
+    : this._(path: path, status: GeneratedFileStatus.skipped);
 
   /// {@macro generated_file}
   const GeneratedFile.identical({required String path})
-      : this._(path: path, status: GeneratedFileStatus.identical);
+    : this._(path: path, status: GeneratedFileStatus.identical);
+
+  /// {@macro generated_file}
+  const GeneratedFile.conditionNotMet({required String path})
+    : this._(path: path, status: GeneratedFileStatus.conditionNotMet);
 
   /// The file path.
   final String path;
@@ -205,6 +244,9 @@ abstract class Generator implements Comparable<Generator> {
   /// Contains a Map of partial file path to partial file content.
   final Map<String, List<int>> partials = {};
 
+  /// In-file generations supported by this generator.
+  Map<String, Map<String, String>> get inFileGenerations => const {};
+
   /// Add a new template file.
   void addTemplateFile(TemplateFile? file) {
     if (file == null) return;
@@ -223,10 +265,48 @@ abstract class Generator implements Comparable<Generator> {
   }) async {
     final overwriteRule = fileConflictResolution?.toOverwriteRule();
     final generatedFiles = <GeneratedFile>[];
-    await Future.forEach<TemplateFile>(files, (TemplateFile file) async {
+    final templateFiles = [...files];
+
+    // Handle *iterator* prefix
+    final resolvedFiles = <_FileWithVars>[];
+    for (final file in templateFiles) {
+      final fileName = p.basename(file.path);
+      if (fileName.startsWith('*')) {
+        final parts = fileName.split('*');
+        if (parts.length >= 3) {
+          final variableName = parts[1];
+          final remainingName = parts.sublist(2).join('*');
+          final iterable = vars[variableName];
+          if (iterable is Iterable) {
+            for (final item in iterable) {
+              final itemVars = {...vars, 'item': item};
+              final newPathSegments = p.split(file.path);
+              newPathSegments[newPathSegments.length - 1] = remainingName;
+              final newPath = p.joinAll(newPathSegments);
+
+              resolvedFiles.add(
+                _FileWithVars(
+                  TemplateFile.fromBytes(newPath, file.content),
+                  itemVars,
+                ),
+              );
+            }
+            continue;
+          }
+        }
+      }
+      resolvedFiles.add(_FileWithVars(file, vars));
+    }
+
+    await Future.forEach<_FileWithVars>(resolvedFiles, (
+      _FileWithVars fileWithVars,
+    ) async {
+      final file = fileWithVars.file;
+      final fileVars = fileWithVars.vars;
       final fileMatch = _fileRegExp.firstMatch(file.path);
+
       if (fileMatch != null) {
-        final resultFile = await _fetch(vars[fileMatch[1]] as String);
+        final resultFile = await _fetch(fileVars[fileMatch[1]] as String);
         if (resultFile.path.isEmpty) return;
         final generatedFile = await target.createFile(
           p.basename(resultFile.path),
@@ -237,7 +317,7 @@ abstract class Generator implements Comparable<Generator> {
         generatedFiles.add(generatedFile);
       } else {
         final resultFiles = await file.runSubstitution(
-          Map<String, dynamic>.of(vars),
+          Map<String, dynamic>.of(fileVars),
           Map<String, List<int>>.of(partials),
           onMissingVariable: logger != null
               ? (variable) => logger.prompt('Enter value for $variable')
@@ -247,21 +327,182 @@ abstract class Generator implements Comparable<Generator> {
         final separator = RegExp(r'\/|\\');
         final rootOrSeparator = RegExp('$root|$separator');
         final wasRoot = file.path.startsWith(rootOrSeparator);
+
         for (final file in resultFiles) {
           final isRoot = file.path.startsWith(rootOrSeparator);
           if (!wasRoot && isRoot) continue;
           if (file.path.isEmpty) continue;
           if (file.path.split(separator).contains('')) continue;
-          final generatedFile = await target.createFile(
-            file.path,
-            file.content,
-            logger: logger,
-            overwriteRule: overwriteRule,
+
+          var fileName = p.basename(file.path);
+          var rule = overwriteRule;
+
+          // Handle prefixes: *iterator*, ?conditional?, >>>overwrite rules
+          while (true) {
+            // Handle iterators: *variable*
+            if (fileName.startsWith('*')) {
+              final parts = fileName.split('*');
+              if (parts.length >= 3) {
+                // Iterator is handled by runSubstitution, so we just remove the prefix
+                // and let the generator proceed with substitution.
+                // However, we need to know the rule for all substituted files.
+                // Re-parsing iterators here is mostly to strip the prefix for recursion.
+                fileName = parts.sublist(2).join('*');
+                continue;
+              }
+            }
+
+            // Handle conditional filenames: ?variable?
+            if (fileName.startsWith('?')) {
+              final parts = fileName.split('?');
+              if (parts.length >= 3) {
+                final variableName = parts[1];
+                final value = fileVars[variableName];
+                final isTrue =
+                    value == true ||
+                    (value is Iterable && value.isNotEmpty) ||
+                    (value is String && value.isNotEmpty && value != 'false');
+                if (!isTrue) {
+                  generatedFiles.add(
+                    GeneratedFile.conditionNotMet(
+                      path: p.normalize(p.join(p.dirname(file.path), fileName)),
+                    ),
+                  );
+                  return;
+                }
+                fileName = parts.sublist(2).join('?');
+                continue;
+              }
+            }
+
+            // Handle overwrite rules: >>>, >>, <<, >, !, ~
+            var isPrefixed = true;
+            if (fileName.startsWith('>>>')) {
+              rule = OverwriteRule.alwaysMerge;
+              fileName = fileName.substring(3);
+            } else if (fileName.startsWith('>>')) {
+              rule = OverwriteRule.alwaysAppend;
+              fileName = fileName.substring(2);
+            } else if (fileName.startsWith('<<')) {
+              rule = OverwriteRule.alwaysPrepend;
+              fileName = fileName.substring(2);
+            } else if (fileName.startsWith('>')) {
+              rule = OverwriteRule.alwaysOverwrite;
+              fileName = fileName.substring(1);
+            } else if (fileName.startsWith('!')) {
+              rule = OverwriteRule.ifNotExists;
+              fileName = fileName.substring(1);
+            } else if (fileName.startsWith('~')) {
+              rule = OverwriteRule.temporary;
+              fileName = fileName.substring(1);
+            } else {
+              isPrefixed = false;
+            }
+
+            if (isPrefixed) continue;
+            break;
+          }
+
+          // Handle in-file generation: %id%
+          if (fileName.startsWith('%')) {
+            final idMatch = RegExp(r"%((.+?)|(.*?))%").firstMatch(fileName);
+            if (idMatch != null) {
+              final id = idMatch.group(1)!;
+              for (final entry in inFileGenerations.entries) {
+                final targetPath = entry.key;
+                final generations = entry.value;
+                if (generations.containsKey(id)) {
+                  final template = generations[id]!;
+                  final snippetContent = utf8.decode(file.content);
+                  final destinationFile = target is DirectoryGeneratorTarget
+                      ? File(p.join(target.dir.path, targetPath))
+                      : null;
+
+                  if (destinationFile != null && destinationFile.existsSync()) {
+                    var content = destinationFile.readAsStringSync();
+                    final markers = [
+                      "// @GenerateBefore('$id')",
+                      '// @GenerateBefore("$id")',
+                      "@GenerateBefore('$id')",
+                      '@GenerateBefore("$id")',
+                    ];
+                    final afterMarkers = [
+                      "// @GenerateAfter('$id')",
+                      '// @GenerateAfter("$id")',
+                      "@GenerateAfter('$id')",
+                      '@GenerateAfter("$id")',
+                    ];
+
+                    var found = false;
+                    for (final marker in markers) {
+                      if (content.contains(marker)) {
+                        content = content.replaceFirst(
+                          marker,
+                          '// $template\n$snippetContent\n$marker',
+                        );
+                        found = true;
+                        break;
+                      }
+                    }
+
+                    if (!found) {
+                      for (final marker in afterMarkers) {
+                        if (content.contains(marker)) {
+                          content = content.replaceFirst(
+                            marker,
+                            '$marker\n// $template\n$snippetContent',
+                          );
+                          break;
+                        }
+                      }
+                    }
+
+                    destinationFile.writeAsStringSync(content);
+                    logger?.delayed(
+                      '  ${lightBlue.wrap('injected')} $targetPath',
+                    );
+                  }
+                }
+              }
+            }
+            continue;
+          }
+
+          final finalPath = p.normalize(p.join(p.dirname(file.path), fileName));
+          final templateFile = TemplateFile.fromBytes(finalPath, file.content);
+          final substitutedFiles = await templateFile.runSubstitution(
+            Map<String, dynamic>.of(fileVars),
+            Map<String, List<int>>.of(partials),
+            onMissingVariable: logger != null
+                ? (variable) => logger.prompt('Enter value for $variable')
+                : null,
           );
-          generatedFiles.add(generatedFile);
+          for (final f in substitutedFiles) {
+            final generatedFile = await target.createFile(
+              f.path,
+              f.content,
+              logger: logger,
+              overwriteRule: rule,
+            );
+            generatedFiles.add(generatedFile);
+          }
         }
       }
     });
+
+    // Clean up temporary files
+    for (final file in generatedFiles) {
+      if (file.status == GeneratedFileStatus.temporary) {
+        final f = File(
+          p.join(
+            target is DirectoryGeneratorTarget ? target.dir.path : '',
+            file.path,
+          ),
+        );
+        if (f.existsSync()) f.deleteSync(recursive: true);
+      }
+    }
+
     return generatedFiles;
   }
 
@@ -315,6 +556,18 @@ enum OverwriteRule {
   /// Always append the existing file.
   alwaysAppend,
 
+  /// Always prepend the existing file.
+  alwaysPrepend,
+
+  /// Always merge the existing file.
+  alwaysMerge,
+
+  /// Only generate if the file does not exist.
+  ifNotExists,
+
+  /// The file is temporary and should be deleted after generation.
+  temporary,
+
   /// Overwrite one time.
   overwriteOnce,
 
@@ -323,6 +576,12 @@ enum OverwriteRule {
 
   /// Append one time
   appendOnce,
+
+  /// Merge one time
+  mergeOnce,
+
+  /// Prepend one time.
+  prependOnce,
 }
 
 /// {@template directory_generator_target}
@@ -346,19 +605,27 @@ class DirectoryGeneratorTarget extends GeneratorTarget {
     Logger? logger,
     OverwriteRule? overwriteRule,
   }) async {
-    _overwriteRule ??= overwriteRule;
     final file = File(p.join(dir.path, path));
     final filePath = darkGray.wrap(p.relative(file.path));
     final fileExists = file.existsSync();
 
+    // Use passed rule, or target's global rule
+    var effectiveRule = overwriteRule ?? _overwriteRule;
+
     if (!fileExists) {
+      final isTemp = effectiveRule == OverwriteRule.temporary;
       await file
           .create(recursive: true)
           .then<File>((_) => file.writeAsBytes(contents))
-          .whenComplete(
-            () => logger?.delayed('  ${green.wrap('created')} $filePath'),
-          );
-      return GeneratedFile.created(path: file.path);
+          .whenComplete(() {
+            final label = isTemp
+                ? darkGray.wrap('temporary')
+                : green.wrap('created');
+            logger?.delayed('  $label $filePath');
+          });
+      return isTemp
+          ? GeneratedFile.temporary(path: file.path)
+          : GeneratedFile.created(path: file.path);
     }
 
     final existingContents = file.readAsBytesSync();
@@ -368,48 +635,93 @@ class DirectoryGeneratorTarget extends GeneratorTarget {
       return GeneratedFile.identical(path: file.path);
     }
 
-    final shouldPrompt = logger != null &&
-        (_overwriteRule != OverwriteRule.alwaysOverwrite &&
-            _overwriteRule != OverwriteRule.alwaysSkip &&
-            _overwriteRule != OverwriteRule.alwaysAppend);
+    final shouldPrompt =
+        logger != null &&
+        (effectiveRule != OverwriteRule.alwaysOverwrite &&
+            effectiveRule != OverwriteRule.alwaysSkip &&
+            effectiveRule != OverwriteRule.alwaysAppend &&
+            effectiveRule != OverwriteRule.alwaysMerge &&
+            effectiveRule != OverwriteRule.alwaysPrepend &&
+            effectiveRule != OverwriteRule.ifNotExists);
 
     if (shouldPrompt) {
       logger.info('${red.wrap(styleBold.wrap('conflict'))} $filePath');
-      _overwriteRule = logger
-          .prompt(
-            lightYellow.wrap('Overwrite ${p.basename(file.path)}? (Yyna)'),
-          )
-          .toOverwriteRule();
+      final response = logger.prompt(
+        lightYellow.wrap('Overwrite ${p.basename(file.path)}? (Yyna)'),
+      );
+      effectiveRule = response.toOverwriteRule();
+      // If user chose "Always", update the target's global rule
+      if (response == 'Y' || response == 'N') {
+        _overwriteRule = effectiveRule;
+      }
     }
 
-    switch (_overwriteRule) {
+    switch (effectiveRule) {
       case OverwriteRule.alwaysSkip:
       case OverwriteRule.skipOnce:
+      case OverwriteRule.ifNotExists:
         logger?.delayed('  ${yellow.wrap('skipped')} $filePath');
         return GeneratedFile.skipped(path: file.path);
       case OverwriteRule.alwaysOverwrite:
       case OverwriteRule.overwriteOnce:
       case OverwriteRule.appendOnce:
       case OverwriteRule.alwaysAppend:
+      case OverwriteRule.alwaysMerge:
+      case OverwriteRule.mergeOnce:
+      case OverwriteRule.alwaysPrepend:
+      case OverwriteRule.prependOnce:
+      case OverwriteRule.temporary:
       case null:
-        final shouldAppend = _overwriteRule == OverwriteRule.appendOnce ||
-            _overwriteRule == OverwriteRule.alwaysAppend;
+        final status =
+            effectiveRule == OverwriteRule.alwaysAppend ||
+                effectiveRule == OverwriteRule.appendOnce
+            ? GeneratedFileStatus.appended
+            : effectiveRule == OverwriteRule.alwaysMerge ||
+                  effectiveRule == OverwriteRule.mergeOnce
+            ? GeneratedFileStatus.merged
+            : effectiveRule == OverwriteRule.alwaysPrepend ||
+                  effectiveRule == OverwriteRule.prependOnce
+            ? GeneratedFileStatus.prepended
+            : effectiveRule == OverwriteRule.temporary
+            ? GeneratedFileStatus.temporary
+            : GeneratedFileStatus.overwritten;
+
+        var finalContents = contents;
+        if (status == GeneratedFileStatus.appended) {
+          finalContents = [...existingContents, ...contents];
+        } else if (status == GeneratedFileStatus.prepended) {
+          finalContents = [...contents, ...existingContents];
+        } else if (status == GeneratedFileStatus.merged) {
+          final merger = Merger.fromPath(file.path);
+          finalContents = merger.merge(existingContents, contents);
+        }
+
         await file
             .create(recursive: true)
             .then<File>(
-              (_) => file.writeAsBytes(
-                contents,
-                mode: shouldAppend ? FileMode.append : FileMode.write,
-              ),
+              (_) => file.writeAsBytes(finalContents, mode: FileMode.write),
             )
-            .whenComplete(
-              () => shouldAppend
-                  ? logger?.delayed('  ${lightBlue.wrap('modified')} $filePath')
-                  : logger?.delayed('  ${green.wrap('created')} $filePath'),
-            );
+            .whenComplete(() {
+              final label = status == GeneratedFileStatus.appended
+                  ? lightBlue.wrap('appended')
+                  : status == GeneratedFileStatus.prepended
+                  ? lightBlue.wrap('prepended')
+                  : status == GeneratedFileStatus.merged
+                  ? lightBlue.wrap('merged')
+                  : status == GeneratedFileStatus.temporary
+                  ? darkGray.wrap('temporary')
+                  : green.wrap('overwritten');
+              logger?.delayed('  $label $filePath');
+            });
 
-        return shouldAppend
+        return status == GeneratedFileStatus.appended
             ? GeneratedFile.appended(path: file.path)
+            : status == GeneratedFileStatus.prepended
+            ? GeneratedFile.prepended(path: file.path)
+            : status == GeneratedFileStatus.merged
+            ? GeneratedFile.merged(path: file.path)
+            : status == GeneratedFileStatus.temporary
+            ? GeneratedFile.temporary(path: file.path)
             : GeneratedFile.overwritten(path: file.path);
     }
   }
@@ -441,7 +753,7 @@ abstract class GeneratorTarget {
 class TemplateFile {
   /// {@macro template_file}
   TemplateFile(String path, String content)
-      : this.fromBytes(path, utf8.encode(content));
+    : this.fromBytes(path, utf8.encode(content));
 
   /// {@macro template_file}
   TemplateFile.fromBytes(this.path, this.content);
@@ -488,32 +800,28 @@ class TemplateFile {
         ),
       ];
 
-      final permutations = _Permutations<dynamic>(
-        [
-          ...filteredParameters.entries
-              .where((entry) => entry.value is List)
-              .map((entry) => entry.value as List),
-        ],
-      ).generate();
+      final permutations = _Permutations<dynamic>([
+        ...filteredParameters.entries
+            .where((entry) => entry.value is List)
+            .map((entry) => entry.value as List),
+      ]).generate();
       for (final permutation in permutations) {
         final param = Map<String, dynamic>.of(parameters);
         for (var i = 0; i < permutation.length; i++) {
-          param.addAll(
-            <String, dynamic>{filteredParameterKeys[i]: permutation[i]},
-          );
+          param.addAll(<String, dynamic>{
+            filteredParameterKeys[i]: permutation[i],
+          });
         }
         final newPath = await filePath.render(
           param,
           onMissingVariable: onMissingVariable,
         );
-        final newContents = await TemplateFile(
-          newPath,
-          utf8.decode(content),
-        )._createContent(
-          parameters..addAll(param),
-          partials,
-          onMissingVariable: onMissingVariable,
-        );
+        final newContents = await TemplateFile(newPath, utf8.decode(content))
+            ._createContent(
+              parameters..addAll(param),
+              partials,
+              onMissingVariable: onMissingVariable,
+            );
         fileContents.add(FileContents(newPath, newContents));
       }
 
@@ -546,7 +854,11 @@ class TemplateFile {
       if (!decoded.contains(_delimiterRegExp)) return content;
       final rendered = await decoded.render(
         processedVars,
-        partials: partials,
+        partialsResolver: (missingPartial) {
+          final partialName = missingPartial.partialName;
+          final content = partials[partialName];
+          return content != null ? utf8.decode(content) : null;
+        },
         onMissingVariable: onMissingVariable,
       );
 
@@ -671,16 +983,19 @@ class _Permutations<T> {
     }
 
     for (var i = 0; i < lists[depth].length; i++) {
-      _generatePermutations(
-        lists,
-        result,
-        depth + 1,
-        [...current, lists[depth][i]],
-      );
+      _generatePermutations(lists, result, depth + 1, [
+        ...current,
+        lists[depth][i],
+      ]);
     }
   }
 }
 
+class _FileWithVars {
+  const _FileWithVars(this.file, this.vars);
+  final TemplateFile file;
+  final Map<String, dynamic> vars;
+}
 
 extension on FileConflictResolution {
   OverwriteRule? toOverwriteRule() {
@@ -704,6 +1019,8 @@ extension on String {
         return OverwriteRule.skipOnce;
       case 'a':
         return OverwriteRule.appendOnce;
+      case 'o':
+        return OverwriteRule.overwriteOnce;
       case 'Y':
         return OverwriteRule.alwaysOverwrite;
       case 'y':

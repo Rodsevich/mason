@@ -69,7 +69,7 @@ bricks:
     path: ../../../../../bricks/greeting
   hooks:
     git:
-      url: https://github.com/felangel/masonex
+      url: https://github.com/felangel/mason
       path: bricks/hooks
       ref: c744e19c23243453f568b539bb122767e6542929
   simple:
@@ -78,7 +78,7 @@ bricks:
     path: ../../../../../bricks/todos
   widget:
     git:
-      url: https://github.com/felangel/masonex
+      url: https://github.com/felangel/mason
       path: bricks/widget
       ref: c744e19c23243453f568b539bb122767e6542929
 ''',
@@ -175,7 +175,7 @@ bricks:
               'greeting': {'path': greetingPath},
               'hooks': {
                 'git': {
-                  'url': 'https://github.com/felangel/masonex',
+                  'url': 'https://github.com/felangel/mason',
                   'path': 'bricks/hooks',
                   'ref': 'c744e19c23243453f568b539bb122767e6542929',
                 },
@@ -184,7 +184,7 @@ bricks:
               'todos': {'path': todosPath},
               'widget': {
                 'git': {
-                  'url': 'https://github.com/felangel/masonex',
+                  'url': 'https://github.com/felangel/mason',
                   'path': 'bricks/widget',
                   'ref': 'c744e19c23243453f568b539bb122767e6542929',
                 },
@@ -236,7 +236,7 @@ bricks:
   greeting: ^0.1.0-dev
   widget:
     git:
-      url: https://github.com/felangel/masonex
+      url: https://github.com/felangel/mason
       path: bricks/widget
 ''',
       );
@@ -291,7 +291,7 @@ bricks:
 bricks:
   widget:
     git:
-      url: https://github.com/felangel/masonex
+      url: https://github.com/felangel/mason
       path: bricks/invalid
 ''',
       );
@@ -300,7 +300,7 @@ bricks:
       verify(
         () => logger.err(
           const BrickNotFoundException(
-            'https://github.com/felangel/masonex/bricks/invalid',
+            'https://github.com/felangel/mason/bricks/invalid',
           ).message,
         ),
       ).called(1);
@@ -385,7 +385,7 @@ bricks:
 bricks:
   widget:
     git:
-      url: https://github.com/felangel/masonex1
+      url: https://github.com/felangel/mason1
       path: bricks/invalid
 ''',
       );

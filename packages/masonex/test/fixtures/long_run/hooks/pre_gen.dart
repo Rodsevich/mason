@@ -1,4 +1,4 @@
-import 'package:masonex/masonex.dart';
+import 'package:mason/mason.dart';
 
 Future<void> run(
   HookContext context, {

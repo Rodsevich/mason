@@ -244,7 +244,7 @@ class Parser {
     }
   }
 
-  final RegExp _validIdentifier = RegExp(r'^[0-9a-zA-Z\_\-\.]+$');
+  final RegExp _validIdentifier = RegExp(r'^[0-9a-zA-Z\_\-\.\|\(\)\s]+$');
 
   static const _tagTypeMap = {
     '#': TagType.openSection,

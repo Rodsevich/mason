@@ -31,7 +31,7 @@ void unpackBundle(MasonexBundle bundle, Directory target) {
     publishTo: bundle.publishTo,
   );
   File(path.join(target.path, BrickYaml.file)).writeAsStringSync(
-    Yaml.encode(brickYaml.toJson()),
+    MasonexYamlEncoder.encode(brickYaml.toJson()),
   );
 
   final readme = bundle.readme;

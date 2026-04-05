@@ -1,23 +1,17 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: type=lint, strict_raw_type
-
 part of 'mason_bundle.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-MasonexBundledFile _$MasonexBundledFileFromJson(Map json) =>
-    $checkedCreate('MasonexBundledFile', json, ($checkedConvert) {
-      $checkKeys(json, allowedKeys: const ['path', 'data', 'type']);
-      final val = MasonexBundledFile(
-        $checkedConvert('path', (v) => v as String),
-        $checkedConvert('data', (v) => v as String),
-        $checkedConvert('type', (v) => v as String),
-      );
-      return val;
-    });
+MasonexBundledFile _$MasonexBundledFileFromJson(Map<String, dynamic> json) =>
+    MasonexBundledFile(
+      json['path'] as String,
+      json['data'] as String,
+      json['type'] as String,
+    );
 
 Map<String, dynamic> _$MasonexBundledFileToJson(MasonexBundledFile instance) =>
     <String, dynamic>{
@@ -26,105 +20,54 @@ Map<String, dynamic> _$MasonexBundledFileToJson(MasonexBundledFile instance) =>
       'type': instance.type,
     };
 
-MasonexBundle _$MasonexBundleFromJson(Map json) => $checkedCreate(
-  'MasonexBundle',
-  json,
-  ($checkedConvert) {
-    $checkKeys(
-      json,
-      allowedKeys: const [
-        'files',
-        'hooks',
-        'name',
-        'description',
-        'version',
-        'environment',
-        'repository',
-        'publish_to',
-        'readme',
-        'changelog',
-        'license',
-        'vars',
-      ],
+MasonexBundle _$MasonexBundleFromJson(Map<String, dynamic> json) =>
+    MasonexBundle(
+      name: json['name'] as String,
+      description: json['description'] as String,
+      version: json['version'] as String,
+      environment: json['environment'] == null
+          ? const BrickEnvironment()
+          : BrickEnvironment.fromJson(json['environment']),
+      vars: json['vars'] == null
+          ? const <String, BrickVariableProperties>{}
+          : const VarsConverter().fromJson(json['vars']),
+      files: (json['files'] as List<dynamic>?)
+              ?.map(
+                  (e) => MasonexBundledFile.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      hooks: (json['hooks'] as List<dynamic>?)
+              ?.map(
+                  (e) => MasonexBundledFile.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      repository: json['repository'] as String?,
+      publishTo: json['publish_to'] as String?,
+      readme: json['readme'] == null
+          ? null
+          : MasonexBundledFile.fromJson(json['readme'] as Map<String, dynamic>),
+      changelog: json['changelog'] == null
+          ? null
+          : MasonexBundledFile.fromJson(
+              json['changelog'] as Map<String, dynamic>),
+      license: json['license'] == null
+          ? null
+          : MasonexBundledFile.fromJson(
+              json['license'] as Map<String, dynamic>),
     );
-    final val = MasonexBundle(
-      name: $checkedConvert('name', (v) => v as String),
-      description: $checkedConvert('description', (v) => v as String),
-      version: $checkedConvert('version', (v) => v as String),
-      environment: $checkedConvert(
-        'environment',
-        (v) => v == null
-            ? const BrickEnvironment()
-            : BrickEnvironment.fromJson(v as Map),
-      ),
-      vars: $checkedConvert(
-        'vars',
-        (v) => v == null
-            ? const <String, BrickVariableProperties>{}
-            : const VarsConverter().fromJson(v),
-      ),
-      files: $checkedConvert(
-        'files',
-        (v) =>
-            (v as List<dynamic>?)
-                ?.map(
-                  (e) => MasonexBundledFile.fromJson(
-                    Map<String, dynamic>.from(e as Map),
-                  ),
-                )
-                .toList() ??
-            const [],
-      ),
-      hooks: $checkedConvert(
-        'hooks',
-        (v) =>
-            (v as List<dynamic>?)
-                ?.map(
-                  (e) => MasonexBundledFile.fromJson(
-                    Map<String, dynamic>.from(e as Map),
-                  ),
-                )
-                .toList() ??
-            const [],
-      ),
-      repository: $checkedConvert('repository', (v) => v as String?),
-      publishTo: $checkedConvert('publish_to', (v) => v as String?),
-      readme: $checkedConvert(
-        'readme',
-        (v) => v == null
-            ? null
-            : MasonexBundledFile.fromJson(Map<String, dynamic>.from(v as Map)),
-      ),
-      changelog: $checkedConvert(
-        'changelog',
-        (v) => v == null
-            ? null
-            : MasonexBundledFile.fromJson(Map<String, dynamic>.from(v as Map)),
-      ),
-      license: $checkedConvert(
-        'license',
-        (v) => v == null
-            ? null
-            : MasonexBundledFile.fromJson(Map<String, dynamic>.from(v as Map)),
-      ),
-    );
-    return val;
-  },
-  fieldKeyMap: const {'publishTo': 'publish_to'},
-);
 
 Map<String, dynamic> _$MasonexBundleToJson(MasonexBundle instance) =>
     <String, dynamic>{
-      'files': instance.files.map((e) => e.toJson()).toList(),
-      'hooks': instance.hooks.map((e) => e.toJson()).toList(),
+      'files': instance.files,
+      'hooks': instance.hooks,
       'name': instance.name,
       'description': instance.description,
       'version': instance.version,
-      'environment': instance.environment.toJson(),
-      'repository': ?instance.repository,
-      'publish_to': ?instance.publishTo,
-      'readme': ?instance.readme?.toJson(),
-      'changelog': ?instance.changelog?.toJson(),
-      'license': ?instance.license?.toJson(),
-      'vars': ?const VarsConverter().toJson(instance.vars),
+      'environment': instance.environment,
+      'repository': instance.repository,
+      'publish_to': instance.publishTo,
+      'readme': instance.readme,
+      'changelog': instance.changelog,
+      'license': instance.license,
+      'vars': const VarsConverter().toJson(instance.vars),
     };

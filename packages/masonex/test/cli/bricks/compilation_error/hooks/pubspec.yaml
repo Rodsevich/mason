@@ -4,7 +4,7 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  masonex:
+  masonexex:
     git:
-      url: https://github.com/Rodsevich/masonex
-      path: packages/masonex
+      url: https://github.com/Rodsevich/masonexex
+      path: packages/masonexex
