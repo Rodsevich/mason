@@ -10,6 +10,6 @@ melos:
 
   scripts:
     publish:masonex:
-      run: melos publish --dry-run --scope="masonex" --scope="masonex_cli" --scope="masonex_annotations"
+      run: melos publish --dry-run --scope="masonex" --scope="mustachex"
       description: |
-        Publish the masonex packages (masonex, masonex_cli, and masonex_annotations).
+        Publish the masonex and or mustachex packages.
