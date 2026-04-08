@@ -5,3 +5,5 @@ dependency_overrides:
     path: ../mason_api
   mason_logger:
     path: ../mason_logger
+  mustachex:
+    path: ../mustachex
