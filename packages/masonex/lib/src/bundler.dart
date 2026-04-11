@@ -30,9 +30,9 @@ void unpackBundle(MasonexBundle bundle, Directory target) {
     repository: bundle.repository,
     publishTo: bundle.publishTo,
   );
-  File(path.join(target.path, BrickYaml.file)).writeAsStringSync(
-    MasonexYamlEncoder.encode(brickYaml.toJson()),
-  );
+  File(
+    path.join(target.path, BrickYaml.file),
+  ).writeAsStringSync(MasonexYamlEncoder.encode(brickYaml.toJson()));
 
   final readme = bundle.readme;
   if (readme != null) _unbundleFile(readme, target.path);
@@ -57,19 +57,19 @@ MasonexBundle createBundle(Directory brick) {
   final brickDir = Directory(path.join(brick.path, BrickYaml.dir));
   final files = brickDir.existsSync()
       ? brickDir
-          .listSync(recursive: true)
-          .whereType<File>()
-          .map(_bundleBrickFile)
-          .toList()
+            .listSync(recursive: true)
+            .whereType<File>()
+            .map(_bundleBrickFile)
+            .toList()
       : <MasonexBundledFile>[];
   final hooksDirectory = Directory(path.join(brick.path, BrickYaml.hooks));
   final hooks = hooksDirectory.existsSync()
       ? hooksDirectory
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((file) => _hookFiles.hasMatch(path.basename(file.path)))
-          .map((file) => _bundleHookFile(file, hooksDirectory))
-          .toList()
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((file) => _hookFiles.hasMatch(path.basename(file.path)))
+            .map((file) => _bundleHookFile(file, hooksDirectory))
+            .toList()
       : <MasonexBundledFile>[];
   return MasonexBundle(
     name: brickYaml.name,
@@ -99,8 +99,9 @@ MasonexBundledFile? _bundleTopLevelFile(Directory brick, String fileName) {
 }
 
 MasonexBundledFile _bundleBrickFile(File file) {
-  final fileType =
-      _binaryFileTypes.hasMatch(path.basename(file.path)) ? 'binary' : 'text';
+  final fileType = _binaryFileTypes.hasMatch(path.basename(file.path))
+      ? 'binary'
+      : 'text';
   final data = base64.encode(file.readAsBytesSync());
   final filePath = path.joinAll(
     path.split(file.path).skipWhile((value) => value != BrickYaml.dir).skip(1),

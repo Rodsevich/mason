@@ -75,51 +75,49 @@ class _BrickGenerator extends MasonexGenerator {
     this.brickDescription, {
     this.createHooks = false,
   }) : super(
-          '__new_brick__',
-          'Creates a new brick.',
-          files: [
-            TemplateFile(
-              p.join(brickName, BrickYaml.file),
-              _brickYamlContent(brickName, brickDescription),
-            ),
-            TemplateFile(
-              p.join(brickName, 'README.md'),
-              _brickReadmeContent(brickName, brickDescription),
-            ),
-            TemplateFile(
-              p.join(brickName, 'CHANGELOG.md'),
-              _brickChangelogContent,
-            ),
-            TemplateFile(
-              p.join(brickName, 'LICENSE'),
-              _brickLicenseContent,
-            ),
-            TemplateFile(
-              p.join(brickName, BrickYaml.dir, 'HELLO.md'),
-              'Hello {{name}}!',
-            ),
-            if (createHooks) ...[
-              TemplateFile(
-                p.join(brickName, BrickYaml.hooks, 'pubspec.yaml'),
-                _hooksPubspecContent(brickName),
-              ),
-              TemplateFile(
-                p.join(brickName, BrickYaml.hooks, 'pre_gen.dart'),
-                _hooksPreGenContent,
-              ),
-              TemplateFile(
-                p.join(brickName, BrickYaml.hooks, 'post_gen.dart'),
-                _hooksPostGenContent,
-              ),
-              TemplateFile(
-                p.join(brickName, BrickYaml.hooks, '.gitignore'),
-                _hooksGitignoreContent,
-              ),
-            ],
-          ],
-        );
+         '__new_brick__',
+         'Creates a new brick.',
+         files: [
+           TemplateFile(
+             p.join(brickName, BrickYaml.file),
+             _brickYamlContent(brickName, brickDescription),
+           ),
+           TemplateFile(
+             p.join(brickName, 'README.md'),
+             _brickReadmeContent(brickName, brickDescription),
+           ),
+           TemplateFile(
+             p.join(brickName, 'CHANGELOG.md'),
+             _brickChangelogContent,
+           ),
+           TemplateFile(p.join(brickName, 'LICENSE'), _brickLicenseContent),
+           TemplateFile(
+             p.join(brickName, BrickYaml.dir, 'HELLO.md'),
+             'Hello {{name}}!',
+           ),
+           if (createHooks) ...[
+             TemplateFile(
+               p.join(brickName, BrickYaml.hooks, 'pubspec.yaml'),
+               _hooksPubspecContent(brickName),
+             ),
+             TemplateFile(
+               p.join(brickName, BrickYaml.hooks, 'pre_gen.dart'),
+               _hooksPreGenContent,
+             ),
+             TemplateFile(
+               p.join(brickName, BrickYaml.hooks, 'post_gen.dart'),
+               _hooksPostGenContent,
+             ),
+             TemplateFile(
+               p.join(brickName, BrickYaml.hooks, '.gitignore'),
+               _hooksGitignoreContent,
+             ),
+           ],
+         ],
+       );
 
-  static String _brickYamlContent(String name, String description) => '''
+  static String _brickYamlContent(String name, String description) =>
+      '''
 name: $name
 description: $description
 
@@ -155,7 +153,8 @@ vars:
     prompt: What is your name?
 ''';
 
-  static String _brickReadmeContent(String name, String description) => '''
+  static String _brickReadmeContent(String name, String description) =>
+      '''
 # $name
 
 [![Powered by Masonex](https://img.shields.io/endpoint?url=https%3A%2F%2Ftinyurl.com%2Fmasonex-badge)](https://github.com/felangel/masonex)
@@ -195,7 +194,8 @@ A few resources to get you started if this is your first brick template:
 TODO: Add your license here.
 ''';
 
-  static String _hooksPubspecContent(String name) => '''
+  static String _hooksPubspecContent(String name) =>
+      '''
 name: ${name}_hooks
 
 environment:

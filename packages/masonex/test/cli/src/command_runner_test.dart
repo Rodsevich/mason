@@ -39,7 +39,7 @@ const expectedUsage = [
       '  update     Update masonex.\n'
       '  upgrade    Upgrade bricks to their latest versions.\n'
       '\n'
-      'Run "masonex help <command>" for more information about a command.'
+      'Run "masonex help <command>" for more information about a command.',
 ];
 
 const latestVersion = '0.0.0';
@@ -52,7 +52,8 @@ final changelogLink = lightCyan.wrap(
     ),
   ),
 );
-final updateMessage = '''
+final updateMessage =
+    '''
 ${lightYellow.wrap('Update available!')} ${lightCyan.wrap(packageVersion)} \u2192 ${lightCyan.wrap(latestVersion)}
 ${lightYellow.wrap('Changelog:')} $changelogLink
 Run ${cyan.wrap('masonex update')} to update''';
@@ -175,9 +176,7 @@ void main() {
         test('outputs current versions', () async {
           final result = await commandRunner.run(['--version']);
           expect(result, equals(ExitCode.success.code));
-          verify(
-            () => logger.info('masonex $packageVersion'),
-          ).called(1);
+          verify(() => logger.info('masonex $packageVersion')).called(1);
         });
       });
     });

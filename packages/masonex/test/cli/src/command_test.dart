@@ -39,21 +39,17 @@ void main() {
         final directory = Directory(path.join(tempDirectory.path, 'malformed'))
           ..createSync(recursive: true);
         final brickYaml = File(path.join(directory.path, 'brick.yaml'))
-          ..writeAsStringSync(
-            '''
+          ..writeAsStringSync('''
 name: malformed
 description: A malformed Template
 version: 0.1.0+1
-''',
-          );
-        File(path.join(directory.path, 'masonex.yaml')).writeAsStringSync(
-          '''
+''');
+        File(path.join(directory.path, 'masonex.yaml')).writeAsStringSync('''
 bricks:
   malformed:
     path: ${directory.path}
   
-''',
-        );
+''');
         Directory.current = directory;
         final logger = _MockLogger();
         when(() => logger.progress(any())).thenReturn(_MockProgress());

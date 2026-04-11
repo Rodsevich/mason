@@ -124,7 +124,8 @@ class MasonexGenerator extends Generator {
     );
     for (final file in generator.files) {
       if (_partialRegExp.hasMatch(file.path)) {
-        generator.partials[file.path] = file.content;
+        final match = _partialRegExp.firstMatch(file.path);
+        if (match != null) generator.partials[match.group(1)!] = file.content;
       }
     }
     return generator;
@@ -439,7 +440,7 @@ abstract class Generator implements Comparable<Generator> {
                         print('DEBUG: Found marker "$marker"!');
                         content = content.replaceFirst(
                           marker,
-                          '// $template\n$snippetContent\n$marker',
+                          '\n// $template\n$snippetContent\n\n$marker',
                         );
                         found = true;
                         break;
@@ -451,7 +452,7 @@ abstract class Generator implements Comparable<Generator> {
                         if (content.contains(marker)) {
                           content = content.replaceFirst(
                             marker,
-                            '$marker\n// $template\n$snippetContent',
+                            '$marker\n// $template\n$snippetContent\n',
                           );
                           break;
                         }

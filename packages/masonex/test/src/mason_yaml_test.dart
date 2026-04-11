@@ -24,30 +24,33 @@ void main() {
         expect(MasonexYaml.findNearest(Directory('/')), isNull);
       });
 
-      test('returns masonex.yaml when there is one in the current directory', () {
-        final directory = Directory.systemTemp.createTempSync();
-        final file = File(
-          path.join(directory.path, MasonexYaml.file),
-        )..createSync();
-        expect(
-          MasonexYaml.findNearest(directory),
-          isA<File>().having((f) => f.path, 'path', file.path),
-        );
-      });
+      test(
+        'returns masonex.yaml when there is one in the current directory',
+        () {
+          final directory = Directory.systemTemp.createTempSync();
+          final file = File(path.join(directory.path, MasonexYaml.file))
+            ..createSync();
+          expect(
+            MasonexYaml.findNearest(directory),
+            isA<File>().having((f) => f.path, 'path', file.path),
+          );
+        },
+      );
 
-      test('returns masonex.yaml when there is one in the parent directory', () {
-        final directory = Directory.systemTemp.createTempSync();
-        final file = File(
-          path.join(directory.path, MasonexYaml.file),
-        )..createSync();
-        final nestedDirectory = Directory(
-          path.join(directory.path, 'nested'),
-        )..createSync();
-        expect(
-          MasonexYaml.findNearest(nestedDirectory),
-          isA<File>().having((f) => f.path, 'path', file.path),
-        );
-      });
+      test(
+        'returns masonex.yaml when there is one in the parent directory',
+        () {
+          final directory = Directory.systemTemp.createTempSync();
+          final file = File(path.join(directory.path, MasonexYaml.file))
+            ..createSync();
+          final nestedDirectory = Directory(path.join(directory.path, 'nested'))
+            ..createSync();
+          expect(
+            MasonexYaml.findNearest(nestedDirectory),
+            isA<File>().having((f) => f.path, 'path', file.path),
+          );
+        },
+      );
     });
   });
 

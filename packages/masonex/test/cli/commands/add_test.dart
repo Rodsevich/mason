@@ -67,15 +67,23 @@ void main() {
           throw const MasonexException('oops');
         }
       });
-      when(
-        () => pubUpdater.getLatestVersion(any()),
-      ).thenThrow(Exception());
+      when(() => pubUpdater.getLatestVersion(any())).thenThrow(Exception());
       when(() => logger.progress(any())).thenReturn(progress);
-      final brickPath =
-          path.join('..', '..', '..', '..', '..', 'bricks', 'greeting');
-      final result = await commandRunner.run(
-        ['add', 'greeting', '--path', brickPath],
+      final brickPath = path.join(
+        '..',
+        '..',
+        '..',
+        '..',
+        '..',
+        'bricks',
+        'greeting',
       );
+      final result = await commandRunner.run([
+        'add',
+        'greeting',
+        '--path',
+        brickPath,
+      ]);
       expect(result, equals(ExitCode.usage.code));
       verify(() => logger.progress('Installing greeting')).called(1);
       verify(() => logger.err('oops')).called(1);
@@ -85,9 +93,12 @@ void main() {
       final progress = _MockProgress();
       when(() => logger.progress(any())).thenReturn(progress);
       final brickPath = path.join('..', '..', 'bricks', 'compilation_error');
-      final result = await commandRunner.run(
-        ['add', 'compilation_error', '--path', brickPath],
-      );
+      final result = await commandRunner.run([
+        'add',
+        'compilation_error',
+        '--path',
+        brickPath,
+      ]);
       expect(result, equals(ExitCode.usage.code));
       verify(progress.fail).called(1);
     });
@@ -116,9 +127,12 @@ void main() {
 
       group('path', () {
         test('exits with code 64 when brick does not exist', () async {
-          final result = await commandRunner.run(
-            ['add', 'example', '--path', '.'],
-          );
+          final result = await commandRunner.run([
+            'add',
+            'example',
+            '--path',
+            '.',
+          ]);
           expect(result, equals(ExitCode.usage.code));
           verify(
             () => logger.err(
@@ -128,11 +142,21 @@ void main() {
         });
 
         test('exits with code 64 when name does not match', () async {
-          final brickPath =
-              path.join('..', '..', '..', '..', '..', 'bricks', 'greeting');
-          final result = await commandRunner.run(
-            ['add', 'example', '--path', brickPath],
+          final brickPath = path.join(
+            '..',
+            '..',
+            '..',
+            '..',
+            '..',
+            'bricks',
+            'greeting',
           );
+          final result = await commandRunner.run([
+            'add',
+            'example',
+            '--path',
+            brickPath,
+          ]);
           expect(result, equals(ExitCode.usage.code));
           verify(() => logger.progress('Installing example')).called(1);
           verify(
@@ -143,11 +167,21 @@ void main() {
         });
 
         test('adds brick successfully when brick exists', () async {
-          final brickPath =
-              path.join('..', '..', '..', '..', '..', 'bricks', 'greeting');
-          final result = await commandRunner.run(
-            ['add', 'greeting', '--path', brickPath],
+          final brickPath = path.join(
+            '..',
+            '..',
+            '..',
+            '..',
+            '..',
+            'bricks',
+            'greeting',
           );
+          final result = await commandRunner.run([
+            'add',
+            'greeting',
+            '--path',
+            brickPath,
+          ]);
           expect(result, equals(ExitCode.success.code));
           final testDir = Directory(
             path.join(Directory.current.path, 'greeting'),
@@ -170,8 +204,7 @@ void main() {
           expect(directoriesDeepEqual(actual, expected), isTrue);
         });
 
-        test(
-            'adds brick successfully when brick exists '
+        test('adds brick successfully when brick exists '
             'from nested directory', () async {
           final nested = Directory(path.join(Directory.current.path, 'nested'))
             ..createSync();
@@ -187,9 +220,12 @@ void main() {
             'bricks',
             'greeting',
           );
-          final result = await commandRunner.run(
-            ['add', 'greeting', '--path', brickPath],
-          );
+          final result = await commandRunner.run([
+            'add',
+            'greeting',
+            '--path',
+            brickPath,
+          ]);
           expect(result, equals(ExitCode.success.code));
           Directory.current = workspace;
           final testDir = Directory(
@@ -217,9 +253,12 @@ void main() {
       group('git', () {
         test('exits with code 64 when brick does not exist', () async {
           const url = 'https://github.com/felangel/mason';
-          final result = await commandRunner.run(
-            ['add', 'example', '--git-url', url],
-          );
+          final result = await commandRunner.run([
+            'add',
+            'example',
+            '--git-url',
+            url,
+          ]);
           expect(result, equals(ExitCode.usage.code));
           verify(() => logger.err('Could not find brick at $url')).called(1);
         });
@@ -227,9 +266,14 @@ void main() {
         test('exits with code 64 when brick does not exist (path)', () async {
           const url = 'https://github.com/felangel/mason';
           const path = 'bricks/example';
-          final result = await commandRunner.run(
-            ['add', 'example', '--git-url', url, '--git-path', path],
-          );
+          final result = await commandRunner.run([
+            'add',
+            'example',
+            '--git-url',
+            url,
+            '--git-path',
+            path,
+          ]);
           expect(result, equals(ExitCode.usage.code));
           verify(
             () => logger.err('Could not find brick at $url/$path'),
@@ -238,9 +282,14 @@ void main() {
 
         test('exits with code 64 when name does not match', () async {
           const url = 'https://github.com/felangel/mason';
-          final result = await commandRunner.run(
-            ['add', 'example', '--git-url', url, '--git-path', 'bricks/widget'],
-          );
+          final result = await commandRunner.run([
+            'add',
+            'example',
+            '--git-url',
+            url,
+            '--git-path',
+            'bricks/widget',
+          ]);
           expect(result, equals(ExitCode.usage.code));
           verify(
             () => logger.err(
@@ -251,13 +300,17 @@ void main() {
 
         test('adds brick successfully when brick exists', () async {
           const url = 'https://github.com/felangel/mason';
-          final result = await commandRunner.run(
-            ['add', 'widget', '--git-url', url, '--git-path', 'bricks/widget'],
-          );
+          final result = await commandRunner.run([
+            'add',
+            'widget',
+            '--git-url',
+            url,
+            '--git-path',
+            'bricks/widget',
+          ]);
           expect(result, equals(ExitCode.success.code));
-          final testDir = Directory(
-            path.join(Directory.current.path, 'widget'),
-          )..createSync(recursive: true);
+          final testDir = Directory(path.join(Directory.current.path, 'widget'))
+            ..createSync(recursive: true);
           Directory.current = testDir.path;
           final makeResult = await MasonexCommandRunner(
             logger: logger,
@@ -285,9 +338,12 @@ void main() {
         });
 
         test('exits with code 64 when too many arguments provided', () async {
-          final result = await commandRunner.run(
-            ['add', 'nonexistent-brick', 'foo', 'bar'],
-          );
+          final result = await commandRunner.run([
+            'add',
+            'nonexistent-brick',
+            'foo',
+            'bar',
+          ]);
           expect(result, equals(ExitCode.usage.code));
           verify(
             () => logger.err(
@@ -319,9 +375,11 @@ void main() {
         });
 
         test('adds brick successfully when brick exists w/version', () async {
-          final addResult = await commandRunner.run(
-            ['add', 'greeting', '0.1.0+1'],
-          );
+          final addResult = await commandRunner.run([
+            'add',
+            'greeting',
+            '0.1.0+1',
+          ]);
           expect(addResult, equals(ExitCode.success.code));
 
           final listResult = await commandRunner.run(['ls']);
@@ -342,8 +400,9 @@ void main() {
     group('global', () {
       setUp(() {
         try {
-          File(path.join(Directory.current.path, 'masonex.yaml'))
-              .deleteSync(recursive: true);
+          File(
+            path.join(Directory.current.path, 'masonex.yaml'),
+          ).deleteSync(recursive: true);
         } catch (_) {}
       });
 
@@ -355,9 +414,13 @@ void main() {
 
       group('path', () {
         test('exits with code 64 when brick does not exist', () async {
-          final result = await commandRunner.run(
-            ['add', '--global', 'example', '--path', '.'],
-          );
+          final result = await commandRunner.run([
+            'add',
+            '--global',
+            'example',
+            '--path',
+            '.',
+          ]);
           expect(result, equals(ExitCode.usage.code));
           verify(
             () => logger.err(
@@ -367,11 +430,22 @@ void main() {
         });
 
         test('adds brick successfully when brick exists', () async {
-          final brickPath =
-              path.join('..', '..', '..', '..', '..', 'bricks', 'greeting');
-          final result = await commandRunner.run(
-            ['add', '--global', 'greeting', '--path', brickPath],
+          final brickPath = path.join(
+            '..',
+            '..',
+            '..',
+            '..',
+            '..',
+            'bricks',
+            'greeting',
           );
+          final result = await commandRunner.run([
+            'add',
+            '--global',
+            'greeting',
+            '--path',
+            brickPath,
+          ]);
           expect(result, equals(ExitCode.success.code));
           final testDir = Directory(
             path.join(Directory.current.path, 'greeting'),
@@ -393,11 +467,22 @@ void main() {
         });
 
         test('adds brick successfully when brick exists (shorthand)', () async {
-          final brickPath =
-              path.join('..', '..', '..', '..', '..', 'bricks', 'greeting');
-          final result = await commandRunner.run(
-            ['add', '-g', 'greeting', '--path', brickPath],
+          final brickPath = path.join(
+            '..',
+            '..',
+            '..',
+            '..',
+            '..',
+            'bricks',
+            'greeting',
           );
+          final result = await commandRunner.run([
+            'add',
+            '-g',
+            'greeting',
+            '--path',
+            brickPath,
+          ]);
           expect(result, equals(ExitCode.success.code));
           final testDir = Directory(
             path.join(Directory.current.path, 'greeting'),
@@ -422,30 +507,31 @@ void main() {
       group('git', () {
         test('exits with code 64 when brick does not exist', () async {
           const url = 'https://github.com/felangel/mason';
-          final result = await commandRunner.run(
-            ['add', '--global', 'example', '--git-url', url],
-          );
+          final result = await commandRunner.run([
+            'add',
+            '--global',
+            'example',
+            '--git-url',
+            url,
+          ]);
           expect(result, equals(ExitCode.usage.code));
           verify(() => logger.err('Could not find brick at $url')).called(1);
         });
 
         test('adds brick successfully when brick exists', () async {
           const url = 'https://github.com/felangel/mason';
-          final result = await commandRunner.run(
-            [
-              'add',
-              '-g',
-              'widget',
-              '--git-url',
-              url,
-              '--git-path',
-              'bricks/widget',
-            ],
-          );
+          final result = await commandRunner.run([
+            'add',
+            '-g',
+            'widget',
+            '--git-url',
+            url,
+            '--git-path',
+            'bricks/widget',
+          ]);
           expect(result, equals(ExitCode.success.code));
-          final testDir = Directory(
-            path.join(Directory.current.path, 'widget'),
-          )..createSync(recursive: true);
+          final testDir = Directory(path.join(Directory.current.path, 'widget'))
+            ..createSync(recursive: true);
           Directory.current = testDir.path;
           final makeResult = await MasonexCommandRunner(
             logger: logger,
@@ -465,9 +551,11 @@ void main() {
 
       group('registry', () {
         test('exits with code 64 when brick does not exist', () async {
-          final result = await commandRunner.run(
-            ['add', '-g', 'nonexistent-brick'],
-          );
+          final result = await commandRunner.run([
+            'add',
+            '-g',
+            'nonexistent-brick',
+          ]);
           expect(result, equals(ExitCode.usage.code));
           verify(
             () => logger.err('Brick "nonexistent-brick" does not exist.'),
@@ -475,9 +563,13 @@ void main() {
         });
 
         test('exits with code 64 when too many arguments provided', () async {
-          final result = await commandRunner.run(
-            ['add', '-g', 'nonexistent-brick', 'foo', 'bar'],
-          );
+          final result = await commandRunner.run([
+            'add',
+            '-g',
+            'nonexistent-brick',
+            'foo',
+            'bar',
+          ]);
           expect(result, equals(ExitCode.usage.code));
           verify(
             () => logger.err(
@@ -509,9 +601,12 @@ void main() {
         });
 
         test('adds brick successfully when brick exists w/version', () async {
-          final addResult = await commandRunner.run(
-            ['add', '-g', 'greeting', '0.1.0+1'],
-          );
+          final addResult = await commandRunner.run([
+            'add',
+            '-g',
+            'greeting',
+            '0.1.0+1',
+          ]);
           expect(addResult, equals(ExitCode.success.code));
 
           final listResult = await commandRunner.run(['ls', '-g']);

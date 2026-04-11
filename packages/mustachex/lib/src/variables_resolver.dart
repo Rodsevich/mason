@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:mustachex/src/variable_recase_decomposer.dart';
+import 'package:mustachex/src/mustache_template/renderer.dart'
+    show noSuchProperty;
 import 'package:recase/recase.dart';
 
 /// Will hold a bunch of variables and provide tools for obtaining them
@@ -97,6 +99,17 @@ class VariablesResolver {
   // pregunta por el valor de una variable que falta dentro de un
   // {{#mapaPadre}}{{valor}}{{/mapaPadre}} se agregue dentro del map o list
   // de mapaPadre
+  void setByList(List keys, dynamic value) {
+    if (keys.isEmpty) return;
+    String memVar = keys.first.toString();
+    if (keys.length == 1) {
+      _mem[memVar] = _process(value);
+    } else {
+      _mem[memVar] =
+          _recursiveAssignment(keys.sublist(1), _mem[memVar], _process(value));
+    }
+  }
+
   void operator []=(keys, value) {
     String? memVar = '';
     List? keysList;
@@ -150,7 +163,10 @@ class VariablesResolver {
       return value;
     } else if (value is String) {
       return StringVariable(value);
-    } else if (value is StringVariable || value is bool || value is num) {
+    } else if (value is StringVariable ||
+        value is bool ||
+        value is num ||
+        value is Function) {
       return value;
     } else if (value == null) {
       return null;
@@ -166,16 +182,8 @@ class VariablesResolver {
         ret[k] = _process(v);
       });
       return ret;
-      // } else {
-      //   // Una complejidad añadida para guardar clases y enums, creo
-      //   ClassAnalysis valAnalysis = ClassAnalysis.fromInstance(value);
-      //   if (valAnalysis.isEnum) {
-      //     return StringVariable(value.toString());
-      //   }
-      //   Map ret = valAnalysis.toMap();
-      //   ret['className'] = valAnalysis.name;
-      //   return ret;
     }
+    return value;
   }
 
   void addAll(Map vars) {
@@ -275,7 +283,7 @@ class StringVariable {
   @override
   bool operator ==(other) => other.hashCode == _original.hashCode;
 
-  int? compareTo(other) => other.compareTo(_original);
+  int? compareTo(other) => _original.compareTo(other.toString());
 
   @override
   int get hashCode => _original.hashCode;

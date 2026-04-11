@@ -44,15 +44,15 @@ void main() {
     });
 
     test('exits with code 64 when name is missing', () async {
-      File(path.join(Directory.current.path, 'masonex.yaml'))
-          .writeAsStringSync('bricks:\n');
+      File(
+        path.join(Directory.current.path, 'masonex.yaml'),
+      ).writeAsStringSync('bricks:\n');
       final result = await commandRunner.run(['new']);
       expect(result, equals(ExitCode.usage.code));
       verify(() => logger.err('Name of the new brick is required.')).called(1);
     });
 
-    test(
-        'exits with code 64 when '
+    test('exits with code 64 when '
         'exception occurs during generation', () async {
       final progress = _MockProgress();
       when(() => progress.complete(any())).thenAnswer((invocation) {
@@ -68,9 +68,8 @@ void main() {
     });
 
     test('creates a new brick when it does not exist', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'simple'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'simple'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final result = await commandRunner.run(['new', 'hello world']);
       expect(result, equals(ExitCode.success.code));
@@ -85,14 +84,16 @@ void main() {
     });
 
     test('creates a new brick w/custom output-dir', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'custom'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'custom'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final outputDir = path.join(testDir.path, 'bricks');
-      final result = await commandRunner.run(
-        ['new', 'hello world', '-o', outputDir],
-      );
+      final result = await commandRunner.run([
+        'new',
+        'hello world',
+        '-o',
+        outputDir,
+      ]);
       expect(result, equals(ExitCode.success.code));
       final actual = Directory(
         path.join(testFixturesPath(cwd, suffix: '.new'), 'custom'),
@@ -105,9 +106,8 @@ void main() {
     });
 
     test('creates a new brick w/hooks', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'hooks'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'hooks'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final result = await commandRunner.run(['new', 'hooks', '--hooks']);
       expect(result, equals(ExitCode.success.code));
@@ -122,9 +122,8 @@ void main() {
     });
 
     test('updates existing brick when brick already exists', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'simple'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'simple'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final result = await commandRunner.run(['new', 'hello world']);
       expect(result, equals(ExitCode.success.code));
@@ -136,9 +135,11 @@ void main() {
       );
       expect(directoriesDeepEqual(actual, expected), isTrue);
 
-      final secondResult = await commandRunner.run(
-        ['new', 'hello world', '--hooks'],
-      );
+      final secondResult = await commandRunner.run([
+        'new',
+        'hello world',
+        '--hooks',
+      ]);
       expect(secondResult, equals(ExitCode.success.code));
     });
   });

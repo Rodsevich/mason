@@ -46,7 +46,7 @@ class Renderer extends Visitor {
 
   void push(value) => _stack.add(value);
 
-  Object pop() => _stack.removeLast();
+  dynamic pop() => _stack.removeLast();
 
   void write(Object output) => sink.write(output.toString());
 
@@ -289,8 +289,8 @@ class BinaryRenderer extends Renderer {
 
   BinaryRenderer(List stack, bool lenient, bool htmlEscapeValues,
       PartialResolver? partialResolver, String? templateName, String source)
-      : super(StringBuffer(), stack, lenient, htmlEscapeValues,
-            partialResolver, templateName, '', source);
+      : super(StringBuffer(), stack, lenient, htmlEscapeValues, partialResolver,
+            templateName, '', source);
 
   /// Collects all segments into a single flat List<int>.
   List<int> collectBytes() {

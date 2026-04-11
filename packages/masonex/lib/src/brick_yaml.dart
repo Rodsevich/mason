@@ -161,11 +161,11 @@ class BrickVariableProperties {
     String? defaultValue,
     String? prompt,
   }) : this(
-          type: BrickVariableType.string,
-          description: description,
-          defaultValue: defaultValue,
-          prompt: prompt,
-        );
+         type: BrickVariableType.string,
+         description: description,
+         defaultValue: defaultValue,
+         prompt: prompt,
+       );
 
   /// {@macro brick_variable_properties}
   ///
@@ -176,11 +176,11 @@ class BrickVariableProperties {
     bool? defaultValue,
     String? prompt,
   }) : this(
-          type: BrickVariableType.boolean,
-          description: description,
-          defaultValue: defaultValue,
-          prompt: prompt,
-        );
+         type: BrickVariableType.boolean,
+         description: description,
+         defaultValue: defaultValue,
+         prompt: prompt,
+       );
 
   /// {@macro brick_variable_properties}
   ///
@@ -191,11 +191,11 @@ class BrickVariableProperties {
     num? defaultValue,
     String? prompt,
   }) : this(
-          type: BrickVariableType.number,
-          description: description,
-          defaultValue: defaultValue,
-          prompt: prompt,
-        );
+         type: BrickVariableType.number,
+         description: description,
+         defaultValue: defaultValue,
+         prompt: prompt,
+       );
 
   /// {@macro brick_variable_properties}
   ///
@@ -207,12 +207,12 @@ class BrickVariableProperties {
     String? defaultValue,
     String? prompt,
   }) : this(
-          type: BrickVariableType.enumeration,
-          description: description,
-          defaultValue: defaultValue,
-          prompt: prompt,
-          values: values,
-        );
+         type: BrickVariableType.enumeration,
+         description: description,
+         defaultValue: defaultValue,
+         prompt: prompt,
+         values: values,
+       );
 
   /// {@macro brick_variable_properties}
   ///
@@ -224,12 +224,12 @@ class BrickVariableProperties {
     List<String>? defaultValues,
     String? prompt,
   }) : this(
-          type: BrickVariableType.array,
-          description: description,
-          defaultValues: defaultValues,
-          prompt: prompt,
-          values: values,
-        );
+         type: BrickVariableType.array,
+         description: description,
+         defaultValues: defaultValues,
+         prompt: prompt,
+         values: values,
+       );
 
   /// {@macro brick_variable_properties}
   ///
@@ -240,11 +240,11 @@ class BrickVariableProperties {
     String? prompt,
     String? separator,
   }) : this(
-          type: BrickVariableType.list,
-          description: description,
-          prompt: prompt,
-          separator: separator,
-        );
+         type: BrickVariableType.list,
+         description: description,
+         prompt: prompt,
+         separator: separator,
+       );
 
   /// Converts [Map] to [BrickYaml]
   factory BrickVariableProperties.fromJson(Map<dynamic, dynamic> json) =>
@@ -343,6 +343,7 @@ class BrickEnvironment {
   /// Defaults to 'any'.
   final String masonex;
 }
+
 class BrickEnvironmentConverter
     implements JsonConverter<BrickEnvironment, dynamic> {
   const BrickEnvironmentConverter();

@@ -69,11 +69,7 @@ bricks:
 
     test('clear removes global .masonex/bricks.json', () async {
       final expectedBrickJsonFile = File(
-        path.join(
-          BricksJson.globalDir.path,
-          '.masonex',
-          'bricks.json',
-        ),
+        path.join(BricksJson.globalDir.path, '.masonex', 'bricks.json'),
       );
 
       if (!expectedBrickJsonFile.existsSync()) {

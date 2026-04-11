@@ -48,9 +48,10 @@ void main() {
       when(
         () => pubUpdater.getLatestVersion(any()),
       ).thenAnswer((_) async => packageVersion);
-      await MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(
-        ['cache', 'clear'],
-      );
+      await MasonexCommandRunner(
+        logger: logger,
+        pubUpdater: pubUpdater,
+      ).run(['cache', 'clear']);
     });
 
     setUp(() {
@@ -159,7 +160,7 @@ void main() {
               '  todos                A Todos Template\n'
               '  widget               Create a Simple Flutter Widget\n'
               '\n'
-              'Run "masonex help" to see global options.'
+              'Run "masonex help" to see global options.',
         ];
         final result = await commandRunner.run(['make', '-h']);
         expect(result, equals(ExitCode.success.code));
@@ -194,7 +195,7 @@ void main() {
               '    --name                      Your name <string>\n'
               '                                (defaults to "Dash")\n'
               '\n'
-              'Run "masonex help" to see global options.'
+              'Run "masonex help" to see global options.',
         ];
         final result = await commandRunner.run(['make', 'greeting', '--help']);
         expect(result, equals(ExitCode.success.code));
@@ -228,7 +229,7 @@ void main() {
               '\n'
               '    --name                      <string>\n'
               '\n'
-              'Run "masonex help" to see global options.'
+              'Run "masonex help" to see global options.',
         ];
         final result = await commandRunner.run(['make', 'legacy', '--help']);
         expect(result, equals(ExitCode.success.code));
@@ -267,7 +268,7 @@ void main() {
               '    --isDeveloper               If the current user is a developer <boolean>\n'
               '                                (defaults to false)\n'
               '\n'
-              'Run "masonex help" to see global options.'
+              'Run "masonex help" to see global options.',
         ];
         final result = await commandRunner.run(['make', 'bio', '--help']);
         expect(result, equals(ExitCode.success.code));
@@ -302,7 +303,7 @@ void main() {
               '    --flavors                   Supported flavors <array>\n'
               '                                [development, integration, staging, production]\n'
               '\n'
-              'Run "masonex help" to see global options.'
+              'Run "masonex help" to see global options.',
         ];
         final result = await commandRunner.run(['make', 'flavors', '--help']);
         expect(result, equals(ExitCode.success.code));
@@ -338,11 +339,13 @@ void main() {
               '                                (defaults to green)\n'
               '                                [red, green, blue]\n'
               '\n'
-              'Run "masonex help" to see global options.'
+              'Run "masonex help" to see global options.',
         ];
-        final result = await commandRunner.run(
-          ['make', 'favorite_color', '--help'],
-        );
+        final result = await commandRunner.run([
+          'make',
+          'favorite_color',
+          '--help',
+        ]);
         expect(result, equals(ExitCode.success.code));
         expect(printLogs, equals(expectedPrintLogs));
       }),
@@ -368,8 +371,9 @@ void main() {
 
     test('exits with code 64 when local masonex.yaml does not exist', () async {
       try {
-        File(path.join(Directory.current.path, 'masonex.yaml'))
-            .deleteSync(recursive: true);
+        File(
+          path.join(Directory.current.path, 'masonex.yaml'),
+        ).deleteSync(recursive: true);
       } catch (_) {}
       commandRunner = MasonexCommandRunner(
         logger: logger,
@@ -384,46 +388,47 @@ void main() {
       ).called(1);
     });
 
-    test('exits with code 70 when masonex version constraint cannot be resolved',
-        () async {
-      await commandRunner.run(['new', 'example']);
-      File(path.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync(
-        '''
+    test(
+      'exits with code 70 when masonex version constraint cannot be resolved',
+      () async {
+        await commandRunner.run(['new', 'example']);
+        File(
+          path.join(Directory.current.path, 'masonex.yaml'),
+        ).writeAsStringSync('''
   example:
     path:  ./example
-''',
-        mode: FileMode.append,
-      );
-      await commandRunner.run(['get']);
-      final brickYaml = File(path.join('example', 'brick.yaml'));
-      brickYaml.writeAsStringSync(
-        brickYaml.readAsStringSync().replaceFirst(
-              'masonex: ^${masonex.packageVersion}',
-              'masonex: ">=99.99.99 <100.0.0"',
-            ),
-      );
+''', mode: FileMode.append);
+        await commandRunner.run(['get']);
+        final brickYaml = File(path.join('example', 'brick.yaml'));
+        brickYaml.writeAsStringSync(
+          brickYaml.readAsStringSync().replaceFirst(
+            'masonex: ^${masonex.packageVersion}',
+            'masonex: ">=99.99.99 <100.0.0"',
+          ),
+        );
 
-      commandRunner = MasonexCommandRunner(
-        logger: logger,
-        pubUpdater: pubUpdater,
-      );
+        commandRunner = MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        );
 
-      final result = await commandRunner.run(['make', 'example']);
-      expect(result, equals(ExitCode.software.code));
-      verify(
-        () => logger.err(
-          '''The current masonex version is ${masonex.packageVersion}.\nBecause example requires masonex version >=99.99.99 <100.0.0, version solving failed.''',
-        ),
-      ).called(1);
-    });
+        final result = await commandRunner.run(['make', 'example']);
+        expect(result, equals(ExitCode.software.code));
+        verify(
+          () => logger.err(
+            '''The current masonex version is ${masonex.packageVersion}.\nBecause example requires masonex version >=99.99.99 <100.0.0, version solving failed.''',
+          ),
+        ).called(1);
+      },
+    );
 
     test('exits with code 64 when json decode fails', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'todos'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'todos'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
-      File(path.join(testDir.path, 'todos.json'))
-          .writeAsStringSync('''{"todos": [}''');
+      File(
+        path.join(testDir.path, 'todos.json'),
+      ).writeAsStringSync('''{"todos": [}''');
       final result = await commandRunner.run([
         'make',
         'todos',
@@ -432,20 +437,17 @@ void main() {
       ]);
       expect(result, equals(ExitCode.usage.code));
       verify(
-        () => logger.err(
-          '''
+        () => logger.err('''
 FormatException: Unexpected character (at character 12)
 {"todos": [}
            ^
-in todos.json''',
-        ),
+in todos.json'''),
       ).called(1);
     });
 
     test('exits with code 64 when config does not exist', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'todos'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'todos'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final result = await commandRunner.run([
         'make',
@@ -490,8 +492,9 @@ bricks:
     });
 
     test('exits with code 64 when bricks.json contains bad path', () async {
-      File(path.join(Directory.current.path, '.masonex', 'bricks.json'))
-          .writeAsStringSync('''{"greeting1":"bricks/greeting"}''');
+      File(
+        path.join(Directory.current.path, '.masonex', 'bricks.json'),
+      ).writeAsStringSync('''{"greeting1":"bricks/greeting"}''');
       commandRunner = MasonexCommandRunner(
         logger: logger,
         pubUpdater: pubUpdater,
@@ -541,17 +544,19 @@ bricks:
 
     test('exits with code 70 when exception occurs post generation', () async {
       when(() => logger.flush(any())).thenThrow(Exception('oops'));
-      final result = await commandRunner.run(
-        ['make', 'greeting', '--name', 'test-name'],
-      );
+      final result = await commandRunner.run([
+        'make',
+        'greeting',
+        '--name',
+        'test-name',
+      ]);
       expect(result, equals(ExitCode.software.code));
       verify(() => logger.err('Exception: oops')).called(1);
     });
 
     test('generates app_icon (from args)', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'app_icon'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'app_icon'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final result = await commandRunner.run([
         'make',
@@ -574,9 +579,8 @@ bricks:
       const url =
           'https://storage.googleapis.com/cms-storage-bucket/c823e53b3a1a7b0d36a9.png';
       when(() => logger.prompt(any())).thenReturn(url);
-      final testDir = Directory(
-        path.join(Directory.current.path, 'app_icon'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'app_icon'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final result = await commandRunner.run(['make', 'app_icon']);
       expect(result, equals(ExitCode.success.code));
@@ -606,9 +610,8 @@ bricks:
       when(
         () => logger.confirm(any(), defaultValue: any(named: 'defaultValue')),
       ).thenReturn(false);
-      final testDir = Directory(
-        path.join(Directory.current.path, 'bio'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'bio'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final result = await commandRunner.run(['make', 'bio']);
       expect(result, equals(ExitCode.success.code));
@@ -677,9 +680,7 @@ bricks:
         path.join(Directory.current.path, 'favorite_languages'),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      when(
-        () => logger.promptAny(any()),
-      ).thenReturn(['dart', 'rust', 'c++']);
+      when(() => logger.promptAny(any())).thenReturn(['dart', 'rust', 'c++']);
       final result = await commandRunner.run(['make', 'favorite_languages']);
       expect(result, equals(ExitCode.success.code));
 
@@ -721,16 +722,14 @@ bricks:
       expect(result, equals(ExitCode.usage.code));
 
       verify(
-        () => logger.err(
-          'Invalid color.\n"Enums must have at least one value.',
-        ),
+        () =>
+            logger.err('Invalid color.\n"Enums must have at least one value.'),
       ).called(1);
     });
 
     test('generates flavors', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'flavors'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'flavors'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       when(
         () => logger.chooseAny<String>(
@@ -787,9 +786,8 @@ bricks:
     });
 
     test('generates greeting', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'greeting'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'greeting'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final result = await commandRunner.run([
         'make',
@@ -906,9 +904,14 @@ bricks:
         path.join(Directory.current.path, 'plugin', 'empty'),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      final result = await commandRunner.run(
-        ['make', 'plugin', '--ios', 'false', '--android', 'false'],
-      );
+      final result = await commandRunner.run([
+        'make',
+        'plugin',
+        '--ios',
+        'false',
+        '--android',
+        'false',
+      ]);
       expect(result, equals(ExitCode.success.code));
 
       final actual = Directory(
@@ -925,9 +928,14 @@ bricks:
         path.join(Directory.current.path, 'plugin', 'android'),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      final result = await commandRunner.run(
-        ['make', 'plugin', '--ios', 'false', '--android', 'true'],
-      );
+      final result = await commandRunner.run([
+        'make',
+        'plugin',
+        '--ios',
+        'false',
+        '--android',
+        'true',
+      ]);
       expect(result, equals(ExitCode.success.code));
 
       final actual = Directory(
@@ -944,9 +952,14 @@ bricks:
         path.join(Directory.current.path, 'plugin', 'ios'),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      final result = await commandRunner.run(
-        ['make', 'plugin', '--ios', 'true', '--android', 'false'],
-      );
+      final result = await commandRunner.run([
+        'make',
+        'plugin',
+        '--ios',
+        'true',
+        '--android',
+        'false',
+      ]);
       expect(result, equals(ExitCode.success.code));
 
       final actual = Directory(
@@ -963,9 +976,14 @@ bricks:
         path.join(Directory.current.path, 'plugin', 'android_ios'),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      final result = await commandRunner.run(
-        ['make', 'plugin', '--ios', 'true', '--android', 'true'],
-      );
+      final result = await commandRunner.run([
+        'make',
+        'plugin',
+        '--ios',
+        'true',
+        '--android',
+        'true',
+      ]);
       expect(result, equals(ExitCode.success.code));
 
       final actual = Directory(
@@ -986,9 +1004,8 @@ bricks:
     });
 
     test('generates simple', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'simple'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'simple'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final result = await commandRunner.run(['make', 'simple']);
       expect(result, equals(ExitCode.success.code));
@@ -1003,12 +1020,10 @@ bricks:
     });
 
     test('generates todos', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'todos'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'todos'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
-      File(path.join(testDir.path, 'todos.json')).writeAsStringSync(
-        '''
+      File(path.join(testDir.path, 'todos.json')).writeAsStringSync('''
 {
   "todos": [
     { "todo": "Eat", "done": true },
@@ -1017,8 +1032,7 @@ bricks:
   ],
   "developers": [{ "name": "Alex" }, { "name": "Sam" }, { "name": "Jen" }]
 }
-''',
-      );
+''');
       final result = await commandRunner.run([
         'make',
         'todos',
@@ -1037,9 +1051,8 @@ bricks:
     });
 
     test('generates widget', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'widget'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'widget'))
+        ..createSync(recursive: true);
       Directory.current = testDir.path;
       final result = await commandRunner.run([
         'make',
@@ -1059,16 +1072,14 @@ bricks:
     });
 
     test('generates greeting with custom output directory', () async {
-      final result = await commandRunner.run(
-        [
-          'make',
-          'greeting',
-          '--name',
-          'test-name',
-          '-o',
-          path.join('output_dir', 'dir'),
-        ],
-      );
+      final result = await commandRunner.run([
+        'make',
+        'greeting',
+        '--name',
+        'test-name',
+        '-o',
+        path.join('output_dir', 'dir'),
+      ]);
       expect(result, equals(ExitCode.success.code));
 
       final actual = Directory(
@@ -1093,9 +1104,7 @@ bricks:
       ]);
       expect(result, equals(ExitCode.success.code));
 
-      final fileA = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileA = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileA.readAsStringSync(), contains('Hi test-name!'));
       verify(
         () => logger.delayed(
@@ -1113,9 +1122,7 @@ bricks:
       ]);
 
       expect(result, equals(ExitCode.success.code));
-      final fileB = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileB = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileB.readAsStringSync(), contains('Hi test-name!'));
       verify(
         () => logger.delayed(
@@ -1137,9 +1144,7 @@ bricks:
       ]);
       expect(result, equals(ExitCode.success.code));
 
-      final fileA = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileA = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileA.readAsStringSync(), contains('Hi test-name!'));
       verify(
         () => logger.delayed(
@@ -1157,9 +1162,7 @@ bricks:
       ]);
 
       expect(result, equals(ExitCode.success.code));
-      final fileB = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileB = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileB.readAsStringSync(), contains('Hi test-name2!'));
       verify(
         () => logger.delayed(
@@ -1181,9 +1184,7 @@ bricks:
       ]);
       expect(result, equals(ExitCode.success.code));
 
-      final fileA = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileA = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileA.readAsStringSync(), contains('Hi test-name!'));
       verify(
         () => logger.delayed(
@@ -1201,9 +1202,7 @@ bricks:
       ]);
 
       expect(result, equals(ExitCode.success.code));
-      final fileB = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileB = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileB.readAsStringSync(), contains('Hi test-name!Hi test-name2!'));
       verify(
         () => logger.delayed(
@@ -1217,23 +1216,23 @@ bricks:
         path.join(Directory.current.path, 'greeting-set-exit-if-changed'),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      var result = await commandRunner.run(
-        ['make', 'greeting', '--name', 'test-name', '--set-exit-if-changed'],
-      );
+      var result = await commandRunner.run([
+        'make',
+        'greeting',
+        '--name',
+        'test-name',
+        '--set-exit-if-changed',
+      ]);
       expect(result, equals(ExitCode.software.code));
 
-      final fileA = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileA = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileA.readAsStringSync(), contains('Hi test-name!'));
       verify(
         () => logger.delayed(
           '''  ${green.wrap('created')} ${darkGray.wrap('GREETINGS.md')}''',
         ),
       ).called(1);
-      verify(
-        () => logger.err(any(that: contains('1 file changed'))),
-      ).called(1);
+      verify(() => logger.err(any(that: contains('1 file changed')))).called(1);
 
       result = await commandRunner.run([
         'make',
@@ -1246,9 +1245,7 @@ bricks:
       ]);
 
       expect(result, equals(ExitCode.success.code));
-      final fileB = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileB = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileB.readAsStringSync(), contains('Hi test-name!'));
       verify(
         () => logger.delayed(
@@ -1265,23 +1262,23 @@ bricks:
         path.join(Directory.current.path, 'greeting-set-exit-if-changed'),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      var result = await commandRunner.run(
-        ['make', 'greeting', '--name', 'test-name', '--set-exit-if-changed'],
-      );
+      var result = await commandRunner.run([
+        'make',
+        'greeting',
+        '--name',
+        'test-name',
+        '--set-exit-if-changed',
+      ]);
       expect(result, equals(ExitCode.software.code));
 
-      final fileA = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileA = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileA.readAsStringSync(), contains('Hi test-name!'));
       verify(
         () => logger.delayed(
           '''  ${green.wrap('created')} ${darkGray.wrap('GREETINGS.md')}''',
         ),
       ).called(1);
-      verify(
-        () => logger.err(any(that: contains('1 file changed'))),
-      ).called(1);
+      verify(() => logger.err(any(that: contains('1 file changed')))).called(1);
 
       result = await commandRunner.run([
         'make',
@@ -1294,18 +1291,14 @@ bricks:
       ]);
 
       expect(result, equals(ExitCode.software.code));
-      final fileB = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileB = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileB.readAsStringSync(), contains('Hi test-name1!'));
       verify(
         () => logger.delayed(
           '''  ${green.wrap('created')} ${darkGray.wrap('GREETINGS.md')}''',
         ),
       ).called(1);
-      verify(
-        () => logger.err(any(that: contains('1 file changed'))),
-      ).called(1);
+      verify(() => logger.err(any(that: contains('1 file changed')))).called(1);
     });
 
     test('generates greeting --set-exit-if-changed (skipped)', () async {
@@ -1313,23 +1306,23 @@ bricks:
         path.join(Directory.current.path, 'greeting-set-exit-if-changed'),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      var result = await commandRunner.run(
-        ['make', 'greeting', '--name', 'test-name', '--set-exit-if-changed'],
-      );
+      var result = await commandRunner.run([
+        'make',
+        'greeting',
+        '--name',
+        'test-name',
+        '--set-exit-if-changed',
+      ]);
       expect(result, equals(ExitCode.software.code));
 
-      final fileA = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileA = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileA.readAsStringSync(), contains('Hi test-name!'));
       verify(
         () => logger.delayed(
           '''  ${green.wrap('created')} ${darkGray.wrap('GREETINGS.md')}''',
         ),
       ).called(1);
-      verify(
-        () => logger.err(any(that: contains('1 file changed'))),
-      ).called(1);
+      verify(() => logger.err(any(that: contains('1 file changed')))).called(1);
 
       result = await commandRunner.run([
         'make',
@@ -1342,9 +1335,7 @@ bricks:
       ]);
 
       expect(result, equals(ExitCode.success.code));
-      final fileB = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileB = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileB.readAsStringSync(), contains('Hi test-name!'));
       verify(
         () => logger.delayed(
@@ -1361,23 +1352,23 @@ bricks:
         path.join(Directory.current.path, 'greeting-set-exit-if-changed'),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      var result = await commandRunner.run(
-        ['make', 'greeting', '--name', 'test-name', '--set-exit-if-changed'],
-      );
+      var result = await commandRunner.run([
+        'make',
+        'greeting',
+        '--name',
+        'test-name',
+        '--set-exit-if-changed',
+      ]);
       expect(result, equals(ExitCode.software.code));
 
-      final fileA = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileA = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileA.readAsStringSync(), contains('Hi test-name!'));
       verify(
         () => logger.delayed(
           '''  ${green.wrap('created')} ${darkGray.wrap('GREETINGS.md')}''',
         ),
       ).called(1);
-      verify(
-        () => logger.err(any(that: contains('1 file changed'))),
-      ).called(1);
+      verify(() => logger.err(any(that: contains('1 file changed')))).called(1);
 
       result = await commandRunner.run([
         'make',
@@ -1390,18 +1381,14 @@ bricks:
       ]);
 
       expect(result, equals(ExitCode.software.code));
-      final fileB = File(
-        path.join(Directory.current.path, 'GREETINGS.md'),
-      );
+      final fileB = File(path.join(Directory.current.path, 'GREETINGS.md'));
       expect(fileB.readAsStringSync(), contains('Hi test-name!Hi test-name1!'));
       verify(
         () => logger.delayed(
           '''  ${lightBlue.wrap('modified')} ${darkGray.wrap('GREETINGS.md')}''',
         ),
       ).called(1);
-      verify(
-        () => logger.err(any(that: contains('1 file changed'))),
-      ).called(1);
+      verify(() => logger.err(any(that: contains('1 file changed')))).called(1);
     });
 
     test('generates plugin --set-exit-if-changed', () async {
@@ -1413,17 +1400,15 @@ bricks:
         ),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      final result = await commandRunner.run(
-        [
-          'make',
-          'plugin',
-          '--ios',
-          'false',
-          '--android',
-          'true',
-          '--set-exit-if-changed',
-        ],
-      );
+      final result = await commandRunner.run([
+        'make',
+        'plugin',
+        '--ios',
+        'false',
+        '--android',
+        'true',
+        '--set-exit-if-changed',
+      ]);
       expect(result, equals(ExitCode.software.code));
       verify(
         () => logger.err(any(that: contains('5 files changed'))),
@@ -1435,9 +1420,13 @@ bricks:
         path.join(Directory.current.path, 'hello_world_quiet'),
       )..createSync(recursive: true);
       Directory.current = testDir.path;
-      final result = await commandRunner.run(
-        ['make', 'hello_world', '--name', 'dash', '--quiet'],
-      );
+      final result = await commandRunner.run([
+        'make',
+        'hello_world',
+        '--name',
+        'dash',
+        '--quiet',
+      ]);
       expect(result, equals(ExitCode.success.code));
 
       final actual = Directory(
@@ -1499,9 +1488,12 @@ vars:
         ..createSync(recursive: true)
         ..writeAsStringSync('bricks:');
 
-      await commandRunner.run(
-        ['add', watchBrick, '--path', watchBrickDirectory.path],
-      );
+      await commandRunner.run([
+        'add',
+        watchBrick,
+        '--path',
+        watchBrickDirectory.path,
+      ]);
 
       final argResults = _MockArgResults();
       when(() => argResults.rest).thenReturn([watchBrick]);
@@ -1518,9 +1510,7 @@ vars:
 
       addTearDown(sigintController.close);
 
-      when(
-        () => sigint.watch(),
-      ).thenAnswer((_) => sigintController.stream);
+      when(() => sigint.watch()).thenAnswer((_) => sigintController.stream);
 
       final helloOutput = File(
         path.join(outputDirectory.path, path.basename(helloTemplate.path)),

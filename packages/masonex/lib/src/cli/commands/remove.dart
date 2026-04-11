@@ -9,11 +9,7 @@ import 'package:masonex/src/cli/command.dart';
 class RemoveCommand extends MasonexCommand {
   /// {@macro remove_command}
   RemoveCommand({super.logger}) {
-    argParser.addFlag(
-      'global',
-      abbr: 'g',
-      help: 'Removes the brick globally.',
-    );
+    argParser.addFlag('global', abbr: 'g', help: 'Removes the brick globally.');
   }
 
   @override
@@ -37,18 +33,25 @@ class RemoveCommand extends MasonexCommand {
       usageException('no brick named $brickName was found');
     }
 
-    final masonexLockJsonFile =
-        isGlobal ? globalMasonexLockJsonFile : localMasonexLockJsonFile;
-    final masonexLockJson = isGlobal ? globalMasonexLockJson : localMasonexLockJson;
+    final masonexLockJsonFile = isGlobal
+        ? globalMasonexLockJsonFile
+        : localMasonexLockJsonFile;
+    final masonexLockJson = isGlobal
+        ? globalMasonexLockJson
+        : localMasonexLockJson;
 
-    final masonexYamlFile = isGlobal ? globalMasonexYamlFile : localMasonexYamlFile;
+    final masonexYamlFile = isGlobal
+        ? globalMasonexYamlFile
+        : localMasonexYamlFile;
     final progress = logger.progress('Removing $brickName');
     try {
       bricksJson.remove(Brick(name: brickName, location: brickLocation));
       final bricks = Map.of(masonexYaml.bricks)
         ..removeWhere((key, value) => key == brickName);
 
-      masonexYamlFile.writeAsStringSync(MasonexYamlEncoder.encode(MasonexYaml(bricks).toJson()));
+      masonexYamlFile.writeAsStringSync(
+        MasonexYamlEncoder.encode(MasonexYaml(bricks).toJson()),
+      );
 
       await bricksJson.flush();
 

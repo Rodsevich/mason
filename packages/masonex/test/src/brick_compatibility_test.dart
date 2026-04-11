@@ -13,10 +13,7 @@ void main() {
 
   group('isBrickCompatibleWithMasonex', () {
     test('returns true when constraint is any', () {
-      expect(
-        isBrickCompatibleWithMasonex(getBrickYaml('any')),
-        isTrue,
-      );
+      expect(isBrickCompatibleWithMasonex(getBrickYaml('any')), isTrue);
     });
 
     test('returns true when constraint is ^{currentVersion}', () {
@@ -41,17 +38,11 @@ void main() {
     });
 
     test('returns false when constraint is 0.0.0', () {
-      expect(
-        isBrickCompatibleWithMasonex(getBrickYaml('0.0.0')),
-        isFalse,
-      );
+      expect(isBrickCompatibleWithMasonex(getBrickYaml('0.0.0')), isFalse);
     });
 
     test('returns false when constraint is ^0.0.0', () {
-      expect(
-        isBrickCompatibleWithMasonex(getBrickYaml('^0.0.0')),
-        isFalse,
-      );
+      expect(isBrickCompatibleWithMasonex(getBrickYaml('^0.0.0')), isFalse);
     });
 
     test('returns false when constraint is >=0.0.0 <0.0.1', () {

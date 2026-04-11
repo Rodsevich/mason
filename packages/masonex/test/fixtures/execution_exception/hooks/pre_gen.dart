@@ -1,1 +1,5 @@
-import 'package:masonex/masonex.dart';void run(HookContext context){throw Exception();}
+import 'package:masonex/masonex.dart';
+
+void run(HookContext context) {
+  throw Exception();
+}

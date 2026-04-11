@@ -202,8 +202,7 @@ void main() {
       verify(() => logger.info(darkGray.wrap('-' * 80))).called(1);
     });
 
-    test(
-        'separator length is terminalColumns '
+    test('separator length is terminalColumns '
         'when terminalColumns < 80', () async {
       final progress = _MockProgress();
       when(() => progress.complete(any())).thenAnswer((_) {});

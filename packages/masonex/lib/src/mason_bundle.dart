@@ -60,9 +60,9 @@ class MasonexBundle {
   /// Converts a universal bundle into a [MasonexBundle] instance.
   static Future<MasonexBundle> fromUniversalBundle(List<int> bytes) async {
     final bundleJson = await Isolate.run(
-      () => json.decode(
-        utf8.decode(BZip2Decoder().decodeBytes(bytes)),
-      ) as Map<String, dynamic>,
+      () =>
+          json.decode(utf8.decode(BZip2Decoder().decodeBytes(bytes)))
+              as Map<String, dynamic>,
     );
     return MasonexBundle.fromJson(bundleJson);
   }

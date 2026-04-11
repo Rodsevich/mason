@@ -21,8 +21,8 @@ class PublishCommand extends MasonexCommand {
     super.logger,
     MasonApiBuilder? masonApiBuilder,
     int? maxBundleSize,
-  })  : _masonApiBuilder = masonApiBuilder ?? MasonApi.new,
-        _maxBundleSize = maxBundleSize ?? _maxBundleSizeInBytes {
+  }) : _masonApiBuilder = masonApiBuilder ?? MasonApi.new,
+       _maxBundleSize = maxBundleSize ?? _maxBundleSizeInBytes {
     argParser.addOptions();
   }
 
