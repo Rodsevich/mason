@@ -10,10 +10,8 @@ import 'package:pub_updater/pub_updater.dart';
 /// {@endtemplate}
 class UpdateCommand extends MasonexCommand {
   /// {@macro update_command}
-  UpdateCommand({
-    required PubUpdater pubUpdater,
-    super.logger,
-  }) : _pubUpdater = pubUpdater;
+  UpdateCommand({required PubUpdater pubUpdater, super.logger})
+    : _pubUpdater = pubUpdater;
 
   final PubUpdater _pubUpdater;
 

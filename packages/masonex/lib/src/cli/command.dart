@@ -13,9 +13,9 @@ import 'package:path/path.dart' as p;
 class MasonexYamlNotFoundException extends MasonexException {
   /// {@macro masonex_yaml_not_found_exception}
   const MasonexYamlNotFoundException()
-      : super(
-          'Cannot find ${MasonexYaml.file}.\nDid you forget to run masonex init?',
-        );
+    : super(
+        'Cannot find ${MasonexYaml.file}.\nDid you forget to run masonex init?',
+      );
 }
 
 /// {@template masonex_yaml_parse_exception}
@@ -56,8 +56,9 @@ abstract class MasonexCommand extends Command<int> {
 
   late final BricksJson _globalBricksJson = BricksJson.global();
 
-  late final BricksJson? _localBricksJson =
-      __entryPoint != null ? BricksJson(directory: __entryPoint!) : null;
+  late final BricksJson? _localBricksJson = __entryPoint != null
+      ? BricksJson(directory: __entryPoint!)
+      : null;
 
   Directory? get __entryPoint {
     try {
@@ -132,7 +133,9 @@ abstract class MasonexCommand extends Command<int> {
   /// Gets the global `masonex.yaml` file.
   File get globalMasonexYamlFile {
     if (_globalMasonexYamlFile != null) return _globalMasonexYamlFile!;
-    return _globalMasonexYamlFile = _getMasonexYamlFile(BricksJson.globalDir.path);
+    return _globalMasonexYamlFile = _getMasonexYamlFile(
+      BricksJson.globalDir.path,
+    );
   }
 
   MasonexYaml? _globalMasonexYaml;
@@ -194,7 +197,9 @@ abstract class MasonexCommand extends Command<int> {
   /// Gets the global [MasonexLockJson].
   MasonexLockJson get globalMasonexLockJson {
     if (_globalMasonexLockJson != null) return _globalMasonexLockJson!;
-    return _globalMasonexLockJson = _getMasonexLockJson(globalMasonexLockJsonFile);
+    return _globalMasonexLockJson = _getMasonexLockJson(
+      globalMasonexLockJsonFile,
+    );
   }
 
   MasonexLockJson? _localMasonexLockJson;
@@ -202,7 +207,9 @@ abstract class MasonexCommand extends Command<int> {
   /// Gets the nearest [MasonexLockJson].
   MasonexLockJson get localMasonexLockJson {
     if (_localMasonexLockJson != null) return _localMasonexLockJson!;
-    return _localMasonexLockJson = _getMasonexLockJson(localMasonexLockJsonFile);
+    return _localMasonexLockJson = _getMasonexLockJson(
+      localMasonexLockJsonFile,
+    );
   }
 
   MasonexLockJson _getMasonexLockJson(File file) {

@@ -56,8 +56,7 @@ void main() {
       verify(() => logger.info('└── (empty)')).called(1);
     });
 
-    test(
-        'exits successfully and lists local bricks '
+    test('exits successfully and lists local bricks '
         'when local and global bricks are available', () async {
       final greetingPath = canonicalize(
         p.join('..', '..', '..', '..', '..', 'bricks', 'greeting'),
@@ -68,8 +67,7 @@ void main() {
       final todosPath = canonicalize(
         p.join('..', '..', '..', '..', '..', 'bricks', 'todos'),
       );
-      File(p.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync(
-        '''
+      File(p.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync('''
 bricks:
   documentation:
     path: ../../../../../bricks/documentation
@@ -81,54 +79,62 @@ bricks:
       url: https://github.com/felangel/mason
       path: bricks/widget
       ref: 997bc878c93534fad17d965be7cafe948a1dbb53
-''',
-      );
+''');
       await expectLater(
-        MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(['get']),
+        MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        ).run(['get']),
         completion(ExitCode.success.code),
       );
       await expectLater(
-        MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(
-          ['add', '-g', 'greeting', '--path', greetingPath],
-        ),
+        MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        ).run(['add', '-g', 'greeting', '--path', greetingPath]),
         completion(ExitCode.success.code),
       );
       await expectLater(
-        MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(
-          ['list'],
-        ),
+        MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        ).run(['list']),
         completion(ExitCode.success.code),
       );
 
       verifyInOrder([
         () => logger.info(
-              '''├── ${styleBold.wrap('documentation')} 0.1.0+1 -> $documentationPath''',
-            ),
+          '''├── ${styleBold.wrap('documentation')} 0.1.0+1 -> $documentationPath''',
+        ),
         () => logger.info(
-              '''├── ${styleBold.wrap('greeting')} 0.1.0+2 -> registry.brickhub.dev''',
-            ),
+          '''├── ${styleBold.wrap('greeting')} 0.1.0+2 -> registry.brickhub.dev''',
+        ),
+        () =>
+            logger.info('├── ${styleBold.wrap('todos')} 0.1.0+1 -> $todosPath'),
         () => logger.info(
-              '├── ${styleBold.wrap('todos')} 0.1.0+1 -> $todosPath',
-            ),
-        () => logger.info(
-              '''└── ${styleBold.wrap('widget')} 0.1.0+1 -> https://github.com/felangel/mason#997bc878c93534fad17d965be7cafe948a1dbb53''',
-            ),
+          '''└── ${styleBold.wrap('widget')} 0.1.0+1 -> https://github.com/felangel/mason#997bc878c93534fad17d965be7cafe948a1dbb53''',
+        ),
       ]);
     });
 
-    test(
-        'exits successfully and lists local bricks '
+    test('exits successfully and lists local bricks '
         'sorted alphabetically', () async {
-      final greetingPath =
-          p.join('..', '..', '..', '..', '..', 'bricks', 'greeting');
+      final greetingPath = p.join(
+        '..',
+        '..',
+        '..',
+        '..',
+        '..',
+        'bricks',
+        'greeting',
+      );
       final documentationPath = canonicalize(
         p.join('..', '..', '..', '..', '..', 'bricks', 'documentation'),
       );
       final todosPath = canonicalize(
         p.join('..', '..', '..', '..', '..', 'bricks', 'todos'),
       );
-      File(p.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync(
-        '''
+      File(p.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync('''
 bricks:
   todos:
     path: ../../../../../bricks/todos
@@ -139,46 +145,47 @@ bricks:
       url: https://github.com/felangel/mason
       path: bricks/hello_world
       ref: 997bc878c93534fad17d965be7cafe948a1dbb53
-''',
-      );
+''');
       await expectLater(
-        MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(['get']),
+        MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        ).run(['get']),
         completion(ExitCode.success.code),
       );
       await expectLater(
-        MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(
-          ['add', '-g', 'greeting', '--path', greetingPath],
-        ),
+        MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        ).run(['add', '-g', 'greeting', '--path', greetingPath]),
         completion(ExitCode.success.code),
       );
       await expectLater(
-        MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(
-          ['list'],
-        ),
+        MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        ).run(['list']),
         completion(ExitCode.success.code),
       );
 
       verifyInOrder([
         () => logger.info(
-              '''├── ${styleBold.wrap('documentation')} 0.1.0+1 -> $documentationPath''',
-            ),
+          '''├── ${styleBold.wrap('documentation')} 0.1.0+1 -> $documentationPath''',
+        ),
         () => logger.info(
-              '''├── ${styleBold.wrap('hello_world')} 0.1.0+1 -> https://github.com/felangel/mason#997bc878c93534fad17d965be7cafe948a1dbb53''',
-            ),
-        () => logger.info(
-              '└── ${styleBold.wrap('todos')} 0.1.0+1 -> $todosPath',
-            ),
+          '''├── ${styleBold.wrap('hello_world')} 0.1.0+1 -> https://github.com/felangel/mason#997bc878c93534fad17d965be7cafe948a1dbb53''',
+        ),
+        () =>
+            logger.info('└── ${styleBold.wrap('todos')} 0.1.0+1 -> $todosPath'),
       ]);
     });
 
-    test(
-        'exits successfully and lists global bricks '
+    test('exits successfully and lists global bricks '
         'when local and global bricks are available', () async {
       final greetingPath = canonicalize(
         p.join('..', '..', '..', '..', '..', 'bricks', 'greeting'),
       );
-      File(p.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync(
-        '''
+      File(p.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync('''
 bricks:
   documentation:
     path: ../../../../../bricks/documentation
@@ -188,22 +195,26 @@ bricks:
     git:
       url: https://github.com/felangel/mason
       path: bricks/widget
-''',
-      );
+''');
       await expectLater(
-        MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(['get']),
+        MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        ).run(['get']),
         completion(ExitCode.success.code),
       );
       await expectLater(
-        MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(
-          ['add', '-g', 'greeting', '--path', greetingPath],
-        ),
+        MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        ).run(['add', '-g', 'greeting', '--path', greetingPath]),
         completion(ExitCode.success.code),
       );
       await expectLater(
-        MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(
-          ['list', '-g'],
-        ),
+        MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        ).run(['list', '-g']),
         completion(ExitCode.success.code),
       );
 

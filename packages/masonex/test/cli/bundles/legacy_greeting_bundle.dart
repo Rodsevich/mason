@@ -5,10 +5,10 @@ import 'package:masonex/masonex.dart';
 
 final legacyGreetingBundle = MasonexBundle.fromJson(<String, dynamic>{
   "files": [
-    {"path": "GREETINGS.md", "data": "SGkge3tuYW1lfX0h", "type": "text"}
+    {"path": "GREETINGS.md", "data": "SGkge3tuYW1lfX0h", "type": "text"},
   ],
   "name": "greeting",
   "description": "A Simple Greeting Template",
   "version": "1.0.0",
-  "vars": ['name']
+  "vars": ['name'],
 });

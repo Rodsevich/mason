@@ -77,9 +77,7 @@ void main() {
       expect(result, equals(ExitCode.software.code));
 
       verify(() => logger.progress('Logging into brickhub.dev')).called(1);
-      verify(
-        () => masonApi.login(email: email, password: password),
-      ).called(1);
+      verify(() => masonApi.login(email: email, password: password)).called(1);
       verify(() => logger.err(message)).called(1);
       verify(() => masonApi.close()).called(1);
     });
@@ -111,9 +109,7 @@ void main() {
       expect(result, equals(ExitCode.success.code));
 
       verify(() => logger.progress('Logging into brickhub.dev')).called(1);
-      verify(
-        () => masonApi.login(email: email, password: password),
-      ).called(1);
+      verify(() => masonApi.login(email: email, password: password)).called(1);
       verify(
         () => logger.success('You are now logged in as <${user.email}>'),
       ).called(1);
