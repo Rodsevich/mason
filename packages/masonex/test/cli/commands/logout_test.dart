@@ -37,9 +37,7 @@ void main() {
       final result = await logoutCommand.run();
       expect(result, equals(ExitCode.success.code));
 
-      verify(
-        () => logger.info('You are already logged out.'),
-      ).called(1);
+      verify(() => logger.info('You are already logged out.')).called(1);
       verify(() => masonApi.close()).called(1);
     });
 

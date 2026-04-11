@@ -15,10 +15,10 @@ class Brick {
 
   /// Brick from a version constraint.
   Brick.version({required String name, required String version})
-      : this(
-          name: name,
-          location: BrickLocation(version: version),
-        );
+    : this(
+        name: name,
+        location: BrickLocation(version: version),
+      );
 
   /// The name of the brick.
   final String? name;

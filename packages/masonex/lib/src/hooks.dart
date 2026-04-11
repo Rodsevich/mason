@@ -6,11 +6,9 @@ part of 'generator.dart';
 class HookDependencyInstallFailure extends MasonexException {
   /// {@macro hook_dependency_install_failure}
   HookDependencyInstallFailure(String path, String error)
-      : super(
-          '''
+    : super('''
 Unable to install dependencies for hook: $path.
-Error: $error''',
-        );
+Error: $error''');
 }
 
 /// {@template hook_missing_run_exception}
@@ -19,16 +17,14 @@ Error: $error''',
 class HookMissingRunException extends MasonexException {
   /// {@macro hook_missing_run_exception}
   HookMissingRunException(String path)
-      : super(
-          '''
+    : super('''
 Unable to execute hook: $path.
 Error: Method 'run' not found.
 Ensure the hook contains a 'run' method:
 
   import 'package:masonex/masonex.dart';
 
-  void run(HookContext context) {...}''',
-        );
+  void run(HookContext context) {...}''');
 }
 
 /// {@template hook_compile_exception}
@@ -37,11 +33,9 @@ Ensure the hook contains a 'run' method:
 class HookCompileException extends MasonexException {
   /// {@macro hook_compile_exception}
   HookCompileException(String path, String error)
-      : super(
-          '''
+    : super('''
 Unable to compile hook: $path.
-Error: $error''',
-        );
+Error: $error''');
 }
 
 /// {@template hook_execution_exception}
@@ -50,11 +44,9 @@ Error: $error''',
 class HookExecutionException extends MasonexException {
   /// {@macro hook_execution_exception}
   HookExecutionException(String path, String error)
-      : super(
-          '''
+    : super('''
 An exception occurred while executing hook: $path.
-Error: $error''',
-        );
+Error: $error''');
 }
 
 /// Supported types of [GeneratorHooks].
@@ -116,9 +108,9 @@ class GeneratorHooks {
       );
       final dartFiles = hooksDirectory.existsSync()
           ? hooksDirectory
-              .listSync(recursive: true)
-              .where(_isHookFile)
-              .cast<File>()
+                .listSync(recursive: true)
+                .where(_isHookFile)
+                .cast<File>()
           : const <File>[];
 
       for (final file in dartFiles) {
@@ -219,10 +211,7 @@ class GeneratorHooks {
       runInShell: true,
     );
     if (result.exitCode != ExitCode.success.code) {
-      throw HookDependencyInstallFailure(
-        workingDirectory,
-        '${result.stderr}',
-      );
+      throw HookDependencyInstallFailure(workingDirectory, '${result.stderr}');
     }
   }
 
@@ -254,11 +243,11 @@ class GeneratorHooks {
 
     final mode = _isAotCompiled ? 'aot-snapshot' : 'kernel';
     final progress = logger?.progress('Compiling ${p.basename(hook.path)}');
-    final result = await Process.run(
-      'dart',
-      ['compile', mode, uri.toFilePath()],
-      runInShell: true,
-    );
+    final result = await Process.run('dart', [
+      'compile',
+      mode,
+      uri.toFilePath(),
+    ], runInShell: true);
 
     File(uri.toFilePath()).delete().ignore();
 
@@ -292,9 +281,7 @@ class GeneratorHooks {
       subscriptions.add(
         messagePort.listen((dynamic message) {
           if (message is String) {
-            onVarsChanged(
-              json.decode(message) as Map<String, dynamic>,
-            );
+            onVarsChanged(json.decode(message) as Map<String, dynamic>);
           }
         }),
       );
@@ -331,8 +318,9 @@ class GeneratorHooks {
       Never throwHookExecutionException(IsolateSpawnException error) {
         Directory.current = cwd;
         final msg = error.message;
-        final content =
-            msg.contains('Error: ') ? msg.split('Error: ').last : msg;
+        final content = msg.contains('Error: ')
+            ? msg.split('Error: ').last
+            : msg;
         throw HookExecutionException(hook.path, content.trim());
       }
 
@@ -384,8 +372,9 @@ class GeneratorHooks {
 
     if (hookError != null) {
       final dynamic error = hookError;
-      final content =
-          error is List && error.isNotEmpty ? '${error.first}' : '$error';
+      final content = error is List && error.isNotEmpty
+          ? '${error.first}'
+          : '$error';
       throw HookExecutionException(hook.path, content);
     }
   }
@@ -460,7 +449,8 @@ Future<Uri?> _getHookUri(HookFile hook, String checksum) async {
   return Uri.file(intermediate.path);
 }
 
-String _generatedHookCode(String hookPath) => '''
+String _generatedHookCode(String hookPath) =>
+    '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'dart:collection';
 import 'dart:convert';

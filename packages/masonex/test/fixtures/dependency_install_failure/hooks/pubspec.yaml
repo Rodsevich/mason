@@ -7,6 +7,10 @@ dependencies:
   foo:
     path: ./foo
   masonex:
-    git:
-      url: https://github.com/felangel/mason
-      path: packages/masonex
+    path: ../../../../../masonex
+
+dependency_overrides:
+  mustachex:
+    path: ../../../../../mustachex
+  mason_logger:
+    path: ../../../../../mason_logger

@@ -15,19 +15,25 @@ void main() {
       const name = 'dash';
       const input = 'hello {{name}}';
       const expected = 'hello $name';
-      expect(await input.render(<String, dynamic>{'name': name}), equals(expected));
-    });
-
-    test('outputs correct string when there is are multiple variables', () async {
-      const name = 'dash';
-      const age = 42;
-      const input = 'hello {{name}}! Age is {{age}}';
-      const expected = 'hello $name! Age is $age';
       expect(
-        await input.render(<String, dynamic>{'name': name, 'age': age}),
+        await input.render(<String, dynamic>{'name': name}),
         equals(expected),
       );
     });
+
+    test(
+      'outputs correct string when there is are multiple variables',
+      () async {
+        const name = 'dash';
+        const age = 42;
+        const input = 'hello {{name}}! Age is {{age}}';
+        const expected = 'hello $name! Age is $age';
+        expect(
+          await input.render(<String, dynamic>{'name': name, 'age': age}),
+          equals(expected),
+        );
+      },
+    );
 
     test('outputs correct string when variable is missing', () async {
       const input = 'hello {{name}}!';
@@ -367,7 +373,10 @@ void main() {
             '''Greeting: {{{greeting.upperCase()}}} Name: {{{name.upperCase()}}}!''';
         const expected = 'Greeting: "HELLO WORLD" Name: "DASH"!';
         expect(
-          await input.render(<String, dynamic>{'greeting': greeting, 'name': name}),
+          await input.render(<String, dynamic>{
+            'greeting': greeting,
+            'name': name,
+          }),
           equals(expected),
         );
       });
@@ -378,22 +387,18 @@ void main() {
             'Greeting: {{greeting.upperCase()}}{{#is_suffixed}}!{{/is_suffixed}}';
         var expected = 'Greeting: HELLO WORLD!';
         expect(
-          await input.render(
-            <String, dynamic>{
-              'greeting': greeting,
-              'is_suffixed': true,
-            },
-          ),
+          await input.render(<String, dynamic>{
+            'greeting': greeting,
+            'is_suffixed': true,
+          }),
           equals(expected),
         );
         expected = 'Greeting: HELLO WORLD';
         expect(
-          await input.render(
-            <String, dynamic>{
-              'greeting': greeting,
-              'is_suffixed': false,
-            },
-          ),
+          await input.render(<String, dynamic>{
+            'greeting': greeting,
+            'is_suffixed': false,
+          }),
           equals(expected),
         );
       });
@@ -404,22 +409,18 @@ void main() {
             '{{#is_prefixed}}Greeting: {{/is_prefixed}}{{greeting.upperCase()}}!';
         var expected = 'Greeting: HELLO WORLD!';
         expect(
-          await input.render(
-            <String, dynamic>{
-              'greeting': greeting,
-              'is_prefixed': true,
-            },
-          ),
+          await input.render(<String, dynamic>{
+            'greeting': greeting,
+            'is_prefixed': true,
+          }),
           equals(expected),
         );
         expected = 'HELLO WORLD!';
         expect(
-          await input.render(
-            <String, dynamic>{
-              'greeting': greeting,
-              'is_prefixed': false,
-            },
-          ),
+          await input.render(<String, dynamic>{
+            'greeting': greeting,
+            'is_prefixed': false,
+          }),
           equals(expected),
         );
       });
@@ -457,9 +458,7 @@ void main() {
         const expected = 'HELLO WORLD';
         expect(
           await input.render(<String, dynamic>{
-            'greeting': {
-              'name': 'hello world',
-            },
+            'greeting': {'name': 'hello world'},
           }),
           equals(expected),
         );
@@ -469,9 +468,7 @@ void main() {
         const input = '{{ greeting.upperCase() }}';
         const expected = 'HELLO WORLD';
         expect(
-          await input.render(<String, dynamic>{
-            'greeting': 'hello world',
-          }),
+          await input.render(<String, dynamic>{'greeting': 'hello world'}),
           equals(expected),
         );
       });
@@ -480,9 +477,7 @@ void main() {
         const input = '{{ greeting.dotCase().upperCase() }}';
         const expected = 'HELLO.WORLD';
         expect(
-          await input.render(<String, dynamic>{
-            'greeting': 'hello world',
-          }),
+          await input.render(<String, dynamic>{'greeting': 'hello world'}),
           equals(expected),
         );
       });
@@ -491,9 +486,7 @@ void main() {
         const input = '{{{greeting.dotCase()}}';
         const expected = '{hello.world';
         expect(
-          await input.render(<String, dynamic>{
-            'greeting': 'hello world',
-          }),
+          await input.render(<String, dynamic>{'greeting': 'hello world'}),
           equals(expected),
         );
       });
@@ -502,9 +495,7 @@ void main() {
         const input = '{{greeting.dotCase()}}}';
         const expected = 'hello.world}';
         expect(
-          await input.render(<String, dynamic>{
-            'greeting': 'hello world',
-          }),
+          await input.render(<String, dynamic>{'greeting': 'hello world'}),
           equals(expected),
         );
       });

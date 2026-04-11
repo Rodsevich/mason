@@ -6,7 +6,7 @@ import 'package:glob/glob.dart';
 class InFileGenerationBuilder implements Builder {
   @override
   final buildExtensions = const {
-    r'$lib$': ['inFileGenerations.json']
+    r'$lib$': ['inFileGenerations.json'],
   };
 
   @override
@@ -38,7 +38,10 @@ class InFileGenerationBuilder implements Builder {
 
     if (inFileGenerations.isNotEmpty) {
       final outputAsset = buildStep.allowedOutputs.first;
-      await buildStep.writeAsString(outputAsset, json.encode(inFileGenerations));
+      await buildStep.writeAsString(
+        outputAsset,
+        json.encode(inFileGenerations),
+      );
     }
   }
 }

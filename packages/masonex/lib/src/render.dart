@@ -27,26 +27,109 @@ const _lambdaNames = {
   'upperCase',
 };
 
-/// Regex that matches Mason's `{{varName.lambdaName()}}` or `{{varName | lambdaName}}` syntax.
-/// Captures: group(1) = varName, group(2) = lambdaName (without trailing ())
-final _masonLambdaRegExp = RegExp(
-  r'\{\{\s*([\w]+)\s*(?:\.\s*([\w]+)\s*\(\s*\)|\|\s*([\w]+)\s*)\s*\}\}',
-);
+String _transpileMasonSyntax(String content) {
+  final tagRegex = RegExp(r'(\{{2,3})(.*?)(\}{2,3})', dotAll: true);
 
-/// Transpiles Mason extended lambda syntax into standard mustache section lambdas.
-///
-/// `{{name.pascalCase()}}` → `{{#pascalCase}}{{name}}{{/pascalCase}}`
-/// `{{name | snakeCase}}` → `{{#snakeCase}}{{name}}{{/snakeCase}}`
-String _transpileMasonSyntax(String source) {
-  return source.replaceAllMapped(_masonLambdaRegExp, (match) {
-    final varName = match.group(1)!;
-    // group(2) = dot style lambda, group(3) = pipe style lambda
-    final lambdaName = match.group(2) ?? match.group(3);
-    if (lambdaName == null || !_lambdaNames.contains(lambdaName)) {
-      // Not a known lambda — leave it alone so mustachex handles it.
+  return content.replaceAllMapped(tagRegex, (match) {
+    var opening = match.group(1)!;
+    var inner = match.group(2)!;
+    var closing = match.group(3)!;
+
+    final trimmedInner = inner.trim();
+    if (trimmedInner.startsWith('#') ||
+        trimmedInner.startsWith('/') ||
+        trimmedInner.startsWith('^') ||
+        trimmedInner.startsWith('>') ||
+        trimmedInner.startsWith('&') ||
+        trimmedInner.startsWith('{')) {
       return match.group(0)!;
     }
-    return '{{#$lambdaName}}{{$varName}}{{/$lambdaName}}';
+
+    final tagLen = opening.length < closing.length
+        ? opening.length
+        : closing.length;
+
+    var prefix = opening.substring(0, opening.length - tagLen);
+    var suffix = closing.substring(tagLen);
+    opening = opening.substring(opening.length - tagLen);
+    closing = closing.substring(0, tagLen);
+
+    final lambdas = <String>[];
+    var currentInner = inner;
+
+    bool changed = true;
+    while (changed) {
+      changed = false;
+      final currentTrimmed = currentInner.trim();
+
+      bool foundInThisPass = false;
+      for (final lambda in _lambdaNames) {
+        final dotRegex = RegExp(r'\.\s*' + lambda + r'\s*\(\s*\)\s*$');
+        final dotMatch = dotRegex.firstMatch(currentTrimmed);
+        if (dotMatch != null) {
+          lambdas.add(lambda);
+          final startInInner =
+              currentInner.lastIndexOf(currentTrimmed) + dotMatch.start;
+          currentInner = currentInner.substring(0, startInInner);
+          foundInThisPass = true;
+          changed = true;
+          break;
+        }
+      }
+
+      if (!foundInThisPass) {
+        for (final lambda in _lambdaNames) {
+          final pipeRegex = RegExp(r'\|\s*' + lambda + r'\s*$');
+          final pipeMatch = pipeRegex.firstMatch(currentTrimmed);
+          if (pipeMatch != null) {
+            lambdas.add(lambda);
+            final startInInner =
+                currentInner.lastIndexOf(currentTrimmed) + pipeMatch.start;
+            currentInner = currentInner.substring(0, startInInner);
+            foundInThisPass = true;
+            changed = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (lambdas.isEmpty) {
+      return match.group(0)!;
+    }
+
+    final varPart = currentInner;
+    final varName = (varPart.trim().isEmpty || varPart.trim() == "..")
+        ? "."
+        : varPart;
+    // We use triple braces if the original was triple, but we must ensure
+    // it doesn't merge with a prefix brace.
+    var result = (opening.length == 3 && closing.length == 3)
+        ? '{{{$varName}}}'
+        : '{{$varName}}';
+
+    for (final lambda in lambdas.reversed) {
+      result = '{{#$lambda}}$result{{/$lambda}}';
+    }
+
+    String escape(String s) {
+      var res = '';
+      for (var i = 0; i < s.length; i++) {
+        if (s[i] == '{') {
+          res += '{{__LEFT_CURLY_BRACKET__}}';
+        } else if (s[i] == '}') {
+          res += '{{__RIGHT_CURLY_BRACKET__}}';
+        } else {
+          res += s[i];
+        }
+      }
+      return res;
+    }
+
+    prefix = escape(prefix);
+    suffix = escape(suffix);
+
+    return '$prefix$result$suffix';
   });
 }
 
@@ -71,71 +154,23 @@ String _sanitizeOutput(String output) {
 }
 
 final _builtInLambdas = <String, LambdaFunction>{
-  /// camelCase
   'camelCase': (ctx) => ReCase(ctx.renderString()).camelCase,
-
-  /// CONSTANT_CASE
   'constantCase': (ctx) => ReCase(ctx.renderString()).constantCase,
-
-  /// dot.case
   'dotCase': (ctx) => ReCase(ctx.renderString()).dotCase,
-
-  /// Header-Case
   'headerCase': (ctx) => ReCase(ctx.renderString()).headerCase,
-
-  /// lower case
   'lowerCase': (ctx) => ctx.renderString().toLowerCase(),
-
-  /// {{ mustache case }}
   'mustacheCase': (ctx) => '{{ ${ctx.renderString()} }}',
-
-  /// PascalCase
   'pascalCase': (ctx) => ReCase(ctx.renderString()).pascalCase,
-
-  /// Pascal.Dot.Case
   'pascalDotCase': (ctx) => ReCase(ctx.renderString()).pascalDotCase,
-
-  /// param-case
   'paramCase': (ctx) => ReCase(ctx.renderString()).paramCase,
-
-  /// path/case
   'pathCase': (ctx) => ReCase(ctx.renderString()).pathCase,
-
-  /// Sentence case
   'sentenceCase': (ctx) => ReCase(ctx.renderString()).sentenceCase,
-
-  /// snake_case
   'snakeCase': (ctx) => ReCase(ctx.renderString()).snakeCase,
-
-  /// Title Case
   'titleCase': (ctx) => ReCase(ctx.renderString()).titleCase,
-
-  /// UPPER CASE
   'upperCase': (ctx) => ctx.renderString().toUpperCase(),
 };
 
-/// {@template render_template}
-/// Given a `String` with mustache templates, and a [Map] of String key /
-/// value pairs, substitute all instances of `{{key}}` for `value`.
-///
-/// ```text
-/// Hello {{name}}!
-/// ```
-///
-/// and
-///
-/// ```text
-/// {'name': 'Bob'}
-/// ```
-///
-/// becomes:
-///
-/// ```text
-/// Hello Bob!
-/// ```
-/// {@endtemplate}
 extension RenderTemplate on String {
-  /// {@macro render_template}
   Future<String> render(
     Map<String, dynamic> vars, {
     PartialResolverFunction? partialsResolver,
@@ -149,17 +184,11 @@ extension RenderTemplate on String {
     return _sanitizeOutput(utf8.decode(renderedBytes));
   }
 
-  /// Processes the [String] template and returns the rendered result as raw bytes ([List<int>]).
-  /// Binary values (Uint8List / List<int>) in [vars] are written directly without string conversion.
   Future<List<int>> renderBytes(
     Map<String, dynamic> vars, {
     PartialResolverFunction? partialsResolver,
     FutureOr<String> Function(String variable)? onMissingVariable,
   }) async {
-    // Transpile Mason's dot/pipe lambda syntax into standard mustache sections
-    // BEFORE handing off to MustachexProcessor. This ensures
-    // `{{name.pascalCase()}}` becomes `{{#pascalCase}}{{name}}{{/pascalCase}}`
-    // so the built-in lambda functions handle it correctly.
     final transpiled = _transpileMasonSyntax(this);
 
     final allVars = <String, dynamic>{
@@ -169,6 +198,7 @@ extension RenderTemplate on String {
     };
 
     final processor = MustachexProcessor(
+      lenient: true,
       initialVariables: allVars,
       missingVarFulfiller: onMissingVariable != null
           ? (exception) async => await onMissingVariable(exception.varName!)
@@ -185,17 +215,13 @@ extension RenderTemplate on String {
   }
 }
 
-/// {@template resolve_partial}
-/// A resolver function which given a partial name.
-/// attempts to return a new [Template].
-/// {@endtemplate}
 extension ResolvePartial on Map<String, List<int>> {
-  /// {@macro resolve_partial}
   Template? resolve(String name) {
     final content = this['{{~ $name }}'];
     if (content == null) return null;
     final decoded = utf8.decode(content);
-    final sanitized = _sanitizeInput(decoded);
+    final transpiled = _transpileMasonSyntax(decoded);
+    final sanitized = _sanitizeInput(transpiled);
     return Template(sanitized, name: name, lenient: true);
   }
 }

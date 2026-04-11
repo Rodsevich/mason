@@ -7,10 +7,10 @@ part of 'mason_yaml.dart';
 // **************************************************************************
 
 MasonexYaml _$MasonexYamlFromJson(Map json) => MasonexYaml(
-      (json['bricks'] as Map?)?.map(
-        (k, e) => MapEntry(k as String, BrickLocation.fromJson(e)),
-      ),
-    );
+  (json['bricks'] as Map?)?.map(
+    (k, e) => MapEntry(k as String, BrickLocation.fromJson(e)),
+  ),
+);
 
 Map<String, dynamic> _$MasonexYamlToJson(MasonexYaml instance) =>
     <String, dynamic>{
@@ -18,10 +18,10 @@ Map<String, dynamic> _$MasonexYamlToJson(MasonexYaml instance) =>
     };
 
 BrickLocation _$BrickLocationFromJson(Map json) => BrickLocation(
-      path: json['path'] as String?,
-      git: json['git'] == null ? null : GitPath.fromJson(json['git'] as Map),
-      version: json['version'] as String?,
-    );
+  path: json['path'] as String?,
+  git: json['git'] == null ? null : GitPath.fromJson(json['git'] as Map),
+  version: json['version'] as String?,
+);
 
 Map<String, dynamic> _$BrickLocationToJson(BrickLocation instance) =>
     <String, dynamic>{
@@ -31,13 +31,13 @@ Map<String, dynamic> _$BrickLocationToJson(BrickLocation instance) =>
     };
 
 GitPath _$GitPathFromJson(Map json) => GitPath(
-      json['url'] as String,
-      path: json['path'] as String?,
-      ref: json['ref'] as String?,
-    );
+  json['url'] as String,
+  path: json['path'] as String?,
+  ref: json['ref'] as String?,
+);
 
 Map<String, dynamic> _$GitPathToJson(GitPath instance) => <String, dynamic>{
-      'url': instance.url,
-      'path': instance.path,
-      'ref': instance.ref,
-    };
+  'url': instance.url,
+  'path': instance.path,
+  'ref': instance.ref,
+};

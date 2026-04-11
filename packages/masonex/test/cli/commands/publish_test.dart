@@ -31,8 +31,15 @@ void main() {
   });
 
   group('PublishCommand', () {
-    final brickPath =
-        p.join('..', '..', '..', '..', '..', 'bricks', 'greeting');
+    final brickPath = p.join(
+      '..',
+      '..',
+      '..',
+      '..',
+      '..',
+      'bricks',
+      'greeting',
+    );
     late Logger logger;
     late MasonApi masonApi;
     late ArgResults argResults;
@@ -58,8 +65,7 @@ void main() {
       expect(PublishCommand.new, returnsNormally);
     });
 
-    test(
-        'throws usageException when '
+    test('throws usageException when '
         'called with both --force and --dry-run', () async {
       final runner = CommandRunner<int>('masonex', '')
         ..addCommand(publishCommand..testArgResults = null);
@@ -100,8 +106,10 @@ void main() {
         () => logger.err('A private brick cannot be published.'),
       ).called(1);
       verify(
-        () => logger.err('''
-Please change or remove the "publish_to" field in the brick.yaml before publishing.'''),
+        () => logger.err(
+          '''
+Please change or remove the "publish_to" field in the brick.yaml before publishing.''',
+        ),
       ).called(1);
       verifyNever(() => masonApi.close());
     });
@@ -342,62 +350,57 @@ Please change or remove the "publish_to" field in the brick.yaml before publishi
       verify(() => masonApi.close()).called(1);
     });
 
-    test(
-      'exits with code 0 when publish succeeds '
-      'with a custom registry (publish_to)',
-      () async {
-        final brickPath = p.join('..', '..', 'bricks', 'custom_registry');
-        final customHostedUri = Uri.parse('https://custom.brickhub.dev');
-        final user = _MockUser();
-        final progressLogs = <String>[];
-        when(() => user.emailVerified).thenReturn(true);
+    test('exits with code 0 when publish succeeds '
+        'with a custom registry (publish_to)', () async {
+      final brickPath = p.join('..', '..', 'bricks', 'custom_registry');
+      final customHostedUri = Uri.parse('https://custom.brickhub.dev');
+      final user = _MockUser();
+      final progressLogs = <String>[];
+      when(() => user.emailVerified).thenReturn(true);
 
-        Uri? publishTo;
-        final publishCommand = PublishCommand(
-          masonApiBuilder: ({Uri? hostedUri}) {
-            publishTo = hostedUri;
-            return masonApi;
-          },
-          logger: logger,
-        )..testArgResults = argResults;
+      Uri? publishTo;
+      final publishCommand = PublishCommand(
+        masonApiBuilder: ({Uri? hostedUri}) {
+          publishTo = hostedUri;
+          return masonApi;
+        },
+        logger: logger,
+      )..testArgResults = argResults;
 
-        when(() => masonApi.currentUser).thenReturn(user);
-        when(
-          () => masonApi.publish(bundle: any(named: 'bundle')),
-        ).thenAnswer((_) async {});
-        final progress = _MockProgress();
-        when(() => progress.complete(any())).thenAnswer((invocation) {
-          final update = invocation.positionalArguments[0] as String?;
-          if (update != null) progressLogs.add(update);
-        });
-        when(() => logger.progress(any())).thenReturn(progress);
-        when(() => logger.confirm(any())).thenReturn(true);
-        when(() => argResults['directory'] as String).thenReturn(brickPath);
-        final result = await publishCommand.run();
-        expect(result, equals(ExitCode.success.code));
-        expect(
-          progressLogs,
-          equals([
-            'Bundled custom_registry',
-            'Published custom_registry 0.1.0+1',
-          ]),
-        );
+      when(() => masonApi.currentUser).thenReturn(user);
+      when(
+        () => masonApi.publish(bundle: any(named: 'bundle')),
+      ).thenAnswer((_) async {});
+      final progress = _MockProgress();
+      when(() => progress.complete(any())).thenAnswer((invocation) {
+        final update = invocation.positionalArguments[0] as String?;
+        if (update != null) progressLogs.add(update);
+      });
+      when(() => logger.progress(any())).thenReturn(progress);
+      when(() => logger.confirm(any())).thenReturn(true);
+      when(() => argResults['directory'] as String).thenReturn(brickPath);
+      final result = await publishCommand.run();
+      expect(result, equals(ExitCode.success.code));
+      expect(
+        progressLogs,
+        equals([
+          'Bundled custom_registry',
+          'Published custom_registry 0.1.0+1',
+        ]),
+      );
 
-        expect(publishTo, equals(customHostedUri));
+      expect(publishTo, equals(customHostedUri));
 
-        verify(
-          () => logger.progress('Publishing custom_registry 0.1.0+1'),
-        ).called(1);
-        verify(
-          () => logger.success(
-            '''\nPublished custom_registry 0.1.0+1 to $customHostedUri.''',
-          ),
-        ).called(1);
-        verify(
-          () => masonApi.publish(bundle: any(named: 'bundle')),
-        ).called(1);
-        verify(() => masonApi.close()).called(1);
-      },
-    );
+      verify(
+        () => logger.progress('Publishing custom_registry 0.1.0+1'),
+      ).called(1);
+      verify(
+        () => logger.success(
+          '''\nPublished custom_registry 0.1.0+1 to $customHostedUri.''',
+        ),
+      ).called(1);
+      verify(() => masonApi.publish(bundle: any(named: 'bundle'))).called(1);
+      verify(() => masonApi.close()).called(1);
+    });
   });
 }

@@ -38,9 +38,10 @@ void main() {
       when(
         () => pubUpdater.getLatestVersion(any()),
       ).thenAnswer((_) async => packageVersion);
-      await MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(
-        ['cache', 'clear'],
-      );
+      await MasonexCommandRunner(
+        logger: logger,
+        pubUpdater: pubUpdater,
+      ).run(['cache', 'clear']);
     });
 
     setUp(() {
@@ -89,121 +90,123 @@ bricks:
       Directory.current = cwd;
     });
 
-    test('creates .masonex/brick.json and masonex-lock.json when masonex.yaml exists',
-        () async {
-      final expectedBrickJsonPath = path.join(
-        Directory.current.path,
-        '.masonex',
-        'bricks.json',
-      );
-      final expectedMasonexLockJsonPath = path.join(
-        Directory.current.path,
-        'masonex-lock.json',
-      );
-      var doneCallCount = 0;
-      final progress = _MockProgress();
-      when(() => progress.complete(any())).thenAnswer((invocation) {
-        doneCallCount++;
-      });
-      when(() => logger.progress(any())).thenReturn(progress);
+    test(
+      'creates .masonex/brick.json and masonex-lock.json when masonex.yaml exists',
+      () async {
+        final expectedBrickJsonPath = path.join(
+          Directory.current.path,
+          '.masonex',
+          'bricks.json',
+        );
+        final expectedMasonexLockJsonPath = path.join(
+          Directory.current.path,
+          'masonex-lock.json',
+        );
+        var doneCallCount = 0;
+        final progress = _MockProgress();
+        when(() => progress.complete(any())).thenAnswer((invocation) {
+          doneCallCount++;
+        });
+        when(() => logger.progress(any())).thenReturn(progress);
 
-      expect(File(expectedBrickJsonPath).existsSync(), isFalse);
-      expect(File(expectedMasonexLockJsonPath).existsSync(), isFalse);
+        expect(File(expectedBrickJsonPath).existsSync(), isFalse);
+        expect(File(expectedMasonexLockJsonPath).existsSync(), isFalse);
 
-      final result = await commandRunner.run(['get']);
-      if (result != 0) {
-        // Since logger is a mock, we can't easily see its calls without verify.
-        // But we can verify it here for debugging.
-        try {
-          verify(() => logger.err(any())).captured.forEach(print);
-        } catch (_) {}
-      }
-      expect(result, equals(ExitCode.success.code));
+        final result = await commandRunner.run(['get']);
+        if (result != 0) {
+          // Since logger is a mock, we can't easily see its calls without verify.
+          // But we can verify it here for debugging.
+          try {
+            verify(() => logger.err(any())).captured.forEach(print);
+          } catch (_) {}
+        }
+        expect(result, equals(ExitCode.success.code));
 
-      expect(File(expectedBrickJsonPath).existsSync(), isTrue);
-      expect(File(expectedMasonexLockJsonPath).existsSync(), isTrue);
+        expect(File(expectedBrickJsonPath).existsSync(), isTrue);
+        expect(File(expectedMasonexLockJsonPath).existsSync(), isTrue);
 
-      final bricksPath = path.join('..', '..', '..', '..', '..', 'bricks');
-      final appIconPath = canonicalize(
-        path.join(Directory.current.path, bricksPath, 'app_icon'),
-      );
-      final docPath = canonicalize(
-        path.join(Directory.current.path, bricksPath, 'documentation'),
-      );
-      final greetingPath = canonicalize(
-        path.join(Directory.current.path, bricksPath, 'greeting'),
-      );
-      final hooksPath = canonicalize(
-        path.join(
-          BricksJson.rootDir.path,
-          'git',
-          '''masonex_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_c744e19c23243453f568b539bb122767e6542929''',
-          'bricks',
-          'hooks',
-        ),
-      );
-      final simplePath = canonicalize(
-        path.join(Directory.current.path, bricksPath, 'simple'),
-      );
-      final todosPath = canonicalize(
-        path.join(Directory.current.path, bricksPath, 'todos'),
-      );
-      final widgetPath = canonicalize(
-        path.join(
-          BricksJson.rootDir.path,
-          'git',
-          '''masonex_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_c744e19c23243453f568b539bb122767e6542929''',
-          'bricks',
-          'widget',
-        ),
-      );
+        final bricksPath = path.join('..', '..', '..', '..', '..', 'bricks');
+        final appIconPath = canonicalize(
+          path.join(Directory.current.path, bricksPath, 'app_icon'),
+        );
+        final docPath = canonicalize(
+          path.join(Directory.current.path, bricksPath, 'documentation'),
+        );
+        final greetingPath = canonicalize(
+          path.join(Directory.current.path, bricksPath, 'greeting'),
+        );
+        final hooksPath = canonicalize(
+          path.join(
+            BricksJson.rootDir.path,
+            'git',
+            '''masonex_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_c744e19c23243453f568b539bb122767e6542929''',
+            'bricks',
+            'hooks',
+          ),
+        );
+        final simplePath = canonicalize(
+          path.join(Directory.current.path, bricksPath, 'simple'),
+        );
+        final todosPath = canonicalize(
+          path.join(Directory.current.path, bricksPath, 'todos'),
+        );
+        final widgetPath = canonicalize(
+          path.join(
+            BricksJson.rootDir.path,
+            'git',
+            '''masonex_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_c744e19c23243453f568b539bb122767e6542929''',
+            'bricks',
+            'widget',
+          ),
+        );
 
-      expect(
-        File(expectedBrickJsonPath).readAsStringSync(),
-        equals(
-          json.encode({
-            'app_icon': appIconPath,
-            'documentation': docPath,
-            'greeting': greetingPath,
-            'hooks': hooksPath,
-            'simple': simplePath,
-            'todos': todosPath,
-            'widget': widgetPath,
-          }),
-        ),
-      );
-      expect(
-        File(expectedMasonexLockJsonPath).readAsStringSync(),
-        equals(
-          json.encode({
-            'bricks': {
-              'app_icon': {'path': appIconPath},
-              'documentation': {'path': docPath},
-              'greeting': {'path': greetingPath},
-              'hooks': {
-                'git': {
-                  'url': 'https://github.com/felangel/mason',
-                  'path': 'bricks/hooks',
-                  'ref': 'c744e19c23243453f568b539bb122767e6542929',
+        expect(
+          File(expectedBrickJsonPath).readAsStringSync(),
+          equals(
+            json.encode({
+              'app_icon': appIconPath,
+              'documentation': docPath,
+              'greeting': greetingPath,
+              'hooks': hooksPath,
+              'simple': simplePath,
+              'todos': todosPath,
+              'widget': widgetPath,
+            }),
+          ),
+        );
+        expect(
+          File(expectedMasonexLockJsonPath).readAsStringSync(),
+          equals(
+            json.encode({
+              'bricks': {
+                'app_icon': {'path': appIconPath},
+                'documentation': {'path': docPath},
+                'greeting': {'path': greetingPath},
+                'hooks': {
+                  'git': {
+                    'url': 'https://github.com/felangel/mason',
+                    'path': 'bricks/hooks',
+                    'ref': 'c744e19c23243453f568b539bb122767e6542929',
+                  },
+                },
+                'simple': {'path': simplePath},
+                'todos': {'path': todosPath},
+                'widget': {
+                  'git': {
+                    'url': 'https://github.com/felangel/mason',
+                    'path': 'bricks/widget',
+                    'ref': 'c744e19c23243453f568b539bb122767e6542929',
+                  },
                 },
               },
-              'simple': {'path': simplePath},
-              'todos': {'path': todosPath},
-              'widget': {
-                'git': {
-                  'url': 'https://github.com/felangel/mason',
-                  'path': 'bricks/widget',
-                  'ref': 'c744e19c23243453f568b539bb122767e6542929',
-                },
-              },
-            },
-          }),
-        ),
-      );
+            }),
+          ),
+        );
 
-      verify(() => logger.progress('Getting bricks')).called(1);
-      expect(doneCallCount, equals(1));
-    });
+        verify(() => logger.progress('Getting bricks')).called(1);
+        expect(doneCallCount, equals(1));
+      },
+    );
 
     test('does not error when brick.json already exists', () async {
       final expectedBrickJsonPath = path.join(
@@ -291,50 +294,53 @@ bricks:
       ).called(1);
     });
 
-    test('throws BrickNotFoundException when git path does not exist',
-        () async {
-      File(path.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync(
-        '''
+    test(
+      'throws BrickNotFoundException when git path does not exist',
+      () async {
+        File(
+          path.join(Directory.current.path, 'masonex.yaml'),
+        ).writeAsStringSync('''
 bricks:
   widget:
     git:
       url: https://github.com/felangel/mason
       path: bricks/invalid
-''',
-      );
-      final result = await commandRunner.run(['get']);
-      expect(result, equals(ExitCode.usage.code));
-      verify(
-        () => logger.err(
-          const BrickNotFoundException(
-            'https://github.com/felangel/mason/bricks/invalid',
-          ).message,
-        ),
-      ).called(1);
-    });
-
-    test('throws MasonexYamlParseException when masonex.yaml is malformed',
-        () async {
-      File(path.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync(
-        '''
-{malformed}
-''',
-      );
-      final result = await commandRunner.run(['get']);
-      expect(result, equals(ExitCode.usage.code));
-      verify(
-        () => logger.err(
-          any(
-            that: contains(
-              'Unrecognized keys: [malformed]; supported keys: [bricks]',
-            ),
+''');
+        final result = await commandRunner.run(['get']);
+        expect(result, equals(ExitCode.usage.code));
+        verify(
+          () => logger.err(
+            const BrickNotFoundException(
+              'https://github.com/felangel/mason/bricks/invalid',
+            ).message,
           ),
-        ),
-      ).called(1);
-    });
+        ).called(1);
+      },
+    );
 
     test(
-        'throws MasonexYamlNameMismatch '
+      'throws MasonexYamlParseException when masonex.yaml is malformed',
+      () async {
+        File(
+          path.join(Directory.current.path, 'masonex.yaml'),
+        ).writeAsStringSync('''
+{malformed}
+''');
+        final result = await commandRunner.run(['get']);
+        expect(result, equals(ExitCode.usage.code));
+        verify(
+          () => logger.err(
+            any(
+              that: contains(
+                'Unrecognized keys: [malformed]; supported keys: [bricks]',
+              ),
+            ),
+          ),
+        ).called(1);
+      },
+    );
+
+    test('throws MasonexYamlNameMismatch '
         'when masonex.yaml contains mismatch', () async {
       File(path.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync(
         '''
@@ -354,37 +360,38 @@ bricks:
       verify(() => logger.err(expectedErrorMessage)).called(1);
     });
 
-    test('exits with code 64 when masonex version constraint cannot be resolved',
-        () async {
-      await commandRunner.run(['new', 'example']);
-      final brickYaml = File(path.join('example', 'brick.yaml'));
-      brickYaml.writeAsStringSync(
-        brickYaml.readAsStringSync().replaceFirst(
-              'masonex: ^${masonex.packageVersion}',
-              'masonex: ">=99.99.99 <100.0.0"',
-            ),
-      );
-      File(path.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync(
-        '''
+    test(
+      'exits with code 64 when masonex version constraint cannot be resolved',
+      () async {
+        await commandRunner.run(['new', 'example']);
+        final brickYaml = File(path.join('example', 'brick.yaml'));
+        brickYaml.writeAsStringSync(
+          brickYaml.readAsStringSync().replaceFirst(
+            'masonex: ^${masonex.packageVersion}',
+            'masonex: ">=99.99.99 <100.0.0"',
+          ),
+        );
+        File(
+          path.join(Directory.current.path, 'masonex.yaml'),
+        ).writeAsStringSync('''
   example:
     path:  ./example
-''',
-        mode: FileMode.append,
-      );
+''', mode: FileMode.append);
 
-      commandRunner = MasonexCommandRunner(
-        logger: logger,
-        pubUpdater: pubUpdater,
-      );
+        commandRunner = MasonexCommandRunner(
+          logger: logger,
+          pubUpdater: pubUpdater,
+        );
 
-      final result = await commandRunner.run(['get']);
-      expect(result, equals(ExitCode.usage.code));
-      verify(
-        () => logger.err(
-          '''The current masonex version is ${masonex.packageVersion}.\nBecause example requires masonex version >=99.99.99 <100.0.0, version solving failed.''',
-        ),
-      ).called(1);
-    });
+        final result = await commandRunner.run(['get']);
+        expect(result, equals(ExitCode.usage.code));
+        verify(
+          () => logger.err(
+            '''The current masonex version is ${masonex.packageVersion}.\nBecause example requires masonex version >=99.99.99 <100.0.0, version solving failed.''',
+          ),
+        ).called(1);
+      },
+    );
 
     test('throws ProcessException when remote does not exist', () async {
       File(path.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync(

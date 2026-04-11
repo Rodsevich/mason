@@ -4,7 +4,7 @@ import 'package:masonex/masonex.dart';
 
 final greetingBundle = MasonexBundle.fromJson(<String, dynamic>{
   "files": [
-    {"path": "GREETINGS.md", "data": "SGkge3tuYW1lfX0h", "type": "text"}
+    {"path": "GREETINGS.md", "data": "SGkge3tuYW1lfX0h", "type": "text"},
   ],
   "hooks": [],
   "name": "greeting",
@@ -16,7 +16,7 @@ final greetingBundle = MasonexBundle.fromJson(<String, dynamic>{
       "type": "string",
       "description": "Your name",
       "default": "Dash",
-      "prompt": "What is your name?"
-    }
-  }
+      "prompt": "What is your name?",
+    },
+  },
 });

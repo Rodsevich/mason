@@ -18,11 +18,13 @@ class BuildCommand extends MasonexCommand {
   @override
   Future<int> run() async {
     final progress = logger.progress('Running build_runner');
-    final result = await Process.run(
-      'dart',
-      ['pub', 'run', 'build_runner', 'build', '--delete-conflicting-outputs'],
-      runInShell: true,
-    );
+    final result = await Process.run('dart', [
+      'pub',
+      'run',
+      'build_runner',
+      'build',
+      '--delete-conflicting-outputs',
+    ], runInShell: true);
 
     if (result.exitCode == 0) {
       progress.complete('build_runner completed successfully.');

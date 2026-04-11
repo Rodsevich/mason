@@ -40,35 +40,34 @@ void main() {
       );
     });
 
-    test('returns original location when locked location is not similar (git)',
-        () {
-      final location = BrickLocation(
-        git: GitPath(
-          'https://github.com/felangel/mason',
-          path: 'bricks/hello',
-        ),
-      );
-      final lockedLocation = BrickLocation(
-        git: GitPath(
-          'https://github.com/felangel/mason',
-          path: 'bricks/widget',
-        ),
-      );
-      expect(
-        resolveBrickLocation(
-          location: location,
-          lockedLocation: lockedLocation,
-        ),
-        equals(location),
-      );
-    });
+    test(
+      'returns original location when locked location is not similar (git)',
+      () {
+        final location = BrickLocation(
+          git: GitPath(
+            'https://github.com/felangel/mason',
+            path: 'bricks/hello',
+          ),
+        );
+        final lockedLocation = BrickLocation(
+          git: GitPath(
+            'https://github.com/felangel/mason',
+            path: 'bricks/widget',
+          ),
+        );
+        expect(
+          resolveBrickLocation(
+            location: location,
+            lockedLocation: lockedLocation,
+          ),
+          equals(location),
+        );
+      },
+    );
 
     test('returns locked location when locations are similar (git)', () {
       final location = BrickLocation(
-        git: GitPath(
-          'https://github.com/felangel/mason',
-          path: 'bricks/hello',
-        ),
+        git: GitPath('https://github.com/felangel/mason', path: 'bricks/hello'),
       );
       final lockedLocation = BrickLocation(
         git: GitPath(
@@ -86,18 +85,20 @@ void main() {
       );
     });
 
-    test('returns original location when locked location is null (version)',
-        () {
-      final location = BrickLocation(version: '1.0.0');
-      final lockedLocation = BrickLocation();
-      expect(
-        resolveBrickLocation(
-          location: location,
-          lockedLocation: lockedLocation,
-        ),
-        equals(location),
-      );
-    });
+    test(
+      'returns original location when locked location is null (version)',
+      () {
+        final location = BrickLocation(version: '1.0.0');
+        final lockedLocation = BrickLocation();
+        expect(
+          resolveBrickLocation(
+            location: location,
+            lockedLocation: lockedLocation,
+          ),
+          equals(location),
+        );
+      },
+    );
 
     test('returns original location when locked version is incompatible', () {
       final location = BrickLocation(version: '^1.0.0');

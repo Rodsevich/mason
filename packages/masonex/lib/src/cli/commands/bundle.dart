@@ -11,7 +11,7 @@ enum BundleType {
   universal,
 
   /// Dart-specific bundle type (usually used when building Dart CLI Apps)
-  dart
+  dart,
 }
 
 /// {@template bundle_command}
@@ -49,12 +49,14 @@ class BundleCommand extends MasonexCommand {
       )
       ..addOption(
         'git-ref',
-        help: 'Git branch or commit to be used.'
+        help:
+            'Git branch or commit to be used.'
             ' Only valid if source is set to "git".',
       )
       ..addOption(
         'git-path',
-        help: 'Path of the brick in the git repository'
+        help:
+            'Path of the brick in the git repository'
             ' Only valid if source is set to "git".',
       );
   }
@@ -224,10 +226,10 @@ class _BrickDartBundleGenerator extends _BrickBundleGenerator {
     required String outputDirectoryPath,
     required super.bundle,
   }) : super(
-          bundleFile: File(
-            path.join(outputDirectoryPath, '${bundle.name}_bundle.dart'),
-          ),
-        );
+         bundleFile: File(
+           path.join(outputDirectoryPath, '${bundle.name}_bundle.dart'),
+         ),
+       );
 
   @override
   Future<void> generate() async {
@@ -247,10 +249,10 @@ class _BrickUniversalBundleGenerator extends _BrickBundleGenerator {
     required String outputDirectoryPath,
     required super.bundle,
   }) : super(
-          bundleFile: File(
-            path.join(outputDirectoryPath, '${bundle.name}.bundle'),
-          ),
-        );
+         bundleFile: File(
+           path.join(outputDirectoryPath, '${bundle.name}.bundle'),
+         ),
+       );
 
   @override
   Future<void> generate() async {

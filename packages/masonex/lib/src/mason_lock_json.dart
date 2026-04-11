@@ -10,7 +10,7 @@ part 'mason_lock_json.g.dart';
 class MasonexLockJson {
   /// {@macro masonex_lock_json}
   const MasonexLockJson({Map<String, BrickLocation>? bricks})
-      : bricks = bricks ?? const <String, BrickLocation>{};
+    : bricks = bricks ?? const <String, BrickLocation>{};
 
   /// Converts [Map] to [MasonexLockJson]
   factory MasonexLockJson.fromJson(Map<dynamic, dynamic> json) =>

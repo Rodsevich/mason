@@ -16,48 +16,61 @@ void main() {
     });
 
     test('merges Dart list variables', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
+      final brickDir = Directory(path.join(tempDir.path, 'brick'))
+        ..createSync();
       File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
 version: 0.1.0
 ''');
-      final brickFiles = Directory(path.join(brickDir.path, '__brick__'))..createSync();
+      final brickFiles = Directory(path.join(brickDir.path, '__brick__'))
+        ..createSync();
       File(path.join(brickFiles.path, '>>>file.dart')).writeAsStringSync('''
 var list = ['banana', 'manzana'];
 ''');
 
-      final targetDir = Directory(path.join(tempDir.path, 'target'))..createSync();
+      final targetDir = Directory(path.join(tempDir.path, 'target'))
+        ..createSync();
       final targetFile = File(path.join(targetDir.path, 'file.dart'))
         ..writeAsStringSync('''
 var list = ['naranja'];
 ''');
 
-      final generator = await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(
+        Brick.path(brickDir.path),
+      );
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
-      expect(targetFile.readAsStringSync(), contains("var list = ['naranja', 'banana', 'manzana'];"));
+      expect(
+        targetFile.readAsStringSync(),
+        contains("var list = ['naranja', 'banana', 'manzana'];"),
+      );
     });
 
     test('merges Dart map variables', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
+      final brickDir = Directory(path.join(tempDir.path, 'brick'))
+        ..createSync();
       File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
 version: 0.1.0
 ''');
-      final brickFiles = Directory(path.join(brickDir.path, '__brick__'))..createSync();
+      final brickFiles = Directory(path.join(brickDir.path, '__brick__'))
+        ..createSync();
       File(path.join(brickFiles.path, '>>>file.dart')).writeAsStringSync('''
 var map = {'b': 2, 'c': 3};
 ''');
 
-      final targetDir = Directory(path.join(tempDir.path, 'target'))..createSync();
+      final targetDir = Directory(path.join(tempDir.path, 'target'))
+        ..createSync();
       final targetFile = File(path.join(targetDir.path, 'file.dart'))
         ..writeAsStringSync('''
 var map = {'a': 1, 'b': 0};
 ''');
 
-      final generator = await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(
+        Brick.path(brickDir.path),
+      );
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -67,13 +80,15 @@ var map = {'a': 1, 'b': 0};
     });
 
     test('merges JSON files', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
+      final brickDir = Directory(path.join(tempDir.path, 'brick'))
+        ..createSync();
       File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
 version: 0.1.0
 ''');
-      final brickFiles = Directory(path.join(brickDir.path, '__brick__'))..createSync();
+      final brickFiles = Directory(path.join(brickDir.path, '__brick__'))
+        ..createSync();
       File(path.join(brickFiles.path, '>>>file.json')).writeAsStringSync('''
 {
   "list": [2, 3],
@@ -81,7 +96,8 @@ version: 0.1.0
 }
 ''');
 
-      final targetDir = Directory(path.join(tempDir.path, 'target'))..createSync();
+      final targetDir = Directory(path.join(tempDir.path, 'target'))
+        ..createSync();
       final targetFile = File(path.join(targetDir.path, 'file.json'))
         ..writeAsStringSync('''
 {
@@ -90,7 +106,9 @@ version: 0.1.0
 }
 ''');
 
-      final generator = await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(
+        Brick.path(brickDir.path),
+      );
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -100,13 +118,15 @@ version: 0.1.0
     });
 
     test('merges YAML files', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
+      final brickDir = Directory(path.join(tempDir.path, 'brick'))
+        ..createSync();
       File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
 version: 0.1.0
 ''');
-      final brickFiles = Directory(path.join(brickDir.path, '__brick__'))..createSync();
+      final brickFiles = Directory(path.join(brickDir.path, '__brick__'))
+        ..createSync();
       File(path.join(brickFiles.path, '>>>file.yaml')).writeAsStringSync('''
 list:
   - banana
@@ -115,7 +135,8 @@ map:
   b: 2
 ''');
 
-      final targetDir = Directory(path.join(tempDir.path, 'target'))..createSync();
+      final targetDir = Directory(path.join(tempDir.path, 'target'))
+        ..createSync();
       final targetFile = File(path.join(targetDir.path, 'file.yaml'))
         ..writeAsStringSync('''
 list:
@@ -125,7 +146,9 @@ map:
   b: 0
 ''');
 
-      final generator = await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(
+        Brick.path(brickDir.path),
+      );
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -137,7 +160,8 @@ map:
     });
 
     test('appends new Dart variables', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
+      final brickDir = Directory(path.join(tempDir.path, 'brick'))
+        ..createSync();
       File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
@@ -156,8 +180,9 @@ final newVar = 'new';
 var oldVar = 'old';
 ''');
 
-      final generator =
-          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(
+        Brick.path(brickDir.path),
+      );
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -166,7 +191,8 @@ var oldVar = 'old';
     });
 
     test('merges Dart list variables in complex file', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
+      final brickDir = Directory(path.join(tempDir.path, 'brick'))
+        ..createSync();
       File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
@@ -200,8 +226,9 @@ void main() {
 }
 ''');
 
-      final generator =
-          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(
+        Brick.path(brickDir.path),
+      );
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -213,7 +240,8 @@ void main() {
     });
 
     test('merges Dart list variables inside classes', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
+      final brickDir = Directory(path.join(tempDir.path, 'brick'))
+        ..createSync();
       File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
@@ -236,8 +264,9 @@ class MyClass {
 }
 ''');
 
-      final generator =
-          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(
+        Brick.path(brickDir.path),
+      );
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -245,7 +274,8 @@ class MyClass {
     });
 
     test('appends new variable to file with only a class', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
+      final brickDir = Directory(path.join(tempDir.path, 'brick'))
+        ..createSync();
       File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
@@ -264,8 +294,9 @@ var lista = [3];
 class Clazz {}
 ''');
 
-      final generator =
-          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(
+        Brick.path(brickDir.path),
+      );
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -273,37 +304,43 @@ class Clazz {}
       expect(content, contains('var lista = [3];'));
     });
 
-    test('appends new class from brick to target with existing class', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
-      File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
+    test(
+      'appends new class from brick to target with existing class',
+      () async {
+        final brickDir = Directory(path.join(tempDir.path, 'brick'))
+          ..createSync();
+        File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
 version: 0.1.0
 ''');
-      final brickFiles = Directory(path.join(brickDir.path, '__brick__'))
-        ..createSync();
-      File(path.join(brickFiles.path, '>>>file.dart')).writeAsStringSync('''
+        final brickFiles = Directory(path.join(brickDir.path, '__brick__'))
+          ..createSync();
+        File(path.join(brickFiles.path, '>>>file.dart')).writeAsStringSync('''
 class NewClass {}
 ''');
 
-      final targetDir = Directory(path.join(tempDir.path, 'target'))
-        ..createSync();
-      final targetFile = File(path.join(targetDir.path, 'file.dart'))
-        ..writeAsStringSync('''
+        final targetDir = Directory(path.join(tempDir.path, 'target'))
+          ..createSync();
+        final targetFile = File(path.join(targetDir.path, 'file.dart'))
+          ..writeAsStringSync('''
 class ExistingClass {}
 ''');
 
-      final generator =
-          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
-      await generator.generate(DirectoryGeneratorTarget(targetDir));
+        final generator = await MasonexGenerator.fromBrick(
+          Brick.path(brickDir.path),
+        );
+        await generator.generate(DirectoryGeneratorTarget(targetDir));
 
-      final content = targetFile.readAsStringSync();
-      expect(content, contains('class ExistingClass {}'));
-      expect(content, contains('class NewClass {}'));
-    });
+        final content = targetFile.readAsStringSync();
+        expect(content, contains('class ExistingClass {}'));
+        expect(content, contains('class NewClass {}'));
+      },
+    );
 
     test('merges imports', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
+      final brickDir = Directory(path.join(tempDir.path, 'brick'))
+        ..createSync();
       File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
@@ -326,8 +363,9 @@ import 'package:old_pkg/old_pkg.dart';
 var list = ['naranja'];
 ''');
 
-      final generator =
-          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(
+        Brick.path(brickDir.path),
+      );
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
@@ -337,7 +375,8 @@ var list = ['naranja'];
     });
 
     test('handles variables with same name in different scopes', () async {
-      final brickDir = Directory(path.join(tempDir.path, 'brick'))..createSync();
+      final brickDir = Directory(path.join(tempDir.path, 'brick'))
+        ..createSync();
       File(path.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: test_brick
 description: test
@@ -364,13 +403,17 @@ class MyClass {
 }
 ''');
 
-      final generator =
-          await MasonexGenerator.fromBrick(Brick.path(brickDir.path));
+      final generator = await MasonexGenerator.fromBrick(
+        Brick.path(brickDir.path),
+      );
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
       expect(content, contains("var list = ['top_naranja', 'top_banana']"));
-      expect(content, contains("static var list = ['class_naranja', 'class_banana']"));
+      expect(
+        content,
+        contains("static var list = ['class_naranja', 'class_banana']"),
+      );
     });
   });
 }

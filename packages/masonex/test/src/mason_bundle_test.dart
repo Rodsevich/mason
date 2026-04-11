@@ -100,11 +100,7 @@ void main() {
         isA<MasonexBundle>()
             .having((file) => file.name, 'name', instance.name)
             .having((file) => file.version, 'version', instance.version)
-            .having(
-              (file) => file.publishTo,
-              'publishTo',
-              instance.publishTo,
-            )
+            .having((file) => file.publishTo, 'publishTo', instance.publishTo)
             .having((file) => file.vars, 'vars', instance.vars)
             .having((file) => file.files, 'files', instance.files)
             .having((file) => file.hooks, 'hooks', instance.hooks)

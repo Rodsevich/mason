@@ -21,7 +21,9 @@ class InitCommand extends MasonexCommand with InstallBrickMixin {
   @override
   Future<int> run() async {
     if (File(p.join(cwd.path, MasonexYaml.file)).existsSync()) {
-      logger.err('Existing ${MasonexYaml.file} at ${p.join(cwd.path, MasonexYaml.file)}');
+      logger.err(
+        'Existing ${MasonexYaml.file} at ${p.join(cwd.path, MasonexYaml.file)}',
+      );
       return ExitCode.usage.code;
     }
     final progress = logger.progress('Initializing');
@@ -41,11 +43,11 @@ class InitCommand extends MasonexCommand with InstallBrickMixin {
 
 class _MasonexYamlGenerator extends MasonexGenerator {
   _MasonexYamlGenerator()
-      : super(
-          '__masonex_init__',
-          'Initialize a new ${MasonexYaml.file}',
-          files: [TemplateFile(MasonexYaml.file, _masonexYamlContent)],
-        );
+    : super(
+        '__masonex_init__',
+        'Initialize a new ${MasonexYaml.file}',
+        files: [TemplateFile(MasonexYaml.file, _masonexYamlContent)],
+      );
 
   static const _masonexYamlContent = '''
 # Register bricks which can be consumed via the Masonex CLI.

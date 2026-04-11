@@ -9,12 +9,12 @@ final photosBundle = MasonexBundle.fromJson(<String, dynamic>{
       "path": "image.png",
       "data":
           "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=",
-      "type": "binary"
-    }
+      "type": "binary",
+    },
   ],
   "hooks": [],
   "name": "photos",
   "description": "A Photos Example Template",
   "version": "1.0.0",
-  "vars": {}
+  "vars": {},
 });
