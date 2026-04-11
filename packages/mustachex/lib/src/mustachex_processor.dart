@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:mustache_recase/mustache_recase.dart' as mustache_recase;
 import 'package:mustachex/mustache.dart';
+import 'package:mustachex/src/mustache_template/renderer.dart'
+    show noSuchProperty;
 import 'package:mustachex/src/variables_resolver.dart';
 import 'package:quiver/collection.dart';
 import 'package:recase/recase.dart';
@@ -20,6 +22,7 @@ typedef PartialResolverFunction = FutureOr<String>? Function(
 typedef _PartialsResolver = Template Function(String partialName);
 
 class MustachexProcessor {
+  final bool lenient;
   FulfillmentFunction? missingVarFulfiller;
   PartialResolverFunction? partialsResolver;
   late VariablesResolver variablesResolver;
@@ -29,7 +32,8 @@ class MustachexProcessor {
   final Map<String, Map> _sourceCache = {};
 
   MustachexProcessor(
-      {Map? initialVariables,
+      {this.lenient = false,
+      Map? initialVariables,
       this.missingVarFulfiller,
       this.partialsResolver,
       VariablesResolver? variablesResolver})
@@ -61,11 +65,13 @@ class MustachexProcessor {
     var e = MissingPartialException(partialName: name);
     var templateSource = partialsResolver!(e) as String?;
     if (templateSource is! String) throw e;
-    return Template(templateSource, partialResolver: _partialsResolverAdapted);
+    return Template(templateSource,
+        partialResolver: _partialsResolverAdapted, lenient: lenient);
   }
 
   Map<String?, dynamic> _mustacheVars(String source) {
-    var template = Template(source, partialResolver: _partialsResolverAdapted);
+    var template = Template(source,
+        partialResolver: _partialsResolverAdapted, lenient: lenient);
     return _gatherTemplateRequiredVars(template);
   }
 
@@ -105,8 +111,8 @@ class MustachexProcessor {
             // ignore: unused_local_variable
             var type = matches[i].group(1);
             var contents = matches[i].group(2)!;
-            var sectionSourceTemplate =
-                Template(contents, partialResolver: _partialsResolverAdapted);
+            var sectionSourceTemplate = Template(contents,
+                partialResolver: _partialsResolverAdapted, lenient: lenient);
             // if (e.contains("for inverse section")) {
             // } else if (e.contains("for section")) {
             // if (type == '^') {
@@ -133,7 +139,7 @@ class MustachexProcessor {
     if (_sourceCache[source] == null) {
       _sourceCache[source] = {
         'template': Template(source,
-            lenient: false,
+            lenient: lenient,
             partialResolver: partialsResolver,
             htmlEscapeValues: false),
         'variables': _mustacheVars(source)
@@ -172,8 +178,8 @@ class MustachexProcessor {
               request.add(recasedName);
               storeLocation.add(variable);
               var storedVar = variablesResolver.get(request);
-              variablesResolver[storeLocation] =
-                  _processHasXStoringValue(storedVar);
+              variablesResolver.setByList(
+                  storeLocation, _processHasXStoringValue(storedVar));
               // print('Problem solved by defining '
               //     "'$variable' to ${variablesResolver[storeLocation]}");
             }
@@ -232,15 +238,15 @@ class MustachexProcessor {
               return _tryRender();
             }
           }
-          if (preExistentVar != null) {
+          if (preExistentVar != noSuchProperty && preExistentVar != null) {
             // guardamos el valor recaseado
-            variablesResolver[ex.parentCollectionsWithRequest] =
-                variablesResolver.get(ex.parentCollectionsWithRequest);
+            variablesResolver.setByList(ex.parentCollectionsWithRequest,
+                variablesResolver.get(ex.parentCollectionsWithRequest));
             // print("Problem solved by recasing it to '$recasingAttempt'");
           } else {
             if (missingVarFulfiller == null) throw ex;
             var value = await missingVarFulfiller!(ex);
-            variablesResolver[ex.parentCollectionsWithVarName] = value;
+            variablesResolver.setByList(ex.parentCollectionsWithVarName, value);
             // print("Problem solved by asking user ('$value' answered)");
           }
           return _tryRender();
@@ -343,7 +349,7 @@ void _throwImpossibleState() {
 
 /// Determines whether the hasStoredValue is true or false
 bool _processHasXStoringValue(storedVar) {
-  if (storedVar == null) {
+  if (storedVar == null || storedVar == noSuchProperty) {
     return false;
   } else if (storedVar is bool) {
     return true;

@@ -1,1 +1,5 @@
-import 'package:masonex/masonex.dart';void run(HookContext context){'✨'.trim();}
+import 'package:masonex/masonex.dart';
+
+void run(HookContext context) {
+  '✨'.trim();
+}

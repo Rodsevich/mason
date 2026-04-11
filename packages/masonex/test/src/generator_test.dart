@@ -995,7 +995,7 @@ void main() {
     group('generate', () {
       test('generates app_icon from remote url', () async {
         const url =
-            'https://raw.githubusercontent.com/felangel/masonex/master/assets/masonex_logo.png';
+            'https://raw.githubusercontent.com/felangel/masonex/master/assets/mason_logo.png';
         final brick = Brick.path(path.join('..', '..', 'bricks', 'app_icon'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
@@ -1014,7 +1014,7 @@ void main() {
       });
 
       test('generates app_icon from local url', () async {
-        final url = path.join('..', '..', 'assets', 'masonex_logo.png');
+        final url = path.join('..', '..', 'assets', 'mason_logo.png');
         final brick = Brick.path(path.join('..', '..', 'bricks', 'app_icon'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();

@@ -46,9 +46,8 @@ void main() {
     });
 
     test('parses a brick template from a universal bundle', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'universal'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'universal'))
+        ..createSync(recursive: true);
       final bundlePath = path.join(
         '..',
         '..',
@@ -60,14 +59,9 @@ void main() {
       final result = await commandRunner.run(['unbundle', bundlePath]);
       expect(result, equals(ExitCode.success.code));
       final actual = Directory(
-        path.join(
-          testFixturesPath(cwd, suffix: '.unbundle'),
-          'universal',
-        ),
+        path.join(testFixturesPath(cwd, suffix: '.unbundle'), 'universal'),
       );
-      final expected = Directory(
-        testFixturesPath(cwd, suffix: 'unbundle'),
-      );
+      final expected = Directory(testFixturesPath(cwd, suffix: 'unbundle'));
       expect(directoriesDeepEqual(actual, expected), isTrue);
       verify(() => logger.progress('Unbundling greeting')).called(1);
       verify(() => progress.complete('Generated 1 brick.')).called(1);
@@ -77,9 +71,8 @@ void main() {
     });
 
     test('parses a brick template from a dart bundle', () async {
-      final testDir = Directory(
-        path.join(Directory.current.path, 'dart'),
-      )..createSync(recursive: true);
+      final testDir = Directory(path.join(Directory.current.path, 'dart'))
+        ..createSync(recursive: true);
       final bundlePath = path.join(
         '..',
         '..',
@@ -88,19 +81,17 @@ void main() {
         'greeting_bundle.dart',
       );
       Directory.current = testDir.path;
-      final result = await commandRunner.run(
-        ['unbundle', bundlePath, '-t', 'dart'],
-      );
+      final result = await commandRunner.run([
+        'unbundle',
+        bundlePath,
+        '-t',
+        'dart',
+      ]);
       expect(result, equals(ExitCode.success.code));
       final actual = Directory(
-        path.join(
-          testFixturesPath(cwd, suffix: '.unbundle'),
-          'dart',
-        ),
+        path.join(testFixturesPath(cwd, suffix: '.unbundle'), 'dart'),
       );
-      final expected = Directory(
-        testFixturesPath(cwd, suffix: 'unbundle'),
-      );
+      final expected = Directory(testFixturesPath(cwd, suffix: 'unbundle'));
       expect(directoriesDeepEqual(actual, expected), isTrue);
       verify(() => logger.progress('Unbundling greeting_bundle')).called(1);
       verify(() => progress.complete('Generated 1 brick.')).called(1);
@@ -112,9 +103,7 @@ void main() {
     test('exits with code 64 when no bundle path is provided', () async {
       final result = await commandRunner.run(['unbundle']);
       expect(result, equals(ExitCode.usage.code));
-      verify(
-        () => logger.err('path to the bundle must be provided'),
-      ).called(1);
+      verify(() => logger.err('path to the bundle must be provided')).called(1);
       verifyNever(() => logger.progress(any()));
     });
 
@@ -128,23 +117,21 @@ void main() {
       verifyNever(() => logger.progress(any()));
     });
 
-    test('exists with code 64 when exception occurs during unbundling',
-        () async {
-      final progress = _MockProgress();
-      when(() => progress.complete(any())).thenAnswer((invocation) {
-        final update = invocation.positionalArguments[0] as String?;
-        if (update == 'Generated 1 brick.') throw const MasonexException('oops');
-      });
-      when(() => logger.progress(any())).thenReturn(progress);
-      final bundlePath = path.join(
-        '..',
-        '..',
-        'bundles',
-        'greeting.bundle',
-      );
-      final result = await commandRunner.run(['unbundle', bundlePath]);
-      expect(result, equals(ExitCode.usage.code));
-      verify(() => logger.err('oops')).called(1);
-    });
+    test(
+      'exists with code 64 when exception occurs during unbundling',
+      () async {
+        final progress = _MockProgress();
+        when(() => progress.complete(any())).thenAnswer((invocation) {
+          final update = invocation.positionalArguments[0] as String?;
+          if (update == 'Generated 1 brick.')
+            throw const MasonexException('oops');
+        });
+        when(() => logger.progress(any())).thenReturn(progress);
+        final bundlePath = path.join('..', '..', 'bundles', 'greeting.bundle');
+        final result = await commandRunner.run(['unbundle', bundlePath]);
+        expect(result, equals(ExitCode.usage.code));
+        verify(() => logger.err('oops')).called(1);
+      },
+    );
   });
 }

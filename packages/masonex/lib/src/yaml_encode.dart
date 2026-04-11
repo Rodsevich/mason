@@ -2,6 +2,7 @@
 class MasonexYamlEncoder {
   /// Encodes a [Map<String, dynamic>] as `yaml` similar to `json.encode`.
   static String encode(Map<dynamic, dynamic> json, [int nestingLevel = 0]) {
+    if (json.isEmpty) return ' {}';
     return json.entries
         .map((entry) => _formatEntry(entry, nestingLevel))
         .join('\n');
@@ -9,14 +10,21 @@ class MasonexYamlEncoder {
 }
 
 String _formatEntry(MapEntry<dynamic, dynamic> entry, int nesting) {
+  if (entry.key == 'vars' || entry.key == 'in_file_generations') {
+    if (entry.value is Map && (entry.value as Map).isEmpty) {
+      return '${_indentation(nesting)}${entry.key}: {}';
+    }
+  }
   return '''${_indentation(nesting)}${entry.key}:${_formatValue(entry.value, nesting)}''';
 }
 
 String _formatValue(dynamic value, int nesting) {
-  if (value is Map<String, dynamic>) {
+  if (value is Map<dynamic, dynamic>) {
+    if (value.isEmpty) return ' {}';
     return '\n${MasonexYamlEncoder.encode(value, nesting + 1)}';
   }
   if (value is List<dynamic>) {
+    if (value.isEmpty) return ' []';
     return '\n${_formatList(value, nesting + 1)}';
   }
   if (value is String) {
@@ -37,9 +45,11 @@ String _formatValue(dynamic value, int nesting) {
 }
 
 String _formatList(List<dynamic> list, int nesting) {
-  return list.map((dynamic value) {
-    return '${_indentation(nesting)}-${_formatValue(value, nesting + 2)}';
-  }).join('\n');
+  return list
+      .map((dynamic value) {
+        return '${_indentation(nesting)}-${_formatValue(value, nesting + 2)}';
+      })
+      .join('\n');
 }
 
 String _indentation(int nesting) => _spaces(nesting * 2);
@@ -55,16 +65,7 @@ final _specialCharacters = ':{}[],&*#?|-<>=!%@'.split('');
 bool _containsEscapeCharacters(String s) =>
     _escapeCharacters.any((c) => s.contains(c));
 
-final _escapeCharacters = [
-  r'\',
-  '\r',
-  '\t',
-  '\n',
-  '"',
-  "'",
-  '',
-  '',
-];
+final _escapeCharacters = [r'\', '\r', '\t', '\n', '"', "'", '', ''];
 
 String _withEscapes(String s) => s
     .replaceAll(r'\', r'\\')

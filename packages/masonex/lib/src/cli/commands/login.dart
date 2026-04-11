@@ -9,7 +9,7 @@ import 'package:masonex/src/cli/command_runner.dart';
 class LoginCommand extends MasonexCommand {
   /// {@macro login_command}
   LoginCommand({super.logger, MasonApiBuilder? masonApiBuilder})
-      : _masonApiBuilder = masonApiBuilder ?? MasonApi.new;
+    : _masonApiBuilder = masonApiBuilder ?? MasonApi.new;
 
   final MasonApiBuilder _masonApiBuilder;
 

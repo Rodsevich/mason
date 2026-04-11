@@ -243,8 +243,8 @@ void main() {
     group('Binary data support', () {
       test('Uint8List variable renders exact bytes without corruption',
           () async {
-        final binaryData =
-            Uint8List.fromList([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+        final binaryData = Uint8List.fromList(
+            [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
         var p = MustachexProcessor(initialVariables: {'img': binaryData});
         var result = await p.processBytes('{{{img}}}');
         expect(result, equals(binaryData));
@@ -259,11 +259,10 @@ void main() {
         final prefix = 'test: '.codeUnits;
         final suffix = ' end'.codeUnits;
         expect(result.sublist(0, prefix.length), equals(prefix));
-        expect(
-            result.sublist(prefix.length, prefix.length + binaryData.length),
+        expect(result.sublist(prefix.length, prefix.length + binaryData.length),
             equals(binaryData));
-        expect(result.sublist(prefix.length + binaryData.length),
-            equals(suffix));
+        expect(
+            result.sublist(prefix.length + binaryData.length), equals(suffix));
       });
 
       test('List<int> works the same as Uint8List', () async {

@@ -50,8 +50,8 @@ class BrickIncompatibleMasonexVersion extends MasonexException {
     required String brickName,
     required String constraint,
   }) : super(
-          '''The current masonex version is $packageVersion.\nBecause $brickName requires masonex version $constraint, version solving failed.''',
-        );
+         '''The current masonex version is $packageVersion.\nBecause $brickName requires masonex version $constraint, version solving failed.''',
+       );
 }
 
 /// {@template cached_brick}
@@ -280,19 +280,19 @@ class BricksJson {
     final directory = Directory.systemTemp.createTempSync();
     await Git.run(['clone', gitPath.url, directory.path]);
     if (gitPath.ref != null) {
-      await Git.run(
-        ['checkout', gitPath.ref!],
-        processWorkingDir: directory.path,
-      );
+      await Git.run([
+        'checkout',
+        gitPath.ref!,
+      ], processWorkingDir: directory.path);
     }
     return directory;
   }
 
   Future<String> _revParse(Directory directory) async {
-    final result = await Git.run(
-      ['rev-parse', 'HEAD'],
-      processWorkingDir: directory.path,
-    );
+    final result = await Git.run([
+      'rev-parse',
+      'HEAD',
+    ], processWorkingDir: directory.path);
     return (result.stdout as String).trim();
   }
 
@@ -385,10 +385,13 @@ class BricksJson {
     late final List<Version> versions;
     try {
       final _versions = body['versions'] as List;
-      versions = _versions
-          .map((dynamic v) => Version.parse((v as Map)['version'] as String))
-          .toList()
-        ..sort(Version.antiprioritize);
+      versions =
+          _versions
+              .map(
+                (dynamic v) => Version.parse((v as Map)['version'] as String),
+              )
+              .toList()
+            ..sort(Version.antiprioritize);
     } catch (_) {
       throw BrickResolveVersionException(
         'Unable to parse available versions for brick "${brick.name}".',

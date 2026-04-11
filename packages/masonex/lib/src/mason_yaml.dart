@@ -13,7 +13,7 @@ part 'mason_yaml.g.dart';
 class MasonexYaml {
   /// {@macro masonex_yaml}
   const MasonexYaml(Map<String, BrickLocation>? bricks)
-      : bricks = bricks ?? const <String, BrickLocation>{};
+    : bricks = bricks ?? const <String, BrickLocation>{};
 
   /// Converts [Map] to [MasonexYaml]
   factory MasonexYaml.fromJson(Map<dynamic, dynamic> json) =>

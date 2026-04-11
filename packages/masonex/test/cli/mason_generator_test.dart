@@ -19,7 +19,9 @@ void main() {
 
     group('.fromBundle', () {
       test('creates a generator from bundle (legacy)', () async {
-        final generator = await MasonexGenerator.fromBundle(legacyGreetingBundle);
+        final generator = await MasonexGenerator.fromBundle(
+          legacyGreetingBundle,
+        );
         final hooks = generator.hooks;
 
         expect(hooks.preGenHook, isNull);
@@ -83,10 +85,7 @@ void main() {
           logger: logger,
         );
         expect(files.length, equals(1));
-        expect(
-          File(path.join(target.path, 'hooks.md')).existsSync(),
-          isTrue,
-        );
+        expect(File(path.join(target.path, 'hooks.md')).existsSync(), isTrue);
 
         await hooks.postGen(vars: vars, workingDirectory: target.path);
         expect(

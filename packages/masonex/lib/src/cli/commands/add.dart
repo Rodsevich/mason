@@ -14,11 +14,7 @@ class AddCommand extends MasonexCommand with InstallBrickMixin {
   /// {@macro add_command}
   AddCommand({super.logger}) {
     argParser
-      ..addFlag(
-        'global',
-        abbr: 'g',
-        help: 'Adds the brick globally.',
-      )
+      ..addFlag('global', abbr: 'g', help: 'Adds the brick globally.')
       ..addOption('git-url', help: 'Git URL of the brick')
       ..addOption('git-ref', help: 'Git branch or commit to be used')
       ..addOption('git-path', help: 'Path of the brick in the git repository')
@@ -42,7 +38,10 @@ class AddCommand extends MasonexCommand with InstallBrickMixin {
 
     late final Brick brick;
     if (path != null) {
-      brick = Brick(name: name, location: BrickLocation(path: path));
+      brick = Brick(
+        name: name,
+        location: BrickLocation(path: path),
+      );
     } else if (gitUrl != null) {
       brick = Brick(
         name: name,
@@ -61,14 +60,22 @@ class AddCommand extends MasonexCommand with InstallBrickMixin {
         );
       }
       final version = results.rest.length == 2 ? results.rest.last : 'any';
-      brick = Brick(name: name, location: BrickLocation(version: version));
+      brick = Brick(
+        name: name,
+        location: BrickLocation(version: version),
+      );
     }
     final masonexYaml = isGlobal ? globalMasonexYaml : localMasonexYaml;
-    final masonexYamlFile = isGlobal ? globalMasonexYamlFile : localMasonexYamlFile;
+    final masonexYamlFile = isGlobal
+        ? globalMasonexYamlFile
+        : localMasonexYamlFile;
     final bricksJson = isGlobal ? globalBricksJson : localBricksJson;
-    final masonexLockJson = isGlobal ? globalMasonexLockJson : localMasonexLockJson;
-    final masonexLockJsonFile =
-        isGlobal ? globalMasonexLockJsonFile : localMasonexLockJsonFile;
+    final masonexLockJson = isGlobal
+        ? globalMasonexLockJson
+        : localMasonexLockJson;
+    final masonexLockJsonFile = isGlobal
+        ? globalMasonexLockJsonFile
+        : localMasonexLockJsonFile;
     if (bricksJson == null) throw const MasonexYamlNotFoundException();
     final cachedPath = bricksJson.getPath(brick);
     if (cachedPath != null) {
@@ -85,7 +92,9 @@ class AddCommand extends MasonexCommand with InstallBrickMixin {
 
       final bricks = Map.of(masonexYaml.bricks)
         ..removeWhere((key, value) => key == brick.name);
-      masonexYamlFile.writeAsStringSync(MasonexYamlEncoder.encode(MasonexYaml(bricks).toJson()));
+      masonexYamlFile.writeAsStringSync(
+        MasonexYamlEncoder.encode(MasonexYaml(bricks).toJson()),
+      );
 
       final lockedBricks = {...masonexLockJson.bricks}
         ..removeWhere((key, value) => key == brick.name);
@@ -117,13 +126,13 @@ class AddCommand extends MasonexCommand with InstallBrickMixin {
     final location = brick.location.version != null
         ? BrickLocation(version: '^${brickYaml.version}')
         : brick.location.path != null
-            ? BrickLocation(
-                path: p.relative(
-                  canonicalize(Directory(brick.location.path!).absolute.path),
-                  from: masonexYamlFile.parent.path,
-                ),
-              )
-            : brick.location;
+        ? BrickLocation(
+            path: p.relative(
+              canonicalize(Directory(brick.location.path!).absolute.path),
+              from: masonexYamlFile.parent.path,
+            ),
+          )
+        : brick.location;
     final bricks = Map.of(masonexYaml.bricks)..addAll({name: location});
     progress.update('Adding ${brickYaml.name}');
     try {
@@ -143,9 +152,12 @@ class AddCommand extends MasonexCommand with InstallBrickMixin {
     final bricksJson = global ? globalBricksJson : localBricksJson;
     if (bricksJson == null) throw const MasonexYamlNotFoundException();
 
-    final masonexLockJsonFile =
-        global ? globalMasonexLockJsonFile : localMasonexLockJsonFile;
-    final masonexLockJson = global ? globalMasonexLockJson : localMasonexLockJson;
+    final masonexLockJsonFile = global
+        ? globalMasonexLockJsonFile
+        : localMasonexLockJsonFile;
+    final masonexLockJson = global
+        ? globalMasonexLockJson
+        : localMasonexLockJson;
     final location = resolveBrickLocation(
       location: brick.location,
       lockedLocation: masonexLockJson.bricks[brick.name],

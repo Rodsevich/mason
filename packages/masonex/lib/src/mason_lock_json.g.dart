@@ -7,12 +7,10 @@ part of 'mason_lock_json.dart';
 // **************************************************************************
 
 MasonexLockJson _$MasonexLockJsonFromJson(Map json) => MasonexLockJson(
-      bricks: (json['bricks'] as Map?)?.map(
-        (k, e) => MapEntry(k as String, BrickLocation.fromJson(e)),
-      ),
-    );
+  bricks: (json['bricks'] as Map?)?.map(
+    (k, e) => MapEntry(k as String, BrickLocation.fromJson(e)),
+  ),
+);
 
 Map<String, dynamic> _$MasonexLockJsonToJson(MasonexLockJson instance) =>
-    <String, dynamic>{
-      'bricks': instance.bricks,
-    };
+    <String, dynamic>{'bricks': instance.bricks};

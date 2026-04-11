@@ -23,7 +23,9 @@ mixin InstallBrickMixin on MasonexCommand {
           location: entry.value,
           lockedLocation: upgrade ? null : lockJson.bricks[entry.key],
         );
-        final masonexYamlFile = global ? globalMasonexYamlFile : localMasonexYamlFile;
+        final masonexYamlFile = global
+            ? globalMasonexYamlFile
+            : localMasonexYamlFile;
         final normalizedLocation = location.path != null
             ? BrickLocation(
                 path: canonicalize(
@@ -34,9 +36,9 @@ mixin InstallBrickMixin on MasonexCommand {
         final cachedBrick = await bricksJson.add(
           Brick(name: entry.key, location: normalizedLocation),
         );
-        resolvedBricks.addAll(
-          <String, BrickLocation>{entry.key: cachedBrick.brick.location},
-        );
+        resolvedBricks.addAll(<String, BrickLocation>{
+          entry.key: cachedBrick.brick.location,
+        });
         final generator = await MasonexGenerator.fromBrick(
           Brick.path(cachedBrick.path),
         );
@@ -80,8 +82,9 @@ mixin InstallBrickMixin on MasonexCommand {
       }
     } finally {
       await bricksJson.flush();
-      final masonexLockJsonFile =
-          global ? globalMasonexLockJsonFile : localMasonexLockJsonFile;
+      final masonexLockJsonFile = global
+          ? globalMasonexLockJsonFile
+          : localMasonexLockJsonFile;
       await masonexLockJsonFile.writeAsString(
         json.encode(MasonexLockJson(bricks: resolvedBricks.sorted())),
       );

@@ -22,12 +22,10 @@ const executableName = 'masonex';
 /// {@endtemplate}
 class MasonexCommandRunner extends CompletionCommandRunner<int> {
   /// {@macro masonex_command_runner}
-  MasonexCommandRunner({
-    Logger? logger,
-    PubUpdater? pubUpdater,
-  })  : _logger = logger ?? Logger(),
-        _pubUpdater = pubUpdater ?? PubUpdater(),
-        super(executableName, '🧱  masonex \u{2022} lay the foundation!') {
+  MasonexCommandRunner({Logger? logger, PubUpdater? pubUpdater})
+    : _logger = logger ?? Logger(),
+      _pubUpdater = pubUpdater ?? PubUpdater(),
+      super(executableName, '🧱  masonex \u{2022} lay the foundation!') {
     argParser.addFlags();
     addCommand(AddCommand(logger: _logger));
     addCommand(BuildCommand(logger: _logger));
@@ -113,12 +111,10 @@ class MasonexCommandRunner extends CompletionCommandRunner<int> {
         );
         _logger
           ..info('')
-          ..info(
-            '''
+          ..info('''
 ${lightYellow.wrap('Update available!')} ${lightCyan.wrap(packageVersion)} \u2192 ${lightCyan.wrap(latestVersion)}
 ${lightYellow.wrap('Changelog:')} $changelogLink
-Run ${cyan.wrap('masonex update')} to update''',
-          );
+Run ${cyan.wrap('masonex update')} to update''');
       }
     } catch (_) {}
   }
@@ -126,10 +122,6 @@ Run ${cyan.wrap('masonex update')} to update''',
 
 extension on ArgParser {
   void addFlags() {
-    addFlag(
-      'version',
-      negatable: false,
-      help: 'Print the current version.',
-    );
+    addFlag('version', negatable: false, help: 'Print the current version.');
   }
 }

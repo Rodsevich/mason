@@ -18,5 +18,5 @@ class MasonexException implements Exception {
 class BrickNotFoundException extends MasonexException {
   /// {@macro brick_not_found_exception}
   const BrickNotFoundException(String path)
-      : super('Could not find brick at $path');
+    : super('Could not find brick at $path');
 }

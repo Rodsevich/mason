@@ -35,9 +35,10 @@ void main() {
       when(
         () => pubUpdater.getLatestVersion(any()),
       ).thenAnswer((_) async => packageVersion);
-      await MasonexCommandRunner(logger: logger, pubUpdater: pubUpdater).run(
-        ['cache', 'clear'],
-      );
+      await MasonexCommandRunner(
+        logger: logger,
+        pubUpdater: pubUpdater,
+      ).run(['cache', 'clear']);
     });
 
     setUp(() {
@@ -62,8 +63,9 @@ void main() {
 
     group('local', () {
       setUp(() {
-        File(p.join(Directory.current.path, 'masonex.yaml'))
-            .writeAsStringSync('bricks:');
+        File(
+          p.join(Directory.current.path, 'masonex.yaml'),
+        ).writeAsStringSync('bricks:');
       });
 
       test('exits with code 64 when brick name is not provided', () async {
@@ -88,21 +90,21 @@ void main() {
         });
         when(() => logger.progress(any())).thenReturn(progress);
         const url = 'https://github.com/felangel/mason';
-        final addResult = await commandRunner.run(
-          [
-            'add',
-            'widget',
-            '--git-url',
-            url,
-            '--git-path',
-            'bricks/widget',
-            '--git-ref',
-            '997bc878c93534fad17d965be7cafe948a1dbb53',
-          ],
-        );
+        final addResult = await commandRunner.run([
+          'add',
+          'widget',
+          '--git-url',
+          url,
+          '--git-path',
+          'bricks/widget',
+          '--git-ref',
+          '997bc878c93534fad17d965be7cafe948a1dbb53',
+        ]);
         expect(addResult, equals(ExitCode.success.code));
 
-        final masonexYaml = File(p.join(Directory.current.path, 'masonex.yaml'));
+        final masonexYaml = File(
+          p.join(Directory.current.path, 'masonex.yaml'),
+        );
         expect(masonexYaml.readAsStringSync(), contains('widget:'));
 
         const key = 'widget';
@@ -118,8 +120,10 @@ void main() {
         final bricksJson = File(
           p.join(Directory.current.path, '.masonex', 'bricks.json'),
         );
-        final bricksJsonContent =
-            bricksJson.readAsStringSync().replaceAll(r'\\', r'\');
+        final bricksJsonContent = bricksJson.readAsStringSync().replaceAll(
+          r'\\',
+          r'\',
+        );
         expect(bricksJsonContent, contains('"$key":"$value"'));
 
         final removeResult = await commandRunner.run(['remove', 'widget']);
@@ -129,21 +133,21 @@ void main() {
 
       test('removes successfully when brick exists', () async {
         const url = 'https://github.com/felangel/mason';
-        final addResult = await commandRunner.run(
-          [
-            'add',
-            'widget',
-            '--git-url',
-            url,
-            '--git-path',
-            'bricks/widget',
-            '--git-ref',
-            '997bc878c93534fad17d965be7cafe948a1dbb53',
-          ],
-        );
+        final addResult = await commandRunner.run([
+          'add',
+          'widget',
+          '--git-url',
+          url,
+          '--git-path',
+          'bricks/widget',
+          '--git-ref',
+          '997bc878c93534fad17d965be7cafe948a1dbb53',
+        ]);
         expect(addResult, equals(ExitCode.success.code));
 
-        final masonexYaml = File(p.join(Directory.current.path, 'masonex.yaml'));
+        final masonexYaml = File(
+          p.join(Directory.current.path, 'masonex.yaml'),
+        );
         expect(masonexYaml.readAsStringSync(), contains('widget:'));
 
         const key = 'widget';
@@ -159,8 +163,10 @@ void main() {
         final bricksJson = File(
           p.join(Directory.current.path, '.masonex', 'bricks.json'),
         );
-        final bricksJsonContent =
-            bricksJson.readAsStringSync().replaceAll(r'\\', r'\');
+        final bricksJsonContent = bricksJson.readAsStringSync().replaceAll(
+          r'\\',
+          r'\',
+        );
         expect(bricksJsonContent, contains('"$key":"$value"'));
 
         final removeResult = await commandRunner.run(['remove', 'widget']);
@@ -178,8 +184,9 @@ void main() {
     group('global', () {
       setUp(() {
         try {
-          File(p.join(Directory.current.path, 'masonex.yaml'))
-              .deleteSync(recursive: true);
+          File(
+            p.join(Directory.current.path, 'masonex.yaml'),
+          ).deleteSync(recursive: true);
         } catch (_) {}
       });
 
@@ -197,22 +204,22 @@ void main() {
 
       test('removes successfully when brick exists', () async {
         const url = 'https://github.com/felangel/mason';
-        final addResult = await commandRunner.run(
-          [
-            'add',
-            '-g',
-            'widget',
-            '--git-url',
-            url,
-            '--git-path',
-            'bricks/widget',
-            '--git-ref',
-            '997bc878c93534fad17d965be7cafe948a1dbb53',
-          ],
-        );
+        final addResult = await commandRunner.run([
+          'add',
+          '-g',
+          'widget',
+          '--git-url',
+          url,
+          '--git-path',
+          'bricks/widget',
+          '--git-ref',
+          '997bc878c93534fad17d965be7cafe948a1dbb53',
+        ]);
         expect(addResult, equals(ExitCode.success.code));
 
-        final masonexYaml = File(p.join(BricksJson.globalDir.path, 'masonex.yaml'));
+        final masonexYaml = File(
+          p.join(BricksJson.globalDir.path, 'masonex.yaml'),
+        );
         expect(masonexYaml.readAsStringSync(), contains('widget:'));
 
         const key = 'widget';
@@ -228,12 +235,17 @@ void main() {
         final bricksJson = File(
           p.join(BricksJson.globalDir.path, '.masonex', 'bricks.json'),
         );
-        final bricksJsonContent =
-            bricksJson.readAsStringSync().replaceAll(r'\\', r'\');
+        final bricksJsonContent = bricksJson.readAsStringSync().replaceAll(
+          r'\\',
+          r'\',
+        );
         expect(bricksJsonContent, contains('"$key":"$value"'));
 
-        final removeResult =
-            await commandRunner.run(['remove', '-g', 'widget']);
+        final removeResult = await commandRunner.run([
+          'remove',
+          '-g',
+          'widget',
+        ]);
         expect(removeResult, equals(ExitCode.success.code));
         verify(() => logger.progress('Removing widget')).called(1);
 

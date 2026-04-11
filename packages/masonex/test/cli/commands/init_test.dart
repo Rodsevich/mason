@@ -46,7 +46,9 @@ void main() {
     });
 
     test('exits with code 64 when masonex.yaml already exists', () async {
-      final masonexYaml = File(path.join(Directory.current.path, 'masonex.yaml'));
+      final masonexYaml = File(
+        path.join(Directory.current.path, 'masonex.yaml'),
+      );
       await masonexYaml.create(recursive: true);
       final result = await commandRunner.run(['init']);
       expect(result, equals(ExitCode.usage.code));
