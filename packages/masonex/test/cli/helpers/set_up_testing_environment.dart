@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
-String testFixturesPath(Directory cwd, {String suffix = ''}) {
-  var basePath = cwd.path;
+String testFixturesPath(String cwd, {String suffix = ''}) {
+  var basePath = cwd;
   final fixturesPart = path.join('test', 'fixtures');
   if (basePath.contains(fixturesPart)) {
     basePath = basePath.substring(0, basePath.indexOf(fixturesPart));
@@ -11,7 +11,7 @@ String testFixturesPath(Directory cwd, {String suffix = ''}) {
   return path.join(basePath, fixturesPart, suffix);
 }
 
-void setUpTestingEnvironment(Directory cwd, {String suffix = ''}) {
+void setUpTestingEnvironment(String cwd, {String suffix = ''}) {
   try {
     final testDir = Directory(testFixturesPath(cwd, suffix: suffix));
     if (testDir.existsSync()) testDir.deleteSync(recursive: true);
