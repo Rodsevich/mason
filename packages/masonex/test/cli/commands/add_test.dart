@@ -9,6 +9,7 @@ import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
 import '../helpers/helpers.dart';
+import '../../helpers/get_brick_path.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -17,7 +18,7 @@ class _MockPubUpdater extends Mock implements PubUpdater {}
 class _MockProgress extends Mock implements Progress {}
 
 void main() {
-  final cwd = Directory.current;
+  final cwd = Directory.current.path;
 
   group('masonex add', () {
     late Logger logger;
@@ -69,15 +70,7 @@ void main() {
       });
       when(() => pubUpdater.getLatestVersion(any())).thenThrow(Exception());
       when(() => logger.progress(any())).thenReturn(progress);
-      final brickPath = path.join(
-        '..',
-        '..',
-        '..',
-        '..',
-        '..',
-        'bricks',
-        'greeting',
-      );
+      final brickPath = getBrickPath('greeting');
       final result = await commandRunner.run([
         'add',
         'greeting',
@@ -92,7 +85,7 @@ void main() {
     test('exits with code 70 on hook compilation exception', () async {
       final progress = _MockProgress();
       when(() => logger.progress(any())).thenReturn(progress);
-      final brickPath = path.join('..', '..', 'bricks', 'compilation_error');
+      final brickPath = getBrickPath('compilation_error');
       final result = await commandRunner.run([
         'add',
         'compilation_error',
@@ -142,15 +135,7 @@ void main() {
         });
 
         test('exits with code 64 when name does not match', () async {
-          final brickPath = path.join(
-            '..',
-            '..',
-            '..',
-            '..',
-            '..',
-            'bricks',
-            'greeting',
-          );
+          final brickPath = getBrickPath('greeting');
           final result = await commandRunner.run([
             'add',
             'example',
@@ -167,15 +152,7 @@ void main() {
         });
 
         test('adds brick successfully when brick exists', () async {
-          final brickPath = path.join(
-            '..',
-            '..',
-            '..',
-            '..',
-            '..',
-            'bricks',
-            'greeting',
-          );
+          final brickPath = getBrickPath('greeting');
           final result = await commandRunner.run([
             'add',
             'greeting',
@@ -208,18 +185,9 @@ void main() {
             'from nested directory', () async {
           final nested = Directory(path.join(Directory.current.path, 'nested'))
             ..createSync();
-          final workspace = Directory.current;
-          Directory.current = nested;
-          final brickPath = path.join(
-            '..',
-            '..',
-            '..',
-            '..',
-            '..',
-            '..',
-            'bricks',
-            'greeting',
-          );
+          final workspace = Directory.current.path;
+          Directory.current = nested.path;
+          final brickPath = getBrickPath('greeting');
           final result = await commandRunner.run([
             'add',
             'greeting',
@@ -227,7 +195,7 @@ void main() {
             brickPath,
           ]);
           expect(result, equals(ExitCode.success.code));
-          Directory.current = workspace;
+          Directory.current = workspace.path;
           final testDir = Directory(
             path.join(Directory.current.path, 'greeting'),
           )..createSync(recursive: true);
@@ -430,15 +398,7 @@ void main() {
         });
 
         test('adds brick successfully when brick exists', () async {
-          final brickPath = path.join(
-            '..',
-            '..',
-            '..',
-            '..',
-            '..',
-            'bricks',
-            'greeting',
-          );
+          final brickPath = getBrickPath('greeting');
           final result = await commandRunner.run([
             'add',
             '--global',
@@ -467,15 +427,7 @@ void main() {
         });
 
         test('adds brick successfully when brick exists (shorthand)', () async {
-          final brickPath = path.join(
-            '..',
-            '..',
-            '..',
-            '..',
-            '..',
-            'bricks',
-            'greeting',
-          );
+          final brickPath = getBrickPath('greeting');
           final result = await commandRunner.run([
             'add',
             '-g',

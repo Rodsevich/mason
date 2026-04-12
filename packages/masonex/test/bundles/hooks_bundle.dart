@@ -5,38 +5,49 @@ import 'package:masonex/masonex.dart';
 
 final hooksBundle = MasonexBundle.fromJson(<String, dynamic>{
   "files": [
-    {"path": "hooks.md", "data": "SGkge3tuYW1lfX0h", "type": "text"},
+    {
+      "path": "hooks.md",
+      "data": "SGkge3tuYW1lfX0h",
+      "type": "text"
+    }
   ],
   "hooks": [
     {
       "path": "post_gen.dart",
-      "data":
-          "aW1wb3J0ICdkYXJ0OmlvJztpbXBvcnQgJ3BhY2thZ2U6bWFzb24vbWFzb24uZGFydCc7dm9pZCBydW4oSG9va0NvbnRleHQgY29udGV4dCl7ZmluYWwgZmlsZT1GaWxlKCcucG9zdF9nZW4udHh0Jyk7ZmlsZS53cml0ZUFzU3RyaW5nU3luYygncG9zdF9nZW46ICR7Y29udGV4dC52YXJzWyduYW1lJ119Jyk7fQ==",
-      "type": "text",
+      "data": "aW1wb3J0ICdkYXJ0OmlvJzsKaW1wb3J0ICdwYWNrYWdlOm1hc29uZXgvbWFzb25leC5kYXJ0JzsKCnZvaWQgcnVuKEhvb2tDb250ZXh0IGNvbnRleHQpIHsKICBmaW5hbCBmaWxlID0gRmlsZSgnLnBvc3RfZ2VuLnR4dCcpOwogIGZpbGUud3JpdGVBc1N0cmluZ1N5bmMoJ3Bvc3RfZ2VuOiAke2NvbnRleHQudmFyc1snbmFtZSddfScpOwp9Cg==",
+      "type": "text"
     },
     {
       "path": "pre_gen.dart",
-      "data":
-          "aW1wb3J0ICdkYXJ0OmlvJztpbXBvcnQgJ3BhY2thZ2U6bWFzb24vbWFzb24uZGFydCc7dm9pZCBydW4oSG9va0NvbnRleHQgY29udGV4dCl7ZmluYWwgZmlsZT1GaWxlKCcucHJlX2dlbi50eHQnKTtmaWxlLndyaXRlQXNTdHJpbmdTeW5jKCdwcmVfZ2VuOiAke2NvbnRleHQudmFyc1snbmFtZSddfScpO30=",
-      "type": "text",
+      "data": "aW1wb3J0ICdkYXJ0OmlvJzsKaW1wb3J0ICdwYWNrYWdlOm1hc29uZXgvbWFzb25leC5kYXJ0JzsKCnZvaWQgcnVuKEhvb2tDb250ZXh0IGNvbnRleHQpIHsKICBmaW5hbCBmaWxlID0gRmlsZSgnLnByZV9nZW4udHh0Jyk7CiAgZmlsZS53cml0ZUFzU3RyaW5nU3luYygncHJlX2dlbjogJHtjb250ZXh0LnZhcnNbJ25hbWUnXX0nKTsKfQo=",
+      "type": "text"
     },
     {
       "path": "pubspec.yaml",
-      "data":
-          "bmFtZTogaG9va3NfaG9va3MKCmVudmlyb25tZW50OgogIHNkazogIj49Mi4xMi4wIDwzLjAuMCIKCmRlcGVuZGVuY2llczoKICBtYXNvbjoKICAgIGdpdDoKICAgICAgdXJsOiBodHRwczovL2dpdGh1Yi5jb20vZmVsYW5nZWwvbWFzb24KICAgICAgcGF0aDogcGFja2FnZXMvbWFzb24K",
-      "type": "text",
-    },
+      "data": "bmFtZTogaG9va3NfaG9va3MKZW52aXJvbm1lbnQ6CiAgc2RrOiAiPj0zLjAuMCA8NC4wLjAiCmRlcGVuZGVuY2llczoKICBtYXNvbmV4OiBhbnkKZGVwZW5kZW5jeV9vdmVycmlkZXM6CiAgbWFzb25leDoKICAgIHBhdGg6IC9ob21lL25pY28vc3JjL21hc29uL3BhY2thZ2VzL21hc29uZXgKICBtdXN0YWNoZXg6CiAgICBwYXRoOiAvaG9tZS9uaWNvL3NyYy9tYXNvbi9wYWNrYWdlcy9tdXN0YWNoZXgKICBtYXNvbl9sb2dnZXI6CiAgICBwYXRoOiAvaG9tZS9uaWNvL3NyYy9tYXNvbi9wYWNrYWdlcy9tYXNvbl9sb2dnZXIK",
+      "type": "text"
+    }
   ],
   "name": "hooks",
   "description": "A Hooks Example Template",
   "version": "0.1.0+1",
-  "environment": {"mason": "any"},
+  "environment": {
+    "masonex": "any"
+  },
+  "repository": null,
+  "publish_to": null,
+  "readme": null,
+  "changelog": null,
+  "license": null,
   "vars": {
     "name": {
       "type": "string",
       "description": "Your name",
       "default": "Dash",
+      "defaults": null,
       "prompt": "What is your name?",
-    },
-  },
+      "values": null,
+      "separator": null
+    }
+  }
 });

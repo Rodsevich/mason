@@ -47,7 +47,7 @@ void main() {
         const content = 'Hello world!';
         final source = utf8.encode(content);
         expect(
-          {'{{~ $name }}': source}.resolve(name),
+          {name: source}.resolve(name),
           isA<Template>()
               .having((template) => template.name, 'name', name)
               .having((template) => template.source, 'source', content),
@@ -59,7 +59,7 @@ void main() {
         const content = 'Hello {{#upperCase}}{{name}}{{/upperCase}}!';
         final source = utf8.encode(content);
         expect(
-          {'{{~ $name }}': source}.resolve(name),
+          {name: source}.resolve(name),
           isA<Template>()
               .having((template) => template.name, 'name', name)
               .having((template) => template.source, 'source', content),
@@ -72,7 +72,7 @@ void main() {
         final source = utf8.encode(content);
         const expected = 'Hello {{#upperCase}}{{name}}{{/upperCase}}!';
         expect(
-          {'{{~ $name }}': source}.resolve(name),
+          {name: source}.resolve(name),
           isA<Template>()
               .having((template) => template.name, 'name', name)
               .having((template) => template.source, 'source', expected),

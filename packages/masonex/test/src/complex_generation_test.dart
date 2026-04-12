@@ -30,7 +30,7 @@ vars:
     type: boolean
   name:
     type: string
-inFileGenerations:
+in_file_generations:
   main.dart:
     imports: "Import section"
     classes: "Class section"
@@ -155,7 +155,11 @@ void main() {}
       expect(
         mainContent,
         contains(
-          "import 'package:masonex_test/masonex_test.dart';\n// @GenerateBefore('imports')",
+          '\n'
+          '// Import section\n'
+          "import 'package:masonex_test/masonex_test.dart';\n"
+          '\n'
+          "// @GenerateBefore('imports')",
         ),
       );
     });

@@ -6,6 +6,8 @@ import 'package:masonex/src/bricks_json.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
+import '../helpers/get_brick_path.dart';
+
 void main() {
   group('BricksJson', () {
     test('can be instantiated with local directory', () {
@@ -23,7 +25,7 @@ void main() {
 
       expect(bricksJson.encode, equals('{}'));
 
-      final brick = Brick.path(path.join('..', '..', 'bricks', 'simple'));
+      final brick = Brick.path(getBrickPath('simple'));
       final result = await bricksJson.add(brick);
 
       expect(result.path, isNotEmpty);
@@ -256,7 +258,7 @@ void main() {
         expect(file.existsSync(), isTrue);
         expect(bricksJson.encode, equals('{}'));
         final result = await bricksJson.add(
-          Brick.path(path.join('..', '..', 'bricks', 'simple')),
+          Brick.path(getBrickPath('simple')),
         );
         expect(result.path, isNotEmpty);
         expect(bricksJson.encode, contains('"simple":'));
@@ -543,7 +545,7 @@ environment:
             Brick(
               name: 'simple1',
               location: BrickLocation(
-                path: path.join('..', '..', 'bricks', 'simple'),
+                path: getBrickPath('simple'),
               ),
             ),
           ),
@@ -621,7 +623,7 @@ environment:
         expect(bricksJson.encode, equals('{}'));
         expect(file.readAsStringSync(), isEmpty);
         final result = await bricksJson.add(
-          Brick.path(path.join('..', '..', 'bricks', 'simple')),
+          Brick.path(getBrickPath('simple')),
         );
         expect(result.path, isNotEmpty);
         expect(bricksJson.encode, contains('"simple":'));
@@ -643,7 +645,7 @@ environment:
         final brick = Brick(
           name: 'simple',
           location: BrickLocation(
-            path: path.join('..', '..', 'bricks', 'simple'),
+            path: getBrickPath('simple'),
           ),
         );
         final result = await bricksJson.add(brick);

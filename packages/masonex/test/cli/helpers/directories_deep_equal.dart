@@ -14,8 +14,10 @@ bool directoriesDeepEqual(
   if (a == null && b == null) return true;
   if (a == null || b == null) return false;
 
-  final dirAContents = a.listSync(recursive: true).whereType<File>();
-  final dirBContents = b.listSync(recursive: true).whereType<File>();
+  final dirAContents = a.listSync(recursive: true).whereType<File>().toList()
+    ..sort((fA, fB) => fA.path.compareTo(fB.path));
+  final dirBContents = b.listSync(recursive: true).whereType<File>().toList()
+    ..sort((fA, fB) => fA.path.compareTo(fB.path));
 
   if (dirAContents.length != dirBContents.length) return false;
 

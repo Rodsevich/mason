@@ -14,3 +14,5 @@ bricks:
   simple: ../../bricks/simple
   todos: ../../bricks/todos
   widget: ../../bricks/widget
+  example:
+    path:  ./example

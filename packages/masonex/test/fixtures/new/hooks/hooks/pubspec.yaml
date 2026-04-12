@@ -4,4 +4,4 @@ environment:
   sdk: ^3.5.4
 
 dependencies:
-  masonex: ^0.1.2
+  masonex: ^0.0.1

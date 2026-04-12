@@ -217,7 +217,7 @@ extension RenderTemplate on String {
 
 extension ResolvePartial on Map<String, List<int>> {
   Template? resolve(String name) {
-    final content = this['{{~ $name }}'];
+    final content = this[name];
     if (content == null) return null;
     final decoded = utf8.decode(content);
     final transpiled = _transpileMasonSyntax(decoded);

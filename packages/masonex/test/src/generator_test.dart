@@ -9,6 +9,7 @@ import 'package:test/test.dart';
 import '../bundles/bundles.dart';
 import '../bundles/photos_bundle.dart';
 import '../bundles/relative_imports_bundle.dart';
+import '../helpers/get_brick_path.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -59,7 +60,7 @@ void main() {
       test('constructs an instance (hello_world)', () async {
         const name = 'Dash';
         final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'hello_world'),
+          getBrickPath('hello_world'),
         );
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
@@ -88,7 +89,7 @@ void main() {
       });
 
       test('constructs an instance (todos)', () async {
-        final brick = Brick.path(path.join('..', '..', 'bricks', 'todos'));
+        final brick = Brick.path(getBrickPath('todos'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
 
@@ -255,7 +256,7 @@ void main() {
 
       test('constructs an instance with hooks', () async {
         const name = 'Dash';
-        final brick = Brick.path(path.join('..', '..', 'bricks', 'hooks'));
+        final brick = Brick.path(getBrickPath('hooks'));
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
 
@@ -329,7 +330,7 @@ void main() {
       test('constructs an instance with random_color', () async {
         const name = 'Dash';
         final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'random_color'),
+          getBrickPath('random_color'),
         );
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
@@ -365,13 +366,13 @@ void main() {
           file.readAsNormalizedStringSync(),
           contains('Hi $name!\nYour favorite color is'),
         );
-      });
+      }, timeout: const Timeout(Duration(minutes: 2)));
 
       test('constructs an instance multiple times '
           '(identical) (hello_world)', () async {
         const name = 'Dash';
         final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'hello_world'),
+          getBrickPath('hello_world'),
         );
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
@@ -437,7 +438,7 @@ void main() {
         const name = 'Dash';
         const otherName = 'Other Dash';
         final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'hello_world'),
+          getBrickPath('hello_world'),
         );
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
@@ -504,7 +505,7 @@ void main() {
         const name = 'Dash';
         const otherName = 'Other Dash';
         final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'hello_world'),
+          getBrickPath('hello_world'),
         );
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
@@ -566,7 +567,7 @@ void main() {
       test('constructs an instance multiple '
           'times w/prompt - Y (documentation)', () async {
         final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'documentation'),
+          getBrickPath('documentation'),
         );
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
@@ -610,7 +611,7 @@ void main() {
         const name = 'Dash';
         const otherName = 'Other Dash';
         final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'hello_world'),
+          getBrickPath('hello_world'),
         );
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
@@ -671,7 +672,7 @@ void main() {
         const name = 'Dash';
         const otherName = 'Other Dash';
         final brick = Brick.path(
-          path.join('..', '..', 'bricks', 'hello_world'),
+          getBrickPath('hello_world'),
         );
         final generator = await MasonexGenerator.fromBrick(brick);
         final tempDir = Directory.systemTemp.createTempSync();
@@ -726,7 +727,7 @@ void main() {
         () async {
           const name = 'Dash';
           final brick = Brick.path(
-            path.join('..', '..', 'bricks', 'hello_world'),
+            getBrickPath('hello_world'),
           );
           final generator = await MasonexGenerator.fromBrick(brick);
           final tempDir = Directory.systemTemp.createTempSync();

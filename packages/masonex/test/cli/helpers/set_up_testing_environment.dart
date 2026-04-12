@@ -3,7 +3,12 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 
 String testFixturesPath(Directory cwd, {String suffix = ''}) {
-  return path.join(cwd.path, 'test', 'fixtures', suffix);
+  var basePath = cwd.path;
+  final fixturesPart = path.join('test', 'fixtures');
+  if (basePath.contains(fixturesPart)) {
+    basePath = basePath.substring(0, basePath.indexOf(fixturesPart));
+  }
+  return path.join(basePath, fixturesPart, suffix);
 }
 
 void setUpTestingEnvironment(Directory cwd, {String suffix = ''}) {

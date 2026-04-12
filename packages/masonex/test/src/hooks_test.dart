@@ -6,6 +6,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
+import '../helpers/get_brick_path.dart';
+
 class _MockLogger extends Mock implements Logger {}
 
 class _MockProgress extends Mock implements Progress {}
@@ -13,7 +15,7 @@ class _MockProgress extends Mock implements Progress {}
 void main() {
   group('Hooks', () {
     test('supports non-ascii characters', () async {
-      final brick = Brick.path(path.join('test', 'fixtures', 'unicode_hook'));
+      final brick = Brick.path(getFixturePath(['unicode_hook']));
       final generator = await MasonexGenerator.fromBrick(brick);
 
       expect(generator.hooks.preGen(), completes);
@@ -21,12 +23,7 @@ void main() {
 
     group('supports programmatic usage', () {
       const name = 'dash';
-      final program = path.join(
-        'test',
-        'fixtures',
-        'programmatic_usage',
-        'main.dart',
-      );
+      final program = getFixturePath(['programmatic_usage', 'main.dart']);
 
       late Directory tempDir;
 
@@ -111,7 +108,7 @@ void main() {
     test('throws HookDependencyInstallFailure '
         'when pubspec is malformed', () async {
       final brick = Brick.path(
-        path.join('test', 'fixtures', 'malformed_pubspec'),
+        getFixturePath(['malformed_pubspec']),
       );
       final generator = await MasonexGenerator.fromBrick(brick);
 
@@ -126,7 +123,7 @@ void main() {
     test('throws HookCompileException '
         'when unable to resolve a type', () async {
       final brick = Brick.path(
-        path.join('test', 'fixtures', 'compile_exception'),
+        getFixturePath(['compile_exception']),
       );
       final generator = await MasonexGenerator.fromBrick(brick);
 
@@ -141,7 +138,7 @@ void main() {
     test('throws HookCompileException '
         'when unable to resolve a type (back-to-back)', () async {
       final brick = Brick.path(
-        path.join('test', 'fixtures', 'compile_exception'),
+        getFixturePath(['compile_exception']),
       );
       final generator = await MasonexGenerator.fromBrick(brick);
 
@@ -162,7 +159,7 @@ void main() {
 
     test('does not throw HookMissingRunException '
         'when it contains a valid long run method', () async {
-      final brick = Brick.path(path.join('test', 'fixtures', 'long_run'));
+      final brick = Brick.path(getFixturePath(['long_run']));
       final generator = await MasonexGenerator.fromBrick(brick);
 
       await expectLater(() async => generator.hooks.preGen(), returnsNormally);
@@ -170,7 +167,7 @@ void main() {
 
     test('throws HookMissingRunException '
         'when hook does not contain a valid run method', () async {
-      final brick = Brick.path(path.join('test', 'fixtures', 'missing_run'));
+      final brick = Brick.path(getFixturePath(['missing_run']));
       final generator = await MasonexGenerator.fromBrick(brick);
 
       try {
@@ -182,7 +179,7 @@ void main() {
     });
 
     test('throws HookCompileException when hook cannot be run', () async {
-      final brick = Brick.path(path.join('test', 'fixtures', 'run_exception'));
+      final brick = Brick.path(getFixturePath(['run_exception']));
       final generator = await MasonexGenerator.fromBrick(brick);
 
       try {
@@ -194,7 +191,7 @@ void main() {
     });
 
     test('throws HookExecutionException on IsolateSpawnException', () async {
-      final hookDirectoryPath = path.join('test', 'fixtures', 'basic', 'hooks');
+      final hookDirectoryPath = getFixturePath(['basic', 'hooks']);
       final files = [
         File(canonicalize(path.join(hookDirectoryPath, 'pre_gen.dart'))),
         File(
@@ -251,10 +248,10 @@ void main() {
 
       final tempFile = File('.tmp.dill');
       final hooksDartToolDirectory = Directory(
-        path.join('test', 'fixtures', 'basic', 'hooks', '.dart_tool'),
+        getFixturePath(['basic', 'hooks', '.dart_tool']),
       );
       final hooksBuildDirectory = Directory(
-        path.join('test', 'fixtures', 'basic', 'hooks', 'build', 'hooks'),
+        getFixturePath(['basic', 'hooks', 'build', 'hooks']),
       );
 
       try {
@@ -264,7 +261,7 @@ void main() {
         await hooksBuildDirectory.delete(recursive: true);
       } catch (_) {}
 
-      final brick = Brick.path(path.join('test', 'fixtures', 'basic'));
+      final brick = Brick.path(getFixturePath(['basic']));
       final generator = await MasonexGenerator.fromBrick(brick);
       await IOOverrides.runZoned(
         () async {
@@ -297,7 +294,7 @@ void main() {
 
     test('throws HookExecutionException when hook throws', () async {
       final brick = Brick.path(
-        path.join('test', 'fixtures', 'execution_exception'),
+        getFixturePath(['execution_exception']),
       );
       final generator = await MasonexGenerator.fromBrick(brick);
 
@@ -312,7 +309,7 @@ void main() {
     test('throws HookDependencyInstallFailure '
         'when dependencies cannot be resolved', () async {
       final brick = Brick.path(
-        path.join('test', 'fixtures', 'dependency_install_failure'),
+        getFixturePath(['dependency_install_failure']),
       );
       final generator = await MasonexGenerator.fromBrick(brick);
 
@@ -328,13 +325,13 @@ void main() {
       'compile installs dependencies and compiles hooks only once',
       () async {
         final hooksBuildDirectory = Directory(
-          path.join('test', 'fixtures', 'basic', 'hooks', 'build', 'hooks'),
+          getFixturePath(['basic', 'hooks', 'build', 'hooks']),
         );
         try {
           await hooksBuildDirectory.delete(recursive: true);
         } catch (_) {}
 
-        final brick = Brick.path(path.join('test', 'fixtures', 'basic'));
+        final brick = Brick.path(getFixturePath(['basic']));
         final generator = await MasonexGenerator.fromBrick(brick);
         final logger = _MockLogger();
         final progress = _MockProgress();
@@ -357,7 +354,7 @@ void main() {
     );
 
     test('compile reports compilation errors', () async {
-      final brick = Brick.path(path.join('test', 'fixtures', 'run_exception'));
+      final brick = Brick.path(getFixturePath(['run_exception']));
       final generator = await MasonexGenerator.fromBrick(brick);
       final logger = _MockLogger();
       final progress = _MockProgress();
@@ -378,7 +375,7 @@ void main() {
     });
 
     test('recovers from cleared pub cache', () async {
-      final brick = Brick.path(path.join('test', 'fixtures', 'basic'));
+      final brick = Brick.path(getFixturePath(['basic']));
       final generator = await MasonexGenerator.fromBrick(brick);
 
       await expectLater(generator.hooks.preGen(), completes);
@@ -393,14 +390,7 @@ void main() {
       const name = 'Dash';
       final directory = Directory.systemTemp.createTempSync();
       final hooksBuildDirectory = Directory(
-        path.join(
-          'test',
-          'fixtures',
-          'relative_imports',
-          'hooks',
-          'build',
-          'hooks',
-        ),
+        getFixturePath(['relative_imports', 'hooks', 'build', 'hooks']),
       );
       final preGenHookBuildDirectory = Directory(
         path.join(hooksBuildDirectory.path, 'pre_gen'),
@@ -416,7 +406,7 @@ void main() {
       expect(hooksBuildDirectory.existsSync(), isFalse);
 
       final brick = Brick.path(
-        path.join('test', 'fixtures', 'relative_imports'),
+        getFixturePath(['relative_imports']),
       );
       final generator = await MasonexGenerator.fromBrick(brick);
       await generator.hooks.preGen(
@@ -445,14 +435,7 @@ void main() {
       const name = 'Dash';
       final directory = Directory.systemTemp.createTempSync();
       final hooksBuildDirectory = Directory(
-        path.join(
-          'test',
-          'fixtures',
-          'relative_imports',
-          'hooks',
-          'build',
-          'hooks',
-        ),
+        getFixturePath(['relative_imports', 'hooks', 'build', 'hooks']),
       );
       final preGenHookBuildDirectory = Directory(
         path.join(hooksBuildDirectory.path, 'pre_gen'),
@@ -468,7 +451,7 @@ void main() {
       expect(hooksBuildDirectory.existsSync(), isFalse);
 
       final brick = Brick.path(
-        path.join('test', 'fixtures', 'relative_imports'),
+        getFixturePath(['relative_imports']),
       );
       final generator = await MasonexGenerator.fromBrick(brick);
 
@@ -496,24 +479,10 @@ void main() {
       File? preGenModule;
       File? postGenModule;
       final legacyPreGen = File(
-        path.join(
-          'test',
-          'fixtures',
-          'relative_imports',
-          'hooks',
-          'legacy',
-          'pre_gen.dill',
-        ),
+        getFixturePath(['relative_imports', 'hooks', 'legacy', 'pre_gen.dill']),
       );
       final legacyPostGen = File(
-        path.join(
-          'test',
-          'fixtures',
-          'relative_imports',
-          'hooks',
-          'legacy',
-          'post_gen.dill',
-        ),
+        getFixturePath(['relative_imports', 'hooks', 'legacy', 'post_gen.dill']),
       );
       final legacyPreGenBytes = legacyPreGen.readAsBytesSync();
       final legacyPostGenBytes = legacyPostGen.readAsBytesSync();

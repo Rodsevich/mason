@@ -10,6 +10,7 @@ import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
 import '../helpers/helpers.dart';
+import '../../helpers/get_brick_path.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -18,7 +19,7 @@ class _MockPubUpdater extends Mock implements PubUpdater {}
 class _MockProgress extends Mock implements Progress {}
 
 void main() {
-  final cwd = Directory.current;
+  final cwd = Directory.current.path;
 
   group('masonex bundle', () {
     late Logger logger;
@@ -52,16 +53,7 @@ void main() {
         final testDir = Directory(
           path.join(Directory.current.path, 'universal'),
         )..createSync(recursive: true);
-        final brickPath = path.join(
-          '..',
-          '..',
-          '..',
-          '..',
-          '..',
-          '..',
-          'bricks',
-          'greeting',
-        );
+        final brickPath = getBrickPath('greeting');
         Directory.current = testDir.path;
         final result = await commandRunner.run(['bundle', brickPath]);
         expect(result, equals(ExitCode.success.code));
@@ -104,16 +96,7 @@ void main() {
         final testDir = Directory(
           path.join(Directory.current.path, 'universal'),
         )..createSync(recursive: true);
-        final brickPath = path.join(
-          '..',
-          '..',
-          '..',
-          '..',
-          '..',
-          '..',
-          'bricks',
-          'hooks',
-        );
+        final brickPath = getBrickPath('hooks');
         Directory.current = testDir.path;
         final result = await commandRunner.run(['bundle', brickPath]);
         expect(result, equals(ExitCode.success.code));
@@ -169,16 +152,7 @@ void main() {
       test('creates a new dart bundle (no hooks)', () async {
         final testDir = Directory(path.join(Directory.current.path, 'dart'))
           ..createSync(recursive: true);
-        final brickPath = path.join(
-          '..',
-          '..',
-          '..',
-          '..',
-          '..',
-          '..',
-          'bricks',
-          'greeting',
-        );
+        final brickPath = getBrickPath('greeting');
         Directory.current = testDir.path;
         final result = await commandRunner.run([
           'bundle',
@@ -227,16 +201,7 @@ void main() {
       test('creates a new dart bundle (with hooks)', () async {
         final testDir = Directory(path.join(Directory.current.path, 'dart'))
           ..createSync(recursive: true);
-        final brickPath = path.join(
-          '..',
-          '..',
-          '..',
-          '..',
-          '..',
-          '..',
-          'bricks',
-          'hooks',
-        );
+        final brickPath = getBrickPath('hooks');
         Directory.current = testDir.path;
         final result = await commandRunner.run([
           'bundle',
@@ -332,15 +297,7 @@ void main() {
           }
         });
         when(() => logger.progress(any())).thenReturn(progress);
-        final brickPath = path.join(
-          '..',
-          '..',
-          '..',
-          '..',
-          '..',
-          'bricks',
-          'greeting',
-        );
+        final brickPath = getBrickPath('greeting');
         final result = await commandRunner.run(['bundle', brickPath]);
         expect(result, equals(ExitCode.usage.code));
         verify(() => logger.err('oops')).called(1);
@@ -498,16 +455,7 @@ void main() {
     });
 
     group('set-exit-if-changed', () {
-      final brickPath = path.join(
-        '..',
-        '..',
-        '..',
-        '..',
-        '..',
-        '..',
-        'bricks',
-        'greeting',
-      );
+      final brickPath = getBrickPath('greeting');
 
       setUp(() {
         final tempTestDir = Directory.current.createTempSync();
