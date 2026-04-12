@@ -1,5 +1,5 @@
 name: hello_world
-description: A new brick created with the Masonexex CLI.
+description: A new brick created with the Masonex CLI.
 
 # The following defines the brick repository url.
 # Uncomment and update the following line before publishing the brick.
@@ -13,7 +13,7 @@ version: 0.1.0+1
 # The following defines the environment for the current brick.
 # It includes the version of masonex that the brick requires.
 environment:
-  masonex: ^0.1.2
+  masonex: ^0.0.1
 
 # Variables specify dynamic values that your brick depends on.
 # Zero or more variables can be specified for a given brick.

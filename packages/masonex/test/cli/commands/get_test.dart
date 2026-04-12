@@ -11,6 +11,7 @@ import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
 import '../helpers/helpers.dart';
+import '../../helpers/get_brick_path.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -19,7 +20,7 @@ class _MockPubUpdater extends Mock implements PubUpdater {}
 class _MockProgress extends Mock implements Progress {}
 
 void main() {
-  final cwd = Directory.current;
+  final cwd = Directory.current.path;
 
   group('masonex get', () {
     late Logger logger;
@@ -63,20 +64,20 @@ void main() {
         '''
 bricks:
   app_icon:
-    path: ../../../../../bricks/app_icon
+    path: ${getBrickPath('app_icon')}
   documentation:
-    path: ../../../../../bricks/documentation
+    path: ${getBrickPath('documentation')}
   greeting:
-    path: ../../../../../bricks/greeting
+    path: ${getBrickPath('greeting')}
   hooks:
     git:
       url: https://github.com/felangel/mason
       path: bricks/hooks
       ref: c744e19c23243453f568b539bb122767e6542929
   simple:
-    path: ../../../../../bricks/simple
+    path: ${getBrickPath('simple')}
   todos:
-    path: ../../../../../bricks/todos
+    path: ${getBrickPath('todos')}
   widget:
     git:
       url: https://github.com/felangel/mason
@@ -125,16 +126,9 @@ bricks:
         expect(File(expectedBrickJsonPath).existsSync(), isTrue);
         expect(File(expectedMasonexLockJsonPath).existsSync(), isTrue);
 
-        final bricksPath = path.join('..', '..', '..', '..', '..', 'bricks');
-        final appIconPath = canonicalize(
-          path.join(Directory.current.path, bricksPath, 'app_icon'),
-        );
-        final docPath = canonicalize(
-          path.join(Directory.current.path, bricksPath, 'documentation'),
-        );
-        final greetingPath = canonicalize(
-          path.join(Directory.current.path, bricksPath, 'greeting'),
-        );
+        final appIconPath = getBrickPath('app_icon');
+        final docPath = getBrickPath('documentation');
+        final greetingPath = getBrickPath('greeting');
         final hooksPath = canonicalize(
           path.join(
             BricksJson.rootDir.path,
@@ -144,12 +138,8 @@ bricks:
             'hooks',
           ),
         );
-        final simplePath = canonicalize(
-          path.join(Directory.current.path, bricksPath, 'simple'),
-        );
-        final todosPath = canonicalize(
-          path.join(Directory.current.path, bricksPath, 'todos'),
-        );
+        final simplePath = getBrickPath('simple');
+        final todosPath = getBrickPath('todos');
         final widgetPath = canonicalize(
           path.join(
             BricksJson.rootDir.path,
@@ -346,7 +336,7 @@ bricks:
         '''
 bricks:
   app_icon1:
-    path: ../../../../../bricks/app_icon
+    path: ${getBrickPath('app_icon')}
 ''',
       );
       commandRunner = MasonexCommandRunner(

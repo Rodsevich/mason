@@ -12,5 +12,5 @@ dependencies:
 dependency_overrides:
   mustachex:
     path: ../../../../../mustachex
-  mason_logger:
-    path: ../../../../../mason_logger
+  masonex_logger:
+    path: ../../../../../masonex_logger

@@ -4,7 +4,12 @@ environment:
   sdk: ^3.5.4
 
 dependencies:
-  mason:
-    git:
-      url: https://github.com/felangel/mason
-      path: packages/mason
+  masonex: any
+
+dependency_overrides:
+  masonex:
+    path: ../../../packages/masonex
+  mustachex:
+    path: ../../../packages/mustachex
+  mason_logger:
+    path: ../../../packages/mason_logger

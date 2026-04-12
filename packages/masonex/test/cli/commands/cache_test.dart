@@ -8,6 +8,7 @@ import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
 import '../helpers/helpers.dart';
+import '../../helpers/get_brick_path.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -16,7 +17,7 @@ class _MockPubUpdater extends Mock implements PubUpdater {}
 class _MockProgress extends Mock implements Progress {}
 
 void main() {
-  final cwd = Directory.current;
+  final cwd = Directory.current.path;
 
   group('masonex cache', () {
     late Logger logger;
@@ -42,7 +43,7 @@ void main() {
         '''
 bricks:
   app_icon:
-    path: ../../../../../bricks/app_icon
+    path: ${getBrickPath('app_icon')}
 ''',
       );
     });

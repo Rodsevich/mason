@@ -15,6 +15,7 @@ import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
 import '../helpers/helpers.dart';
+import '../../helpers/get_brick_path.dart';
 
 class _MockArgResults extends Mock implements ArgResults {}
 
@@ -27,7 +28,7 @@ class _MockProgress extends Mock implements Progress {}
 class _MockProcessSignal extends Mock implements ProcessSignal {}
 
 void main() {
-  final cwd = Directory.current;
+  final cwd = Directory.current.path;
 
   group('masonex make', () {
     late Logger logger;
@@ -73,7 +74,7 @@ void main() {
         'todos',
         'widget',
       };
-      final bricksPath = path.join('..', '..', '..', '..', '..', 'bricks');
+      final bricksPath = getBrickPath('');
       final masonexYamlBuffer = StringBuffer('bricks:\n');
       for (final brick in bricks) {
         masonexYamlBuffer.writeln('  $brick: ${path.join(bricksPath, brick)}');

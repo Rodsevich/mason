@@ -8,6 +8,7 @@ import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
 import '../helpers/helpers.dart';
+import '../../helpers/get_brick_path.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -16,7 +17,7 @@ class _MockPubUpdater extends Mock implements PubUpdater {}
 class _MockProgress extends Mock implements Progress {}
 
 void main() {
-  final cwd = Directory.current;
+  final cwd = Directory.current.path;
 
   group('masonex unbundle', () {
     late Logger logger;
@@ -48,13 +49,7 @@ void main() {
     test('parses a brick template from a universal bundle', () async {
       final testDir = Directory(path.join(Directory.current.path, 'universal'))
         ..createSync(recursive: true);
-      final bundlePath = path.join(
-        '..',
-        '..',
-        '..',
-        'bundles',
-        'greeting.bundle',
-      );
+      final bundlePath = getBundlePath('greeting.bundle');
       Directory.current = testDir.path;
       final result = await commandRunner.run(['unbundle', bundlePath]);
       expect(result, equals(ExitCode.success.code));
@@ -73,13 +68,7 @@ void main() {
     test('parses a brick template from a dart bundle', () async {
       final testDir = Directory(path.join(Directory.current.path, 'dart'))
         ..createSync(recursive: true);
-      final bundlePath = path.join(
-        '..',
-        '..',
-        '..',
-        'bundles',
-        'greeting_bundle.dart',
-      );
+      final bundlePath = getBundlePath('greeting_bundle.dart');
       Directory.current = testDir.path;
       final result = await commandRunner.run([
         'unbundle',
@@ -127,7 +116,7 @@ void main() {
             throw const MasonexException('oops');
         });
         when(() => logger.progress(any())).thenReturn(progress);
-        final bundlePath = path.join('..', '..', 'bundles', 'greeting.bundle');
+        final bundlePath = getBundlePath('greeting.bundle');
         final result = await commandRunner.run(['unbundle', bundlePath]);
         expect(result, equals(ExitCode.usage.code));
         verify(() => logger.err('oops')).called(1);

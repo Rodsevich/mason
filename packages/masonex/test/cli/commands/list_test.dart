@@ -8,6 +8,7 @@ import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
 import '../helpers/helpers.dart';
+import '../../helpers/get_brick_path.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -16,7 +17,7 @@ class _MockPubUpdater extends Mock implements PubUpdater {}
 class _MockProgress extends Mock implements Progress {}
 
 void main() {
-  final cwd = Directory.current;
+  final cwd = Directory.current.path;
 
   group('masonex list', () {
     late Logger logger;
@@ -58,22 +59,16 @@ void main() {
 
     test('exits successfully and lists local bricks '
         'when local and global bricks are available', () async {
-      final greetingPath = canonicalize(
-        p.join('..', '..', '..', '..', '..', 'bricks', 'greeting'),
-      );
-      final documentationPath = canonicalize(
-        p.join('..', '..', '..', '..', '..', 'bricks', 'documentation'),
-      );
-      final todosPath = canonicalize(
-        p.join('..', '..', '..', '..', '..', 'bricks', 'todos'),
-      );
+      final greetingPath = getBrickPath('greeting');
+      final documentationPath = getBrickPath('documentation');
+      final todosPath = getBrickPath('todos');
       File(p.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync('''
 bricks:
   documentation:
-    path: ../../../../../bricks/documentation
+    path: ${getBrickPath('documentation')}
   greeting: ^0.1.0
   todos:
-    path: ../../../../../bricks/todos
+    path: ${getBrickPath('todos')}
   widget:
     git:
       url: https://github.com/felangel/mason
@@ -119,27 +114,15 @@ bricks:
 
     test('exits successfully and lists local bricks '
         'sorted alphabetically', () async {
-      final greetingPath = p.join(
-        '..',
-        '..',
-        '..',
-        '..',
-        '..',
-        'bricks',
-        'greeting',
-      );
-      final documentationPath = canonicalize(
-        p.join('..', '..', '..', '..', '..', 'bricks', 'documentation'),
-      );
-      final todosPath = canonicalize(
-        p.join('..', '..', '..', '..', '..', 'bricks', 'todos'),
-      );
+      final greetingPath = getBrickPath('greeting');
+      final documentationPath = getBrickPath('documentation');
+      final todosPath = getBrickPath('todos');
       File(p.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync('''
 bricks:
   todos:
-    path: ../../../../../bricks/todos
+    path: ${getBrickPath('todos')}
   documentation:
-    path: ../../../../../bricks/documentation
+    path: ${getBrickPath('documentation')}
   hello_world:
     git:
       url: https://github.com/felangel/mason
@@ -182,15 +165,13 @@ bricks:
 
     test('exits successfully and lists global bricks '
         'when local and global bricks are available', () async {
-      final greetingPath = canonicalize(
-        p.join('..', '..', '..', '..', '..', 'bricks', 'greeting'),
-      );
+      final greetingPath = getBrickPath('greeting');
       File(p.join(Directory.current.path, 'masonex.yaml')).writeAsStringSync('''
 bricks:
   documentation:
-    path: ../../../../../bricks/documentation
+    path: ${getBrickPath('documentation')}
   todos:
-    path: ../../../../../bricks/todos
+    path: ${getBrickPath('todos')}
   widget:
     git:
       url: https://github.com/felangel/mason

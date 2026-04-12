@@ -16,7 +16,7 @@ class _MockPubUpdater extends Mock implements PubUpdater {}
 class _MockProgress extends Mock implements Progress {}
 
 void main() {
-  final cwd = Directory.current;
+  final cwd = Directory.current.path;
 
   group('masonex new', () {
     late Logger logger;

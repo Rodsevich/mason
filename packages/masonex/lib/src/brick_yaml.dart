@@ -333,7 +333,8 @@ class BrickEnvironment {
       return BrickEnvironment(masonex: json);
     }
     final Map<dynamic, dynamic> map = json as Map;
-    return _$BrickEnvironmentFromJson(map);
+    final masonex = map['masonex'] ?? map['mason'] ?? 'any';
+    return BrickEnvironment(masonex: masonex as String);
   }
 
   /// Converts [BrickEnvironment] to [Map]

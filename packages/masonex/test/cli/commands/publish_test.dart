@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import '../helpers/helpers.dart';
+import '../../helpers/get_brick_path.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -24,22 +25,14 @@ class _MockProgress extends Mock implements Progress {}
 class FakeUri extends Fake implements Uri {}
 
 void main() {
-  final cwd = Directory.current;
+  final cwd = Directory.current.path;
 
   setUpAll(() {
     registerFallbackValue(FakeUri());
   });
 
   group('PublishCommand', () {
-    final brickPath = p.join(
-      '..',
-      '..',
-      '..',
-      '..',
-      '..',
-      'bricks',
-      'greeting',
-    );
+    final brickPath = getBrickPath('greeting');
     late Logger logger;
     late MasonApi masonApi;
     late ArgResults argResults;
@@ -96,7 +89,7 @@ void main() {
     });
 
     test('exits with code 70 when it is a private brick', () async {
-      final brickPath = p.join('..', '..', 'bricks', 'no_registry');
+      final brickPath = getBrickPath('no_registry');
 
       when(() => argResults['directory'] as String).thenReturn(brickPath);
 
@@ -115,7 +108,7 @@ Please change or remove the "publish_to" field in the brick.yaml before publishi
     });
 
     test('exits with code 70 when publish_to has an invalid value', () async {
-      final brickPath = p.join('..', '..', 'bricks', 'invalid_registry');
+      final brickPath = getBrickPath('invalid_registry');
 
       when(() => argResults['directory'] as String).thenReturn(brickPath);
       final result = await publishCommand.run();
@@ -352,7 +345,7 @@ Please change or remove the "publish_to" field in the brick.yaml before publishi
 
     test('exits with code 0 when publish succeeds '
         'with a custom registry (publish_to)', () async {
-      final brickPath = p.join('..', '..', 'bricks', 'custom_registry');
+      final brickPath = getBrickPath('custom_registry');
       final customHostedUri = Uri.parse('https://custom.brickhub.dev');
       final user = _MockUser();
       final progressLogs = <String>[];

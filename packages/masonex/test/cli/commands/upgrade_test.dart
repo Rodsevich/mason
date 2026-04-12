@@ -8,6 +8,7 @@ import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
 import '../helpers/helpers.dart';
+import '../../helpers/get_brick_path.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -16,7 +17,7 @@ class _MockPubUpdater extends Mock implements PubUpdater {}
 class _MockProgress extends Mock implements Progress {}
 
 void main() {
-  final cwd = Directory.current;
+  final cwd = Directory.current.path;
 
   group('masonex upgrade', () {
     late Logger logger;
@@ -94,17 +95,14 @@ bricks:
       });
 
       test('updates lockfile from nested directory', () async {
-        final bricksPath = path.join('..', '..', '..', '..', '..', 'bricks');
-        final simplePath = canonicalize(
-          path.join(Directory.current.path, bricksPath, 'simple'),
-        );
+        final simplePath = getBrickPath('simple');
         File(
           path.join(Directory.current.path, 'masonex.yaml'),
         ).writeAsStringSync('''
 bricks:
   greeting: 0.1.0+1
   simple:
-    path: ${path.join(bricksPath, 'simple')}
+    path: $simplePath
 ''');
         final getResult = await commandRunner.run(['get']);
         expect(getResult, equals(ExitCode.success.code));
@@ -122,15 +120,15 @@ bricks:
 bricks:
   greeting: ^0.1.0
   simple:
-    path: ${path.join(bricksPath, 'simple')}
+    path: $simplePath
 ''');
 
         final nested = Directory(path.join(Directory.current.path, 'nested'))
           ..createSync();
-        final workspace = Directory.current;
+        final workspace = Directory.current.path;
         Directory.current = nested.path;
         final upgradeResult = await commandRunner.run(['upgrade']);
-        Directory.current = workspace;
+        Directory.current = workspace.path;
         expect(upgradeResult, equals(ExitCode.success.code));
         expect(
           File(

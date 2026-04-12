@@ -14,7 +14,7 @@ class _MockProgress extends Mock implements Progress {}
 
 void main() {
   group('Command', () {
-    final cwd = Directory.current;
+    final cwd = Directory.current.path;
 
     tearDown(() {
       Directory.current = cwd;
@@ -50,7 +50,7 @@ bricks:
     path: ${directory.path}
   
 ''');
-        Directory.current = directory;
+        Directory.current = directory.path;
         final logger = _MockLogger();
         when(() => logger.progress(any())).thenReturn(_MockProgress());
         final command = GetCommand(logger: logger);

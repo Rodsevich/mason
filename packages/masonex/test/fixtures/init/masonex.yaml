@@ -9,5 +9,5 @@ bricks:
   # Uncomment the following lines to import the "widget" brick from git.
   # widget:
   #   git:
-  #     url: https://github.com/felangel/mason.git
+  #     url: https://github.com/felangel/masonex.git
   #     path: bricks/widget

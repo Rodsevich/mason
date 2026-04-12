@@ -114,7 +114,7 @@ class MasonexGenerator extends Generator {
           })
         : <Future<TemplateFile?>>[];
 
-    final generator = MasonexGenerator(
+    return MasonexGenerator(
       brickYaml.name,
       brickYaml.description,
       vars: brickYaml.vars.keys.toList(),
@@ -122,13 +122,6 @@ class MasonexGenerator extends Generator {
       files: await Future.wait(brickFiles),
       hooks: await GeneratorHooks.fromBrickYaml(brickYaml),
     );
-    for (final file in generator.files) {
-      if (_partialRegExp.hasMatch(file.path)) {
-        final match = _partialRegExp.firstMatch(file.path);
-        if (match != null) generator.partials[match.group(1)!] = file.content;
-      }
-    }
-    return generator;
   }
 
   /// Optional list of variables which will be used to populate
@@ -250,9 +243,12 @@ abstract class Generator implements Comparable<Generator> {
   /// Add a new template file.
   void addTemplateFile(TemplateFile? file) {
     if (file == null) return;
-    _partialRegExp.hasMatch(file.path)
-        ? partials.addAll({file.path: file.content})
-        : files.add(file);
+    final match = _partialRegExp.firstMatch(file.path);
+    if (match != null) {
+      partials[match.group(1)!] = file.content;
+    } else {
+      files.add(file);
+    }
   }
 
   /// Generates files based on the provided [GeneratorTarget] and [vars].
@@ -435,9 +431,7 @@ abstract class Generator implements Comparable<Generator> {
 
                     var found = false;
                     for (final marker in markers) {
-                      print('DEBUG: Checking marker "$marker" in content...');
                       if (content.contains(marker)) {
-                        print('DEBUG: Found marker "$marker"!');
                         content = content.replaceFirst(
                           marker,
                           '\n// $template\n$snippetContent\n\n$marker',
