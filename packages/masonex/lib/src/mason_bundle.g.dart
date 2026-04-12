@@ -20,40 +20,41 @@ Map<String, dynamic> _$MasonexBundledFileToJson(MasonexBundledFile instance) =>
       'type': instance.type,
     };
 
-MasonexBundle _$MasonexBundleFromJson(
-  Map<String, dynamic> json,
-) => MasonexBundle(
-  name: json['name'] as String,
-  description: json['description'] as String,
-  version: json['version'] as String,
-  environment: json['environment'] == null
-      ? const BrickEnvironment()
-      : BrickEnvironment.fromJson(json['environment']),
-  vars: json['vars'] == null
-      ? const <String, BrickVariableProperties>{}
-      : const VarsConverter().fromJson(json['vars']),
-  files:
-      (json['files'] as List<dynamic>?)
-          ?.map((e) => MasonexBundledFile.fromJson(e as Map<String, dynamic>))
-          .toList() ??
-      const [],
-  hooks:
-      (json['hooks'] as List<dynamic>?)
-          ?.map((e) => MasonexBundledFile.fromJson(e as Map<String, dynamic>))
-          .toList() ??
-      const [],
-  repository: json['repository'] as String?,
-  publishTo: json['publish_to'] as String?,
-  readme: json['readme'] == null
-      ? null
-      : MasonexBundledFile.fromJson(json['readme'] as Map<String, dynamic>),
-  changelog: json['changelog'] == null
-      ? null
-      : MasonexBundledFile.fromJson(json['changelog'] as Map<String, dynamic>),
-  license: json['license'] == null
-      ? null
-      : MasonexBundledFile.fromJson(json['license'] as Map<String, dynamic>),
-);
+MasonexBundle _$MasonexBundleFromJson(Map<String, dynamic> json) =>
+    MasonexBundle(
+      name: json['name'] as String,
+      description: json['description'] as String,
+      version: json['version'] as String,
+      environment: json['environment'] == null
+          ? const BrickEnvironment()
+          : BrickEnvironment.fromJson(json['environment']),
+      vars: json['vars'] == null
+          ? const <String, BrickVariableProperties>{}
+          : const VarsConverter().fromJson(json['vars']),
+      files: (json['files'] as List<dynamic>?)
+              ?.map(
+                  (e) => MasonexBundledFile.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      hooks: (json['hooks'] as List<dynamic>?)
+              ?.map(
+                  (e) => MasonexBundledFile.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      repository: json['repository'] as String?,
+      publishTo: json['publish_to'] as String?,
+      readme: json['readme'] == null
+          ? null
+          : MasonexBundledFile.fromJson(json['readme'] as Map<String, dynamic>),
+      changelog: json['changelog'] == null
+          ? null
+          : MasonexBundledFile.fromJson(
+              json['changelog'] as Map<String, dynamic>),
+      license: json['license'] == null
+          ? null
+          : MasonexBundledFile.fromJson(
+              json['license'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$MasonexBundleToJson(MasonexBundle instance) =>
     <String, dynamic>{
