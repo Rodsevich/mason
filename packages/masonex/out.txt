@@ -1,0 +1,542 @@
+Running build hooks...Running build hooks...00:00 [32m+0[0m: [1m[90mloading test/cli/commands/make_test.dart[0m[0m                                                                                                                                                     00:01 [32m+0[0m: [1m[90mloading test/cli/commands/make_test.dart[0m[0m                                                                                                                                                     00:02 [32m+0[0m: [1m[90mloading test/cli/commands/make_test.dart[0m[0m                                                                                                                                                     00:02 [32m+0[0m: masonex make (setUpAll)[0m                                                                                                                                                                      00:02 [32m+0[0m: masonex make --help shows correct help information[0m                                                                                                                                           00:02 [32m+0[0m[31m -1[0m: masonex make --help shows correct help information [1m[31m[E][0m[0m                                                                                                                                    
+  Expected: [
+              'Generate code using an existing brick template.\n'
+                '\n'
+                'Usage: masonex make <subcommand> [arguments]\n'
+                '-h, --help                      Print this usage information.\n'
+                '-q, --quiet                     Run with reduced verbosity.\n'
+                '    --no-hooks                  Skips running hooks.\n'
+                '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+                '    --watch                     Watch the __brick__ directory for changes.\n'
+                '-c, --config-path               Path to config json file containing variables.\n'
+                '-o, --output-dir                Directory where to output the generated code.\n'
+                '                                (defaults to ".")\n'
+                '    --on-conflict               File conflict resolution strategy.\n'
+                '\n'
+                '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+                '          [overwrite]           Always overwrite conflicting files.\n'
+                '          [append]              Always append conflicting files.\n'
+                '          [skip]                Always skip conflicting files.\n'
+                '\n'
+                'Available subcommands:\n'
+                '  app_icon             Create an app icon file from a URL\n'
+                '  bio                  A Bio Template\n'
+                '  documentation        Create Documentation Markdown Files\n'
+                '  favorite_color       A new brick created with the Masonex CLI.\n'
+                '  favorite_languages   A new brick created with the Masonex CLI.\n'
+                '  flavors              A new brick created with the Masonex CLI.\n'
+                '  greeting             A Simple Greeting Template\n'
+                '  hello_world          A Simple Hello World Template\n'
+                '  hooks                A Hooks Example Template\n'
+                '  legacy               A Legacy Greeting Template\n'
+                '  plugin               An example plugin template\n'
+                '  random_color         A Random Color Generator\n'
+                '  simple               A Simple Static Template\n'
+                '  todos                A Todos Template\n'
+                '  widget               Create a Simple Flutter Widget\n'
+                '\n'
+                'Run "masonex help" to see global options.'
+            ]
+    Actual: [
+              'Generate code using an existing brick template.\n'
+                '\n'
+                'Usage: masonex make <subcommand> [arguments]\n'
+                '-h, --help                      Print this usage information.\n'
+                '-q, --quiet                     Run with reduced verbosity.\n'
+                '    --no-hooks                  Skips running hooks.\n'
+                '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+                '    --watch                     Watch the __brick__ directory for changes.\n'
+                '-c, --config-path               Path to config json file containing variables.\n'
+                '-o, --output-dir                Directory where to output the generated code.\n'
+                '                                (defaults to ".")\n'
+                '    --on-conflict               File conflict resolution strategy.\n'
+                '\n'
+                '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+                '          [overwrite]           Always overwrite conflicting files.\n'
+                '          [append]              Always append conflicting files.\n'
+                '          [skip]                Always skip conflicting files.\n'
+                '\n'
+                'Available subcommands:\n'
+                '  app_icon             Create an app icon file from a URL\n'
+                '  bio                  A Bio Template\n'
+                '  documentation        Create Documentation Markdown Files\n'
+                '  favorite_color       A new brick created with the Mason CLI.\n'
+                '  favorite_languages   A new brick created with the Mason CLI.\n'
+                '  flavors              A new brick created with the Mason CLI.\n'
+                '  greeting             A Simple Greeting Template\n'
+                '  hello_world          A Simple Hello World Template\n'
+                '  hooks                A Hooks Example Template\n'
+                '  legacy               A Legacy Greeting Template\n'
+                '  plugin               An example plugin template\n'
+                '  random_color         A Random Color Generator\n'
+                '  simple               A Simple Static Template\n'
+                '  todos                A Todos Template\n'
+                '  widget               Create a Simple Flutter Widget\n'
+                '\n'
+                'Run "masonex help" to see global options.'
+            ]
+     Which: at location [0] is 'Generate code using an existing brick template.\n'
+              '\n'
+              'Usage: masonex make <subcommand> [arguments]\n'
+              '-h, --help                      Print this usage information.\n'
+              '-q, --quiet                     Run with reduced verbosity.\n'
+              '    --no-hooks                  Skips running hooks.\n'
+              '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+              '    --watch                     Watch the __brick__ directory for changes.\n'
+              '-c, --config-path               Path to config json file containing variables.\n'
+              '-o, --output-dir                Directory where to output the generated code.\n'
+              '                                (defaults to ".")\n'
+              '    --on-conflict               File conflict resolution strategy.\n'
+              '\n'
+              '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+              '          [overwrite]           Always overwrite conflicting files.\n'
+              '          [append]              Always append conflicting files.\n'
+              '          [skip]                Always skip conflicting files.\n'
+              '\n'
+              'Available subcommands:\n'
+              '  app_icon             Create an app icon file from a URL\n'
+              '  bio                  A Bio Template\n'
+              '  documentation        Create Documentation Markdown Files\n'
+              '  favorite_color       A new brick created with the Mason CLI.\n'
+              '  favorite_languages   A new brick created with the Mason CLI.\n'
+              '  flavors              A new brick created with the Mason CLI.\n'
+              '  greeting             A Simple Greeting Template\n'
+              '  hello_world          A Simple Hello World Template\n'
+              '  hooks                A Hooks Example Template\n'
+              '  legacy               A Legacy Greeting Template\n'
+              '  plugin               An example plugin template\n'
+              '  random_color         A Random Color Generator\n'
+              '  simple               A Simple Static Template\n'
+              '  todos                A Todos Template\n'
+              '  widget               Create a Simple Flutter Widget\n'
+              '\n'
+              'Run "masonex help" to see global options.' instead of 'Generate code using an existing brick template.\n'
+              '\n'
+              'Usage: masonex make <subcommand> [arguments]\n'
+              '-h, --help                      Print this usage information.\n'
+              '-q, --quiet                     Run with reduced verbosity.\n'
+              '    --no-hooks                  Skips running hooks.\n'
+              '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+              '    --watch                     Watch the __brick__ directory for changes.\n'
+              '-c, --config-path               Path to config json file containing variables.\n'
+              '-o, --output-dir                Directory where to output the generated code.\n'
+              '                                (defaults to ".")\n'
+              '    --on-conflict               File conflict resolution strategy.\n'
+              '\n'
+              '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+              '          [overwrite]           Always overwrite conflicting files.\n'
+              '          [append]              Always append conflicting files.\n'
+              '          [skip]                Always skip conflicting files.\n'
+              '\n'
+              'Available subcommands:\n'
+              '  app_icon             Create an app icon file from a URL\n'
+              '  bio                  A Bio Template\n'
+              '  documentation        Create Documentation Markdown Files\n'
+              '  favorite_color       A new brick created with the Masonex CLI.\n'
+              '  favorite_languages   A new brick created with the Masonex CLI.\n'
+              '  flavors              A new brick created with the Masonex CLI.\n'
+              '  greeting             A Simple Greeting Template\n'
+              '  hello_world          A Simple Hello World Template\n'
+              '  hooks                A Hooks Example Template\n'
+              '  legacy               A Legacy Greeting Template\n'
+              '  plugin               An example plugin template\n'
+              '  random_color         A Random Color Generator\n'
+              '  simple               A Simple Static Template\n'
+              '  todos                A Todos Template\n'
+              '  widget               Create a Simple Flutter Widget\n'
+              '\n'
+              'Run "masonex help" to see global options.'
+  
+  package:matcher                          expect
+  ../../cli/commands/make_test.dart 165:9  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make --help shows correct help information'
+00:02 [32m+0[0m[31m -1[0m: masonex make <subcommand> --help shows correct help information (greeting)[0m                                                                                                                00:02 [32m+1[0m[31m -1[0m: masonex make <subcommand> --help shows correct help information (greeting)[0m                                                                                                                00:02 [32m+1[0m[31m -1[0m: masonex make <subcommand> --help shows correct help information (legacy)[0m                                                                                                                  00:02 [32m+2[0m[31m -1[0m: masonex make <subcommand> --help shows correct help information (legacy)[0m                                                                                                                  00:02 [32m+2[0m[31m -1[0m: masonex make <subcommand> --help shows correct help information (bio)[0m                                                                                                                     00:02 [32m+3[0m[31m -1[0m: masonex make <subcommand> --help shows correct help information (bio)[0m                                                                                                                     00:02 [32m+3[0m[31m -1[0m: masonex make <subcommand> --help shows correct help information (flavors)[0m                                                                                                                 00:02 [32m+3[0m[31m -2[0m: masonex make <subcommand> --help shows correct help information (flavors) [1m[31m[E][0m[0m                                                                                                             
+  Expected: [
+              'A new brick created with the Masonex CLI.\n'
+                '\n'
+                'Usage: masonex make flavors [arguments]\n'
+                '-h, --help                      Print this usage information.\n'
+                '-q, --quiet                     Run with reduced verbosity.\n'
+                '    --no-hooks                  Skips running hooks.\n'
+                '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+                '    --watch                     Watch the __brick__ directory for changes.\n'
+                '-c, --config-path               Path to config json file containing variables.\n'
+                '-o, --output-dir                Directory where to output the generated code.\n'
+                '                                (defaults to ".")\n'
+                '    --on-conflict               File conflict resolution strategy.\n'
+                '\n'
+                '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+                '          [overwrite]           Always overwrite conflicting files.\n'
+                '          [append]              Always append conflicting files.\n'
+                '          [skip]                Always skip conflicting files.\n'
+                '\n'
+                '-------------------------------------------------------------------------------\n'
+                '\n'
+                '    --flavors                   Supported flavors <array>\n'
+                '                                [development, integration, staging, production]\n'
+                '\n'
+                'Run "masonex help" to see global options.'
+            ]
+    Actual: [
+              'A new brick created with the Mason CLI.\n'
+                '\n'
+                'Usage: masonex make flavors [arguments]\n'
+                '-h, --help                      Print this usage information.\n'
+                '-q, --quiet                     Run with reduced verbosity.\n'
+                '    --no-hooks                  Skips running hooks.\n'
+                '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+                '    --watch                     Watch the __brick__ directory for changes.\n'
+                '-c, --config-path               Path to config json file containing variables.\n'
+                '-o, --output-dir                Directory where to output the generated code.\n'
+                '                                (defaults to ".")\n'
+                '    --on-conflict               File conflict resolution strategy.\n'
+                '\n'
+                '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+                '          [overwrite]           Always overwrite conflicting files.\n'
+                '          [append]              Always append conflicting files.\n'
+                '          [skip]                Always skip conflicting files.\n'
+                '\n'
+                '-------------------------------------------------------------------------------\n'
+                '\n'
+                '    --flavors                   Supported flavors <array>\n'
+                '                                [development, integration, staging, production]\n'
+                '\n'
+                'Run "masonex help" to see global options.'
+            ]
+     Which: at location [0] is 'A new brick created with the Mason CLI.\n'
+              '\n'
+              'Usage: masonex make flavors [arguments]\n'
+              '-h, --help                      Print this usage information.\n'
+              '-q, --quiet                     Run with reduced verbosity.\n'
+              '    --no-hooks                  Skips running hooks.\n'
+              '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+              '    --watch                     Watch the __brick__ directory for changes.\n'
+              '-c, --config-path               Path to config json file containing variables.\n'
+              '-o, --output-dir                Directory where to output the generated code.\n'
+              '                                (defaults to ".")\n'
+              '    --on-conflict               File conflict resolution strategy.\n'
+              '\n'
+              '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+              '          [overwrite]           Always overwrite conflicting files.\n'
+              '          [append]              Always append conflicting files.\n'
+              '          [skip]                Always skip conflicting files.\n'
+              '\n'
+              '-------------------------------------------------------------------------------\n'
+              '\n'
+              '    --flavors                   Supported flavors <array>\n'
+              '                                [development, integration, staging, production]\n'
+              '\n'
+              'Run "masonex help" to see global options.' instead of 'A new brick created with the Masonex CLI.\n'
+              '\n'
+              'Usage: masonex make flavors [arguments]\n'
+              '-h, --help                      Print this usage information.\n'
+              '-q, --quiet                     Run with reduced verbosity.\n'
+              '    --no-hooks                  Skips running hooks.\n'
+              '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+              '    --watch                     Watch the __brick__ directory for changes.\n'
+              '-c, --config-path               Path to config json file containing variables.\n'
+              '-o, --output-dir                Directory where to output the generated code.\n'
+              '                                (defaults to ".")\n'
+              '    --on-conflict               File conflict resolution strategy.\n'
+              '\n'
+              '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+              '          [overwrite]           Always overwrite conflicting files.\n'
+              '          [append]              Always append conflicting files.\n'
+              '          [skip]                Always skip conflicting files.\n'
+              '\n'
+              '-------------------------------------------------------------------------------\n'
+              '\n'
+              '    --flavors                   Supported flavors <array>\n'
+              '                                [development, integration, staging, production]\n'
+              '\n'
+              'Run "masonex help" to see global options.'
+  
+  package:matcher                          expect
+  ../../cli/commands/make_test.dart 308:9  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make <subcommand> --help shows correct help information (flavors)'
+00:02 [32m+3[0m[31m -2[0m: masonex make <subcommand> --help shows correct help information (favorite_color)[0m                                                                                                          00:02 [32m+3[0m[31m -3[0m: masonex make <subcommand> --help shows correct help information (favorite_color) [1m[31m[E][0m[0m                                                                                                      
+  Expected: [
+              'A new brick created with the Masonex CLI.\n'
+                '\n'
+                'Usage: masonex make favorite_color [arguments]\n'
+                '-h, --help                      Print this usage information.\n'
+                '-q, --quiet                     Run with reduced verbosity.\n'
+                '    --no-hooks                  Skips running hooks.\n'
+                '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+                '    --watch                     Watch the __brick__ directory for changes.\n'
+                '-c, --config-path               Path to config json file containing variables.\n'
+                '-o, --output-dir                Directory where to output the generated code.\n'
+                '                                (defaults to ".")\n'
+                '    --on-conflict               File conflict resolution strategy.\n'
+                '\n'
+                '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+                '          [overwrite]           Always overwrite conflicting files.\n'
+                '          [append]              Always append conflicting files.\n'
+                '          [skip]                Always skip conflicting files.\n'
+                '\n'
+                '-------------------------------------------------------------------------------\n'
+                '\n'
+                '    --color                     Your favorite color <enum>\n'
+                '                                (defaults to green)\n'
+                '                                [red, green, blue]\n'
+                '\n'
+                'Run "masonex help" to see global options.'
+            ]
+    Actual: [
+              'A new brick created with the Mason CLI.\n'
+                '\n'
+                'Usage: masonex make favorite_color [arguments]\n'
+                '-h, --help                      Print this usage information.\n'
+                '-q, --quiet                     Run with reduced verbosity.\n'
+                '    --no-hooks                  Skips running hooks.\n'
+                '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+                '    --watch                     Watch the __brick__ directory for changes.\n'
+                '-c, --config-path               Path to config json file containing variables.\n'
+                '-o, --output-dir                Directory where to output the generated code.\n'
+                '                                (defaults to ".")\n'
+                '    --on-conflict               File conflict resolution strategy.\n'
+                '\n'
+                '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+                '          [overwrite]           Always overwrite conflicting files.\n'
+                '          [append]              Always append conflicting files.\n'
+                '          [skip]                Always skip conflicting files.\n'
+                '\n'
+                '-------------------------------------------------------------------------------\n'
+                '\n'
+                '    --color                     Your favorite color <enum>\n'
+                '                                (defaults to green)\n'
+                '                                [red, green, blue]\n'
+                '\n'
+                'Run "masonex help" to see global options.'
+            ]
+     Which: at location [0] is 'A new brick created with the Mason CLI.\n'
+              '\n'
+              'Usage: masonex make favorite_color [arguments]\n'
+              '-h, --help                      Print this usage information.\n'
+              '-q, --quiet                     Run with reduced verbosity.\n'
+              '    --no-hooks                  Skips running hooks.\n'
+              '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+              '    --watch                     Watch the __brick__ directory for changes.\n'
+              '-c, --config-path               Path to config json file containing variables.\n'
+              '-o, --output-dir                Directory where to output the generated code.\n'
+              '                                (defaults to ".")\n'
+              '    --on-conflict               File conflict resolution strategy.\n'
+              '\n'
+              '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+              '          [overwrite]           Always overwrite conflicting files.\n'
+              '          [append]              Always append conflicting files.\n'
+              '          [skip]                Always skip conflicting files.\n'
+              '\n'
+              '-------------------------------------------------------------------------------\n'
+              '\n'
+              '    --color                     Your favorite color <enum>\n'
+              '                                (defaults to green)\n'
+              '                                [red, green, blue]\n'
+              '\n'
+              'Run "masonex help" to see global options.' instead of 'A new brick created with the Masonex CLI.\n'
+              '\n'
+              'Usage: masonex make favorite_color [arguments]\n'
+              '-h, --help                      Print this usage information.\n'
+              '-q, --quiet                     Run with reduced verbosity.\n'
+              '    --no-hooks                  Skips running hooks.\n'
+              '    --set-exit-if-changed       Return exit code 70 if there are files modified.\n'
+              '    --watch                     Watch the __brick__ directory for changes.\n'
+              '-c, --config-path               Path to config json file containing variables.\n'
+              '-o, --output-dir                Directory where to output the generated code.\n'
+              '                                (defaults to ".")\n'
+              '    --on-conflict               File conflict resolution strategy.\n'
+              '\n'
+              '          [prompt] (default)    Always prompt the user for each file conflict.\n'
+              '          [overwrite]           Always overwrite conflicting files.\n'
+              '          [append]              Always append conflicting files.\n'
+              '          [skip]                Always skip conflicting files.\n'
+              '\n'
+              '-------------------------------------------------------------------------------\n'
+              '\n'
+              '    --color                     Your favorite color <enum>\n'
+              '                                (defaults to green)\n'
+              '                                [red, green, blue]\n'
+              '\n'
+              'Run "masonex help" to see global options.'
+  
+  package:matcher                          expect
+  ../../cli/commands/make_test.dart 348:9  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make <subcommand> --help shows correct help information (favorite_color)'
+00:02 [32m+3[0m[31m -3[0m: masonex make exits with code 64 when brick does not exist[0m                                                                                                                                 00:02 [32m+4[0m[31m -3[0m: masonex make exits with code 64 when brick does not exist[0m                                                                                                                                 00:02 [32m+4[0m[31m -3[0m: masonex make exits with code 64 when missing subcommand[0m                                                                                                                                   00:03 [32m+4[0m[31m -3[0m: masonex make exits with code 64 when missing subcommand[0m                                                                                                                                   00:03 [32m+5[0m[31m -3[0m: masonex make exits with code 64 when missing subcommand[0m                                                                                                                                   00:03 [32m+5[0m[31m -3[0m: masonex make exits with code 64 when local masonex.yaml does not exist[0m                                                                                                                    00:03 [32m+6[0m[31m -3[0m: masonex make exits with code 64 when local masonex.yaml does not exist[0m                                                                                                                    00:03 [32m+6[0m[31m -3[0m: masonex make exits with code 70 when masonex version constraint cannot be resolved[0m                                                                                                        00:03 [32m+7[0m[31m -3[0m: masonex make exits with code 70 when masonex version constraint cannot be resolved[0m                                                                                                        00:03 [32m+7[0m[31m -3[0m: masonex make exits with code 64 when json decode fails[0m                                                                                                                                    00:03 [32m+8[0m[31m -3[0m: masonex make exits with code 64 when json decode fails[0m                                                                                                                                    00:03 [32m+8[0m[31m -3[0m: masonex make exits with code 64 when config does not exist[0m                                                                                                                                00:03 [32m+9[0m[31m -3[0m: masonex make exits with code 64 when config does not exist[0m                                                                                                                                00:03 [32m+9[0m[31m -3[0m: masonex make exits with code 64 when masonex.yaml contains mismatch[0m                                                                                                                       00:03 [32m+10[0m[31m -3[0m: masonex make exits with code 64 when masonex.yaml contains mismatch[0m                                                                                                                      00:03 [32m+10[0m[31m -3[0m: masonex make exits with code 64 when bricks.json contains bad path[0m                                                                                                                       00:03 [32m+11[0m[31m -3[0m: masonex make exits with code 64 when bricks.json contains bad path[0m                                                                                                                       00:03 [32m+11[0m[31m -3[0m: masonex make exits with code 64 when variable input has type mismatch[0m                                                                                                                    00:03 [32m+12[0m[31m -3[0m: masonex make exits with code 64 when variable input has type mismatch[0m                                                                                                                    00:03 [32m+12[0m[31m -3[0m: masonex make exits with code 70 when exception occurs while generating[0m                                                                                                                   00:03 [32m+13[0m[31m -3[0m: masonex make exits with code 70 when exception occurs while generating[0m                                                                                                                   00:03 [32m+13[0m[31m -3[0m: masonex make exits with code 70 when exception occurs post generation[0m                                                                                                                    00:03 [32m+14[0m[31m -3[0m: masonex make exits with code 70 when exception occurs post generation[0m                                                                                                                    00:03 [32m+14[0m[31m -3[0m: masonex make generates app_icon (from args)[0m                                                                                                                                              00:03 [32m+15[0m[31m -3[0m: masonex make generates app_icon (from args)[0m                                                                                                                                              00:03 [32m+15[0m[31m -3[0m: masonex make generates app_icon (from prompt)[0m                                                                                                                                            00:03 [32m+16[0m[31m -3[0m: masonex make generates app_icon (from prompt)[0m                                                                                                                                            00:03 [32m+16[0m[31m -3[0m: masonex make generates bio (from prompt)[0m                                                                                                                                                 00:04 [32m+16[0m[31m -3[0m: masonex make generates bio (from prompt)[0m                                                                                                                                                 00:04 [32m+17[0m[31m -3[0m: masonex make generates bio (from prompt)[0m                                                                                                                                                 00:04 [32m+17[0m[31m -3[0m: masonex make generates documentation[0m                                                                                                                                                     00:04 [32m+18[0m[31m -3[0m: masonex make generates documentation[0m                                                                                                                                                     00:04 [32m+18[0m[31m -3[0m: masonex make generates favorite_color[0m                                                                                                                                                    00:04 [32m+18[0m[31m -4[0m: masonex make generates favorite_color [1m[31m[E][0m[0m                                                                                                                                                
+  Expected: <0>
+    Actual: <70>
+  
+  package:matcher                             expect
+  ../../../cli/commands/make_test.dart 665:7  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make generates favorite_color'
+00:04 [32m+18[0m[31m -4[0m: masonex make generates favorite_languages[0m                                                                                                                                                00:04 [32m+18[0m[31m -5[0m: masonex make generates favorite_languages [1m[31m[E][0m[0m                                                                                                                                            
+  Expected: <0>
+    Actual: <70>
+  
+  package:matcher                             expect
+  ../../../cli/commands/make_test.dart 683:7  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make generates favorite_languages'
+00:04 [32m+18[0m[31m -5[0m: masonex make throws FormatException when enum values is empty[0m                                                                                                                            00:04 [32m+18[0m[31m -6[0m: masonex make throws FormatException when enum values is empty [1m[31m[E][0m[0m                                                                                                                        
+  No matching calls. All calls: _MockLogger.progress(Installing enum_no_choices, {options: null}),
+  _MockLogger.err(
+      The current masonex version is 0.0.1.
+      Because enum_no_choices requires masonex version ^0.1.2, version solving failed., {style: null}),
+  _MockLogger.err(Could not find a subcommand named "enum_no_choices" for "masonex make"., {style: null}),
+  _MockLogger.info({style: null}),
+  _MockLogger.info(
+      Usage: masonex make <subcommand> [arguments]
+      -h, --help                      Print this usage information.
+      -q, --quiet                     Run with reduced verbosity.
+          --no-hooks                  Skips running hooks.
+          --set-exit-if-changed       Return exit code 70 if there are files modified.
+          --watch                     Watch the __brick__ directory for changes.
+      -c, --config-path               Path to config json file containing variables.
+      -o, --output-dir                Directory where to output the generated code.
+                                      (defaults to ".")
+          --on-conflict               File conflict resolution strategy.
+      
+                [prompt] (default)    Always prompt the user for each file conflict.
+                [overwrite]           Always overwrite conflicting files.
+                [append]              Always append conflicting files.
+                [skip]                Always skip conflicting files.
+      
+      Available subcommands:
+        app_icon             Create an app icon file from a URL
+        bio                  A Bio Template
+        documentation        Create Documentation Markdown Files
+        favorite_color       A new brick created with the Mason CLI.
+        favorite_languages   A new brick created with the Mason CLI.
+        flavors              A new brick created with the Mason CLI.
+        greeting             A Simple Greeting Template
+        hello_world          A Simple Hello World Template
+        hooks                A Hooks Example Template
+        legacy               A Legacy Greeting Template
+        plugin               An example plugin template
+        random_color         A Random Color Generator
+        simple               A Simple Static Template
+        todos                A Todos Template
+        widget               Create a Simple Flutter Widget
+      
+      Run "masonex help" to see global options., {style: null})
+  (If you called `verify(...).called(0);`, please instead use `verifyNever(...);`.)
+  package:matcher                              fail
+  package:mocktail/src/mocktail.dart 728:7     _VerifyCall._checkWith
+  package:mocktail/src/mocktail.dart 519:18    _makeVerify.<fn>
+  ../../../cli/commands/make_test.dart 722:13  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make throws FormatException when enum values is empty'
+00:04 [32m+18[0m[31m -6[0m: masonex make generates flavors[0m                                                                                                                                                           00:04 [32m+18[0m[31m -7[0m: masonex make generates flavors [1m[31m[E][0m[0m                                                                                                                                                       
+  Expected: <0>
+    Actual: <70>
+  
+  package:matcher                             expect
+  ../../../cli/commands/make_test.dart 740:7  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make generates flavors'
+00:04 [32m+18[0m[31m -7[0m: masonex make throws FormatException when array values is empty[0m                                                                                                                           00:04 [32m+18[0m[31m -8[0m: masonex make throws FormatException when array values is empty [1m[31m[E][0m[0m                                                                                                                       
+  No matching calls. All calls: _MockLogger.progress(Installing array_no_choices, {options: null}),
+  _MockLogger.err(
+      The current masonex version is 0.0.1.
+      Because array_no_choices requires masonex version ^0.1.2, version solving failed., {style: null}),
+  _MockLogger.err(Could not find a subcommand named "array_no_choices" for "masonex make"., {style: null}),
+  _MockLogger.info({style: null}),
+  _MockLogger.info(
+      Usage: masonex make <subcommand> [arguments]
+      -h, --help                      Print this usage information.
+      -q, --quiet                     Run with reduced verbosity.
+          --no-hooks                  Skips running hooks.
+          --set-exit-if-changed       Return exit code 70 if there are files modified.
+          --watch                     Watch the __brick__ directory for changes.
+      -c, --config-path               Path to config json file containing variables.
+      -o, --output-dir                Directory where to output the generated code.
+                                      (defaults to ".")
+          --on-conflict               File conflict resolution strategy.
+      
+                [prompt] (default)    Always prompt the user for each file conflict.
+                [overwrite]           Always overwrite conflicting files.
+                [append]              Always append conflicting files.
+                [skip]                Always skip conflicting files.
+      
+      Available subcommands:
+        app_icon             Create an app icon file from a URL
+        bio                  A Bio Template
+        documentation        Create Documentation Markdown Files
+        favorite_color       A new brick created with the Mason CLI.
+        favorite_languages   A new brick created with the Mason CLI.
+        flavors              A new brick created with the Mason CLI.
+        greeting             A Simple Greeting Template
+        hello_world          A Simple Hello World Template
+        hooks                A Hooks Example Template
+        legacy               A Legacy Greeting Template
+        plugin               An example plugin template
+        random_color         A Random Color Generator
+        simple               A Simple Static Template
+        todos                A Todos Template
+        widget               Create a Simple Flutter Widget
+      
+      Run "masonex help" to see global options., {style: null})
+  (If you called `verify(...).called(0);`, please instead use `verifyNever(...);`.)
+  package:matcher                              fail
+  package:mocktail/src/mocktail.dart 728:7     _VerifyCall._checkWith
+  package:mocktail/src/mocktail.dart 519:18    _makeVerify.<fn>
+  ../../../cli/commands/make_test.dart 779:13  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make throws FormatException when array values is empty'
+00:04 [32m+18[0m[31m -8[0m: masonex make generates greeting[0m                                                                                                                                                          00:04 [32m+19[0m[31m -8[0m: masonex make generates greeting[0m                                                                                                                                                          00:04 [32m+19[0m[31m -8[0m: masonex make generates hello_world[0m                                                                                                                                                       00:04 [32m+20[0m[31m -8[0m: masonex make generates hello_world[0m                                                                                                                                                       00:04 [32m+20[0m[31m -8[0m: masonex make generates hooks[0m                                                                                                                                                             00:05 [32m+20[0m[31m -8[0m: masonex make generates hooks[0m                                                                                                                                                             00:05 [32m+21[0m[31m -8[0m: masonex make generates hooks[0m                                                                                                                                                             00:05 [32m+21[0m[31m -8[0m: masonex make generates hooks (--no-hooks)[0m                                                                                                                                                00:05 [32m+22[0m[31m -8[0m: masonex make generates hooks (--no-hooks)[0m                                                                                                                                                00:05 [32m+22[0m[31m -8[0m: masonex make generates random_color[0m                                                                                                                                                      ⠋ Generating a random color...00:06 [32m+22[0m[31m -8[0m: masonex make generates random_color[0m                                                                                                                                                      ✓ Generated (1.0s)
+00:06 [32m+23[0m[31m -8[0m: masonex make generates random_color[0m                                                                                                                                                      00:06 [32m+23[0m[31m -8[0m: masonex make generates plugin (empty)[0m                                                                                                                                                    00:06 [32m+24[0m[31m -8[0m: masonex make generates plugin (empty)[0m                                                                                                                                                    00:06 [32m+24[0m[31m -8[0m: masonex make generates plugin (android)[0m                                                                                                                                                  00:06 [32m+25[0m[31m -8[0m: masonex make generates plugin (android)[0m                                                                                                                                                  00:06 [32m+25[0m[31m -8[0m: masonex make generates plugin (ios)[0m                                                                                                                                                      00:06 [32m+26[0m[31m -8[0m: masonex make generates plugin (ios)[0m                                                                                                                                                      00:06 [32m+26[0m[31m -8[0m: masonex make generates plugin (android + ios)[0m                                                                                                                                            00:07 [32m+26[0m[31m -8[0m: masonex make generates plugin (android + ios)[0m                                                                                                                                            00:07 [32m+27[0m[31m -8[0m: masonex make generates plugin (android + ios)[0m                                                                                                                                            00:07 [32m+27[0m[31m -8[0m: masonex make generates simple[0m                                                                                                                                                            00:07 [32m+28[0m[31m -8[0m: masonex make generates simple[0m                                                                                                                                                            00:07 [32m+28[0m[31m -8[0m: masonex make generates todos[0m                                                                                                                                                             00:07 [32m+29[0m[31m -8[0m: masonex make generates todos[0m                                                                                                                                                             00:07 [32m+29[0m[31m -8[0m: masonex make generates widget[0m                                                                                                                                                            00:07 [32m+30[0m[31m -8[0m: masonex make generates widget[0m                                                                                                                                                            00:07 [32m+30[0m[31m -8[0m: masonex make generates greeting with custom output directory[0m                                                                                                                             00:07 [32m+31[0m[31m -8[0m: masonex make generates greeting with custom output directory[0m                                                                                                                             00:07 [32m+31[0m[31m -8[0m: masonex make generates greeting and skips conflicts[0m                                                                                                                                      00:07 [32m+32[0m[31m -8[0m: masonex make generates greeting and skips conflicts[0m                                                                                                                                      00:07 [32m+32[0m[31m -8[0m: masonex make generates greeting and overwrites conflicts[0m                                                                                                                                 00:07 [32m+32[0m[31m -9[0m: masonex make generates greeting and overwrites conflicts [1m[31m[E][0m[0m                                                                                                                             
+  No matching calls. All calls: _MockLogger.progress(Making greeting, {options: null}), [VERIFIED] _MockLogger.delayed(  created GREETINGS.md), _MockLogger.flush(Closure: (String?) => void), _MockLogger.progress(Making greeting, {options: null}), _MockLogger.delayed(  overwritten GREETINGS.md), _MockLogger.flush(Closure: (String?) => void)
+  (If you called `verify(...).called(0);`, please instead use `verifyNever(...);`.)
+  package:matcher                            fail
+  package:mocktail/src/mocktail.dart 728:7   _VerifyCall._checkWith
+  package:mocktail/src/mocktail.dart 519:18  _makeVerify.<fn>
+  test/cli/commands/make_test.dart 1165:13   main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make generates greeting and overwrites conflicts'
+00:07 [32m+32[0m[31m -9[0m: masonex make generates greeting and appends to existing file[0m                                                                                                                             00:07 [32m+32[0m[31m -10[0m: masonex make generates greeting and appends to existing file [1m[31m[E][0m[0m                                                                                                                        
+  No matching calls. All calls: _MockLogger.progress(Making greeting, {options: null}), [VERIFIED] _MockLogger.delayed(  created GREETINGS.md), _MockLogger.flush(Closure: (String?) => void), _MockLogger.progress(Making greeting, {options: null}), _MockLogger.delayed(  appended GREETINGS.md), _MockLogger.flush(Closure: (String?) => void)
+  (If you called `verify(...).called(0);`, please instead use `verifyNever(...);`.)
+  package:matcher                               fail
+  package:mocktail/src/mocktail.dart 728:7      _VerifyCall._checkWith
+  package:mocktail/src/mocktail.dart 519:18     _makeVerify.<fn>
+  ../../../cli/commands/make_test.dart 1205:13  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make generates greeting and appends to existing file'
+00:07 [32m+32[0m[31m -10[0m: masonex make generates greeting --set-exit-if-changed (identical)[0m                                                                                                                       00:07 [32m+33[0m[31m -10[0m: masonex make generates greeting --set-exit-if-changed (identical)[0m                                                                                                                       00:07 [32m+33[0m[31m -10[0m: masonex make generates greeting --set-exit-if-changed (overwritten)[0m                                                                                                                     00:07 [32m+33[0m[31m -11[0m: masonex make generates greeting --set-exit-if-changed (overwritten) [1m[31m[E][0m[0m                                                                                                                 
+  No matching calls. All calls: _MockLogger.progress(Making greeting, {options: null}), [VERIFIED] _MockLogger.delayed(  created GREETINGS.md), _MockLogger.flush(Closure: (String?) => void), [VERIFIED] _MockLogger.err(✗ 1 file changed, {style: null}), _MockLogger.progress(Making greeting, {options: null}), _MockLogger.delayed(  overwritten GREETINGS.md), _MockLogger.flush(Closure: (String?) => void), _MockLogger.err(✗ 1 file changed, {style: null})
+  (If you called `verify(...).called(0);`, please instead use `verifyNever(...);`.)
+  package:matcher                               fail
+  package:mocktail/src/mocktail.dart 728:7      _VerifyCall._checkWith
+  package:mocktail/src/mocktail.dart 519:18     _makeVerify.<fn>
+  ../../../cli/commands/make_test.dart 1294:13  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make generates greeting --set-exit-if-changed (overwritten)'
+00:07 [32m+33[0m[31m -11[0m: masonex make generates greeting --set-exit-if-changed (skipped)[0m                                                                                                                         00:07 [32m+34[0m[31m -11[0m: masonex make generates greeting --set-exit-if-changed (skipped)[0m                                                                                                                         00:07 [32m+34[0m[31m -11[0m: masonex make generates greeting --set-exit-if-changed (modified)[0m                                                                                                                        00:07 [32m+34[0m[31m -12[0m: masonex make generates greeting --set-exit-if-changed (modified) [1m[31m[E][0m[0m                                                                                                                    
+  No matching calls. All calls: _MockLogger.progress(Making greeting, {options: null}), [VERIFIED] _MockLogger.delayed(  created GREETINGS.md), _MockLogger.flush(Closure: (String?) => void), [VERIFIED] _MockLogger.err(✗ 1 file changed, {style: null}), _MockLogger.progress(Making greeting, {options: null}), _MockLogger.delayed(  appended GREETINGS.md), _MockLogger.flush(Closure: (String?) => void), _MockLogger.err(✗ 1 file changed, {style: null})
+  (If you called `verify(...).called(0);`, please instead use `verifyNever(...);`.)
+  package:matcher                               fail
+  package:mocktail/src/mocktail.dart 728:7      _VerifyCall._checkWith
+  package:mocktail/src/mocktail.dart 519:18     _makeVerify.<fn>
+  ../../../cli/commands/make_test.dart 1384:13  main.<fn>.<fn>
+  
+
+[1m[36mTo run this test again:[0m /opt/flutter/bin/cache/dart-sdk/bin/dart test test/cli/commands/make_test.dart -p vm --plain-name 'masonex make generates greeting --set-exit-if-changed (modified)'
+00:07 [32m+34[0m[31m -12[0m: masonex make generates plugin --set-exit-if-changed[0m                                                                                                                                     00:07 [32m+35[0m[31m -12[0m: masonex make generates plugin --set-exit-if-changed[0m                                                                                                                                     00:07 [32m+35[0m[31m -12[0m: masonex make generates hello_world (--quiet mode)[0m                                                                                                                                       00:07 [32m+36[0m[31m -12[0m: masonex make generates hello_world (--quiet mode)[0m                                                                                                                                       00:07 [32m+36[0m[31m -12[0m: masonex make generates brick and watches for changes (--watch)[0m                                                                                                                          00:08 [32m+36[0m[31m -12[0m: masonex make generates brick and watches for changes (--watch)[0m                                                                                                                          00:09 [32m+36[0m[31m -12[0m: masonex make generates brick and watches for changes (--watch)[0m                                                                                                                          00:09 [32m+37[0m[31m -12[0m: masonex make generates brick and watches for changes (--watch)[0m                                                                                                                          00:09 [32m+37[0m[31m -12[0m: masonex make (tearDownAll)[0m                                                                                                                                                              00:09 [32m+37[0m[31m -12[0m: [31mSome tests failed.[0m                                                                                                                                                                      
+
+Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
+For example, 'dart test --chain-stack-traces'.

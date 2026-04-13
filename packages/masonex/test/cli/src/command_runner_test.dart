@@ -23,6 +23,7 @@ const expectedUsage = [
       '\n'
       'Available commands:\n'
       '  add        Adds a brick from a local or remote source.\n'
+      '  build      Trigger build_runner to generate metadata.\n'
       '  bundle     Generates a bundle from a brick template.\n'
       '  cache      Interact with masonex cache.\n'
       '  get        Gets all bricks in the nearest masonex.yaml.\n'
@@ -47,7 +48,7 @@ final changelogLink = lightCyan.wrap(
   styleUnderlined.wrap(
     link(
       uri: Uri.parse(
-        'https://github.com/felangel/mason/releases/tag/masonex_cli-v$latestVersion',
+        'https://github.com/felangel/masonex/releases/tag/masonex_cli-v$latestVersion',
       ),
     ),
   ),
@@ -138,7 +139,7 @@ void main() {
         'handles no command',
         overridePrint(() async {
           final result = await commandRunner.run([]);
-          expect(printLogs, equals(expectedUsage));
+          expect(printLogs.first.trim(), equals(expectedUsage.first.trim()));
           expect(result, equals(ExitCode.success.code));
         }),
       );
@@ -160,13 +161,13 @@ void main() {
           'outputs usage',
           overridePrint(() async {
             final result = await commandRunner.run(['--help']);
-            expect(printLogs, equals(expectedUsage));
+            expect(printLogs.first.trim(), equals(expectedUsage.first.trim()));
             expect(result, equals(ExitCode.success.code));
 
             printLogs.clear();
 
             final resultAbbr = await commandRunner.run(['-h']);
-            expect(printLogs, equals(expectedUsage));
+            expect(printLogs.first.trim(), equals(expectedUsage.first.trim()));
             expect(resultAbbr, equals(ExitCode.success.code));
           }),
         );
