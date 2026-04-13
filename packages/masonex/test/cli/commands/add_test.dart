@@ -185,7 +185,7 @@ void main() {
             'from nested directory', () async {
           final nested = Directory(path.join(Directory.current.path, 'nested'))
             ..createSync();
-          final workspace = Directory.current.path;
+          final workspace = Directory.current;
           Directory.current = nested.path;
           final brickPath = getBrickPath('greeting');
           final result = await commandRunner.run([

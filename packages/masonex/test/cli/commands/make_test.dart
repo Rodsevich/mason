@@ -74,19 +74,16 @@ void main() {
         'todos',
         'widget',
       };
-      final bricksPath = getBrickPath('');
       final masonexYamlBuffer = StringBuffer('bricks:\n');
       for (final brick in bricks) {
-        masonexYamlBuffer.writeln('  $brick: ${path.join(bricksPath, brick)}');
+        masonexYamlBuffer.writeln('  $brick: ${getBrickPath(brick)}');
       }
       File(
         path.join(Directory.current.path, 'masonex.yaml'),
       ).writeAsStringSync('$masonexYamlBuffer');
       final bricksJsonContent = json.encode({
         for (final brick in bricks)
-          brick: canonicalize(
-            path.join(Directory.current.path, bricksPath, brick),
-          ),
+          brick: canonicalize(getBrickPath(brick)),
       });
       final bricksJson =
           File(path.join(Directory.current.path, '.masonex', 'bricks.json'))
@@ -1167,7 +1164,7 @@ bricks:
       expect(fileB.readAsStringSync(), contains('Hi test-name2!'));
       verify(
         () => logger.delayed(
-          '''  ${green.wrap('created')} ${darkGray.wrap('GREETINGS.md')}''',
+          '''  ${green.wrap('overwritten')} ${darkGray.wrap('GREETINGS.md')}''',
         ),
       ).called(1);
     });
@@ -1207,7 +1204,7 @@ bricks:
       expect(fileB.readAsStringSync(), contains('Hi test-name!Hi test-name2!'));
       verify(
         () => logger.delayed(
-          '''  ${lightBlue.wrap('modified')} ${darkGray.wrap('GREETINGS.md')}''',
+          '''  ${lightBlue.wrap('appended')} ${darkGray.wrap('GREETINGS.md')}''',
         ),
       ).called(1);
     });
@@ -1296,7 +1293,7 @@ bricks:
       expect(fileB.readAsStringSync(), contains('Hi test-name1!'));
       verify(
         () => logger.delayed(
-          '''  ${green.wrap('created')} ${darkGray.wrap('GREETINGS.md')}''',
+          '''  ${green.wrap('overwritten')} ${darkGray.wrap('GREETINGS.md')}''',
         ),
       ).called(1);
       verify(() => logger.err(any(that: contains('1 file changed')))).called(1);
@@ -1386,7 +1383,7 @@ bricks:
       expect(fileB.readAsStringSync(), contains('Hi test-name!Hi test-name1!'));
       verify(
         () => logger.delayed(
-          '''  ${lightBlue.wrap('modified')} ${darkGray.wrap('GREETINGS.md')}''',
+          '''  ${lightBlue.wrap('appended')} ${darkGray.wrap('GREETINGS.md')}''',
         ),
       ).called(1);
       verify(() => logger.err(any(that: contains('1 file changed')))).called(1);

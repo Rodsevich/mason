@@ -1,18 +1,21 @@
 bricks:
-  app_icon: ../../bricks/app_icon
-  bio: ../../bricks/bio
-  documentation: ../../bricks/documentation
-  favorite_color: ../../bricks/favorite_color
-  favorite_languages: ../../bricks/favorite_languages
-  flavors: ../../bricks/flavors
-  greeting: ../../bricks/greeting
-  legacy: ../../bricks/legacy
-  hello_world: ../../bricks/hello_world
-  hooks: ../../bricks/hooks
-  plugin: ../../bricks/plugin
-  random_color: ../../bricks/random_color
-  simple: ../../bricks/simple
-  todos: ../../bricks/todos
-  widget: ../../bricks/widget
-  example:
-    path:  ./example
+  documentation:
+    path: /home/nico/src/mason/bricks/documentation
+    git:
+    version:
+  greeting: ^0.1.0
+  todos:
+    path: /home/nico/src/mason/bricks/todos
+    git:
+    version:
+  widget:
+    path:
+    git:
+      url: "https://github.com/felangel/mason"
+      path: bricks/widget
+      ref: 997bc878c93534fad17d965be7cafe948a1dbb53
+    version:
+  array_no_choices:
+    path: test/bricks/array_no_choices
+    git:
+    version:

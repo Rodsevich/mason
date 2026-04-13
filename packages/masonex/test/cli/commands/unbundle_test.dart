@@ -78,7 +78,7 @@ void main() {
       ]);
       expect(result, equals(ExitCode.success.code));
       final actual = Directory(
-        path.join(testFixturesPath(cwd, suffix: '.unbundle'), 'dart'),
+        path.join(testFixturesPath(cwd, suffix: 'unbundle'), 'dart'),
       );
       final expected = Directory(testFixturesPath(cwd, suffix: 'unbundle'));
       expect(directoriesDeepEqual(actual, expected), isTrue);

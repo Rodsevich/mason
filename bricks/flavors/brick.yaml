@@ -1,10 +1,10 @@
 name: flavors
-description: A new brick created with the Mason CLI.
+description: A new brick created with the Masonex CLI.
 
 version: 0.1.0+1
 
 environment:
-  mason: ^0.1.0
+  mason: any
 
 vars:
   flavors:

@@ -1,1 +1,1 @@
-{"bricks":{}}
+{"bricks":{"array_no_choices":{"path":"/home/nico/src/mason/packages/masonex/test/bricks/array_no_choices","git":null,"version":null},"documentation":{"path":"/home/nico/src/mason/bricks/documentation","git":null,"version":null},"greeting":"0.1.0+2","todos":{"path":"/home/nico/src/mason/bricks/todos","git":null,"version":null}}}
