@@ -259,7 +259,7 @@ bricks:
     });
 
     test('exits with code 64 when masonex.yaml does not exist', () async {
-      Directory.current = cwd.path;
+      Directory.current = cwd;
       final result = await commandRunner.run(['get']);
       expect(result, equals(ExitCode.usage.code));
       verify(
