@@ -216,7 +216,7 @@ void main() {
             'version: 0.1.0+1\n'
             'environment:\n'
             '  masonex: any\n'
-            'vars:\n',
+            'vars:',
           ),
         );
         final file = File(path.join(tempDir.path, '__brick__', 'HELLO.md'));
@@ -241,7 +241,7 @@ void main() {
             'environment:\n'
             '  masonex: ^$packageVersion\n'
             'repository: "https://github.com/felangel/mason/tree/master/bricks/hello"\n'
-            'vars:\n'
+            'vars:'
             '  name:\n'
             '    type: string\n'
             '    description: Your name\n'
@@ -330,7 +330,7 @@ void main() {
             'version: 0.1.0+1\n'
             'environment:\n'
             '  masonex: any\n'
-            'vars:\n'
+            'vars:'
             '  name:\n'
             '    type: string\n'
             '    description: Your name\n'
@@ -387,7 +387,7 @@ void main() {
             'version: 0.1.0+1\n'
             'environment:\n'
             '  masonex: any\n'
-            'vars:\n',
+            'vars:',
           ),
         );
         final file = File(path.join(tempDir.path, '__brick__', '.gitkeep'));
@@ -464,7 +464,7 @@ void postGen(HookContext context) {
             'environment:\n'
             '  masonex: any\n'
             'publish_to: "https://custom.brickhub.dev"\n'
-            'vars:\n',
+            'vars:',
           ),
         );
       });
@@ -486,7 +486,7 @@ void postGen(HookContext context) {
             'environment:\n'
             '  masonex: any\n'
             'publish_to: none\n'
-            'vars:\n',
+            'vars:',
           ),
         );
       });

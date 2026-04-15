@@ -45,9 +45,7 @@ String _transpileMasonSyntax(String content) {
       return match.group(0)!;
     }
 
-    final tagLen = opening.length < closing.length
-        ? opening.length
-        : closing.length;
+    final tagLen = opening.length < closing.length ? opening.length : closing.length;
 
     var prefix = opening.substring(0, opening.length - tagLen);
     var suffix = closing.substring(tagLen);
@@ -68,8 +66,7 @@ String _transpileMasonSyntax(String content) {
         final dotMatch = dotRegex.firstMatch(currentTrimmed);
         if (dotMatch != null) {
           lambdas.add(lambda);
-          final startInInner =
-              currentInner.lastIndexOf(currentTrimmed) + dotMatch.start;
+          final startInInner = currentInner.lastIndexOf(currentTrimmed) + dotMatch.start;
           currentInner = currentInner.substring(0, startInInner);
           foundInThisPass = true;
           changed = true;
@@ -83,8 +80,7 @@ String _transpileMasonSyntax(String content) {
           final pipeMatch = pipeRegex.firstMatch(currentTrimmed);
           if (pipeMatch != null) {
             lambdas.add(lambda);
-            final startInInner =
-                currentInner.lastIndexOf(currentTrimmed) + pipeMatch.start;
+            final startInInner = currentInner.lastIndexOf(currentTrimmed) + pipeMatch.start;
             currentInner = currentInner.substring(0, startInInner);
             foundInThisPass = true;
             changed = true;
@@ -99,14 +95,9 @@ String _transpileMasonSyntax(String content) {
     }
 
     final varPart = currentInner;
-    final varName = (varPart.trim().isEmpty || varPart.trim() == "..")
-        ? "."
-        : varPart;
-    // We use triple braces if the original was triple, but we must ensure
-    // it doesn't merge with a prefix brace.
-    var result = (opening.length == 3 && closing.length == 3)
-        ? '{{{$varName}}}'
-        : '{{$varName}}';
+    final varName = (varPart.trim().isEmpty || varPart.trim() == "..") ? "." : varPart;
+
+    var result = (opening.length == 3 || closing.length == 3) ? '{{& $varName}}' : '{{$varName}}';
 
     for (final lambda in lambdas.reversed) {
       result = '{{#$lambda}}$result{{/$lambda}}';
@@ -126,10 +117,7 @@ String _transpileMasonSyntax(String content) {
       return res;
     }
 
-    prefix = escape(prefix);
-    suffix = escape(suffix);
-
-    return '$prefix$result$suffix';
+    return '${escape(prefix)}$result${escape(suffix)}';
   });
 }
 

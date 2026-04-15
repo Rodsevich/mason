@@ -94,7 +94,15 @@ int _comparePaths(MasonexBundledFile a, MasonexBundledFile b) {
 MasonexBundledFile? _bundleTopLevelFile(Directory brick, String fileName) {
   final file = File(path.join(brick.path, fileName));
   if (!file.existsSync()) return null;
-  final data = base64.encode(file.readAsBytesSync());
+  var bytes = file.readAsBytesSync();
+  if (fileName == 'README.md' || fileName == 'CHANGELOG.md') {
+    var content = utf8.decode(bytes);
+    content = content.replaceAll('Mason CLI', 'Masonex CLI');
+    content = content.replaceAll('[mason][1]', '[masonex][1]');
+    content = content.replaceAll('`mason ^', '`masonex ^');
+    bytes = utf8.encode(content);
+  }
+  final data = base64.encode(bytes);
   return MasonexBundledFile(path.basename(file.path), data, 'text');
 }
 
