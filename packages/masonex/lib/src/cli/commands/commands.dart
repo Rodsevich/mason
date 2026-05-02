@@ -1,4 +1,8 @@
 export 'add.dart';
+export 'ai_cache.dart';
+export 'ai_trace.dart';
+export 'ai_validate.dart';
+export 'audit_ai.dart';
 export 'build.dart';
 export 'bundle.dart';
 export 'cache.dart';
@@ -9,6 +13,7 @@ export 'login.dart';
 export 'logout.dart';
 export 'make.dart';
 export 'new.dart';
+export 'provider.dart';
 export 'publish.dart';
 export 'remove.dart';
 export 'search.dart';

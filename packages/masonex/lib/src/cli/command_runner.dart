@@ -28,6 +28,10 @@ class MasonexCommandRunner extends CompletionCommandRunner<int> {
       super(executableName, '🧱  masonex \u{2022} lay the foundation!') {
     argParser.addFlags();
     addCommand(AddCommand(logger: _logger));
+    addCommand(AiCacheCommand(logger: _logger));
+    addCommand(AiTraceCommand(logger: _logger));
+    addCommand(AiValidateCommand(logger: _logger));
+    addCommand(AuditAiCommand(logger: _logger));
     addCommand(BuildCommand(logger: _logger));
     addCommand(CacheCommand(logger: _logger));
     addCommand(BundleCommand(logger: _logger));
@@ -38,6 +42,7 @@ class MasonexCommandRunner extends CompletionCommandRunner<int> {
     addCommand(LogoutCommand(logger: _logger));
     addCommand(MakeCommand(logger: _logger));
     addCommand(NewCommand(logger: _logger));
+    addCommand(ProviderCommand(logger: _logger));
     addCommand(PublishCommand(logger: _logger));
     addCommand(RemoveCommand(logger: _logger));
     addCommand(SearchCommand(logger: _logger));

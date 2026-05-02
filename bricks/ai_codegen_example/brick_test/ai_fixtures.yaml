@@ -1,0 +1,9 @@
+fixtures:
+  - match: "Write a one-line dartdoc for class"
+    output: "Repository for managing orders end-to-end."
+  - match: "One short marketing line"
+    output: "Manage your orders with confidence."
+  - match: "Spanish-language tagline"
+    output: "Gestiona tus pedidos con confianza."
+  - match: "Generate a unique kebab-case id"
+    output: "foo-repository"

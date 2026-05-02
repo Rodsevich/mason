@@ -1,0 +1,21 @@
+name: ai_codegen_example
+description: |
+  Reference brick that exercises the masonex `| ai` filter end-to-end.
+  Bring your own AI provider via `~/.masonex/providers.yaml`, or run with the
+  bundled mock fixtures (CI default).
+version: 0.1.0+1
+
+environment:
+  mason: ^0.1.2
+
+vars:
+  className:
+    type: string
+    description: PascalCase name of the class to generate.
+    default: FooRepository
+    prompt: How is the class called?
+  domain:
+    type: string
+    description: Domain word the class operates on (e.g., orders).
+    default: orders
+    prompt: Which domain does this class deal with?

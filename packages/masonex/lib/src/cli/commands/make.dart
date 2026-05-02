@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:masonex/masonex.dart';
+import 'package:masonex/src/ai/integration.dart';
 import 'package:masonex/src/cli/command.dart';
 import 'package:path/path.dart' as p;
 import 'package:watcher/watcher.dart';
@@ -92,6 +93,8 @@ class _MakeCommand extends MasonexCommand {
     final disableHooks = results['no-hooks'] as bool;
     final quietMode = results['quiet'] as bool;
     final watch = results['watch'] as bool;
+
+    final aiOptions = _buildAiRenderOptions(_brick, results);
 
     Future<int> _make() async {
       final path = File(_brick.path!).parent.path;
@@ -192,6 +195,7 @@ class _MakeCommand extends MasonexCommand {
           vars: updatedVars ?? vars,
           fileConflictResolution: fileConflictResolution,
           logger: logger,
+          aiOptions: aiOptions,
         );
         generateProgress.complete(
           'Generated ${files.length} ${files.length == 1 ? 'file' : 'files'}.',
@@ -356,7 +360,65 @@ extension on ArgParser {
       },
       help: 'File conflict resolution strategy.',
     );
+    addFlag(
+      'no-ai',
+      help: 'Skip AI pre-resolution. `| ai` tags survive into the output.',
+      negatable: false,
+    );
+    addFlag(
+      'refresh-ai',
+      help: 'Bypass AI cache reads (still writes new entries).',
+      negatable: false,
+    );
+    addFlag(
+      'no-cache-ai',
+      help: 'Disable both reads and writes of the AI cache for this run.',
+      negatable: false,
+    );
+    addFlag(
+      'use-mock-ai',
+      help: 'Use the mock AI provider (reads brick_test/ai_fixtures.yaml). '
+          'For testing bricks without contacting a real provider.',
+      negatable: false,
+    );
+    addOption(
+      'ai-provider',
+      help: 'Override the active AI provider for this run.',
+    );
+    addOption(
+      'ai-concurrency',
+      help: 'Maximum simultaneous AI invocations.',
+      defaultsTo: '4',
+    );
   }
+}
+
+/// Builds [AiRenderOptions] from the parsed CLI flags. Returns `null` only
+/// when `--no-ai` is set; otherwise the options carry the brick metadata
+/// and per-tag knobs the orchestrator needs.
+AiRenderOptions? _buildAiRenderOptions(BrickYaml brick, ArgResults results) {
+  final disabled = results['no-ai'] as bool;
+  if (disabled) {
+    return const AiRenderOptions(disabled: true);
+  }
+  final concurrency = int.tryParse(
+        (results['ai-concurrency'] as String?) ?? '4',
+      ) ??
+      4;
+  final brickRoot = brick.path == null
+      ? null
+      : File(brick.path!).parent.path;
+  return AiRenderOptions(
+    refreshAi: results['refresh-ai'] as bool,
+    disableCache: results['no-cache-ai'] as bool,
+    concurrency: concurrency,
+    providerOverride: results['ai-provider'] as String?,
+    useMockProvider: results['use-mock-ai'] as bool,
+    brickRoot: brickRoot,
+    brickName: brick.name,
+    brickVersion: brick.version,
+    brickDescription: brick.description,
+  );
 }
 
 extension on String {
