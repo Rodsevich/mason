@@ -10,6 +10,7 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:masonex/masonex.dart';
+import 'package:masonex/src/ai/integration.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:pool/pool.dart';
@@ -253,11 +254,16 @@ abstract class Generator implements Comparable<Generator> {
 
   /// Generates files based on the provided [GeneratorTarget] and [vars].
   /// Returns a list of [GeneratedFile].
+  ///
+  /// When [aiOptions] is non-null, every template file is rendered through
+  /// the masonex AI pre-resolution pass. The generator augments the supplied
+  /// options with the per-file relative path before each render.
   Future<List<GeneratedFile>> generate(
     GeneratorTarget target, {
     Map<String, dynamic> vars = const <String, dynamic>{},
     FileConflictResolution? fileConflictResolution,
     Logger? logger,
+    AiRenderOptions? aiOptions,
   }) async {
     final overwriteRule = fileConflictResolution?.toOverwriteRule();
     final generatedFiles = <GeneratedFile>[];
@@ -318,6 +324,7 @@ abstract class Generator implements Comparable<Generator> {
           onMissingVariable: logger != null
               ? (variable) => logger.prompt('Enter value for $variable')
               : null,
+          aiOptions: aiOptions,
         );
         final root = RegExp(r'\w:\\|\w:\/');
         final separator = RegExp(r'\/|\\');
@@ -472,6 +479,7 @@ abstract class Generator implements Comparable<Generator> {
             onMissingVariable: logger != null
                 ? (variable) => logger.prompt('Enter value for $variable')
                 : null,
+            aiOptions: aiOptions,
           );
           for (final f in substitutedFiles) {
             final generatedFile = await target.createFile(
@@ -765,6 +773,7 @@ class TemplateFile {
     Map<String, dynamic> parameters,
     Map<String, List<int>> partials, {
     FutureOr<String> Function(String variable)? onMissingVariable,
+    AiRenderOptions? aiOptions,
   }) async {
     var filePath = path.replaceAll(r'\', '/');
     if (_loopRegExp().hasMatch(filePath)) {
@@ -817,6 +826,7 @@ class TemplateFile {
               parameters..addAll(param),
               partials,
               onMissingVariable: onMissingVariable,
+              aiOptions: aiOptions?.copyWith(relativePath: path),
             );
         fileContents.add(FileContents(newPath, newContents));
       }
@@ -831,6 +841,7 @@ class TemplateFile {
         parameters,
         partials,
         onMissingVariable: onMissingVariable,
+        aiOptions: aiOptions?.copyWith(relativePath: path),
       );
       return {FileContents(newPath, newContents)};
     }
@@ -840,6 +851,7 @@ class TemplateFile {
     Map<String, dynamic> vars,
     Map<String, List<int>> partials, {
     FutureOr<String> Function(String variable)? onMissingVariable,
+    AiRenderOptions? aiOptions,
   }) async {
     try {
       final decoded = utf8.decode(content);
@@ -852,6 +864,7 @@ class TemplateFile {
           return content != null ? utf8.decode(content) : null;
         },
         onMissingVariable: onMissingVariable,
+        aiOptions: aiOptions,
       );
     } on Exception {
       return content;

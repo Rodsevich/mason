@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:mustachex/mustachex.dart';
+import 'package:masonex/src/ai/integration.dart';
 import 'package:masonex/src/recase.dart';
+import 'package:mustachex/mustachex.dart';
 
 final _newlineInRegExp = RegExp(r'(\\\r\n|\\\r|\\\n)');
 final _newlineOutRegExp = RegExp(r'(\r\n|\r|\n)');
@@ -175,11 +176,13 @@ extension RenderTemplate on String {
     Map<String, dynamic> vars, {
     PartialResolverFunction? partialsResolver,
     FutureOr<String> Function(String variable)? onMissingVariable,
+    AiRenderOptions? aiOptions,
   }) async {
     final renderedBytes = await renderBytes(
       vars,
       partialsResolver: partialsResolver,
       onMissingVariable: onMissingVariable,
+      aiOptions: aiOptions,
     );
     return _sanitizeOutput(utf8.decode(renderedBytes));
   }
@@ -188,14 +191,29 @@ extension RenderTemplate on String {
     Map<String, dynamic> vars, {
     PartialResolverFunction? partialsResolver,
     FutureOr<String> Function(String variable)? onMissingVariable,
+    AiRenderOptions? aiOptions,
   }) async {
-    final transpiled = _transpileMasonSyntax(this);
-
-    final allVars = <String, dynamic>{
+    var working = this;
+    var allVars = <String, dynamic>{
       ...vars,
       ..._builtInLambdas,
       ..._builtInVars,
     };
+
+    if (aiOptions != null && !aiOptions.disabled) {
+      final aiResult = await runAiPass(
+        working,
+        vars: vars,
+        options: aiOptions,
+      );
+      working = aiResult.source;
+      allVars = <String, dynamic>{
+        ...allVars,
+        ...aiResult.injectedVars,
+      };
+    }
+
+    final transpiled = _transpileMasonSyntax(working);
 
     final processor = MustachexProcessor(
       lenient: true,

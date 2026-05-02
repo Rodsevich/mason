@@ -1,3 +1,22 @@
+# 0.2.0-dev.1
+
+- feat: AI-assisted templating via the Mustache pipeline filter `| ai`.
+  - New filter syntax `{{ "prompt" | ai(expect: word, ...) | uppercase }}`,
+    equivalent to `{{ "prompt".ai(expect: word).uppercase() }}`.
+  - Pre-resolution two-pass render guarantees atomicity: no destination
+    file is written if any AI tag fails (`AiAbortedRenderError`).
+  - Built-in adapters: `claude` (Claude Code CLI), `mock` (test fixtures),
+    `custom` (any CLI driven by `~/.masonex/providers.yaml`). Stubs for
+    `gemini`, `codex`, `cursor-agent`, `aider`, `ollama` (use via custom
+    config until F4).
+  - Content-addressed cache + JSONL trace under `.masonex/cache/ai/`.
+  - New subcommands: `validate`, `audit-ai`, `ai-cache`, `ai-trace`,
+    `provider`.
+  - Reference brick: `bricks/ai_codegen_example/`.
+  - Documentation under `doc/ai/`.
+- See `doc/ai/rfc.md` for the spec and `doc/ai/f4-f7-backlog.md` for the
+  remaining work toward a 1.0 release of the feature.
+
 # 0.1.2
 
 - fix: loop rendering when parameters contains an empty list ([#1611](https://github.com/felangel/masonex/issues/1611))
