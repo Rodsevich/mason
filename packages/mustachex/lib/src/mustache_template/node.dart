@@ -1,3 +1,7 @@
+// ignore_for_file: public_member_api_docs
+
+import '../filters/filter_call.dart';
+
 abstract class Node {
   Node(this.start, this.end);
 
@@ -16,6 +20,7 @@ abstract class Visitor {
   void visitVariable(VariableNode node);
   void visitSection(SectionNode node);
   void visitPartial(PartialNode node);
+  void visitFilterPipeline(FilterPipelineNode node);
 }
 
 class TextNode extends Node {
@@ -88,4 +93,43 @@ class PartialNode extends Node {
 
   @override
   String toString() => '(PartialNode $name $start $end "$indent")';
+}
+
+/// Tag whose content carries pipeline syntax (`{{ head | f(args) | g }}`
+/// or `{{ head.f(args).g() }}`).
+///
+/// Backward compat: a tag without any pipeline operator parses as a
+/// regular [VariableNode]. Only when `looksLikePipeline` matches does the
+/// parser emit a [FilterPipelineNode].
+class FilterPipelineNode extends Node {
+  FilterPipelineNode({
+    required this.head,
+    required this.headKind,
+    required this.filters,
+    required this.original,
+    required this.escape,
+    required int start,
+    required int end,
+  }) : super(start, end);
+
+  /// The head value as written: a literal text (no quotes) or a variable
+  /// name. Use [headKind] to distinguish.
+  final String head;
+  final HeadKind headKind;
+  final List<FilterCall> filters;
+
+  /// Original tag content (between `{{` and `}}`) for diagnostics.
+  final String original;
+
+  /// Whether the value should be HTML-escaped after rendering. False for
+  /// triple-mustache and `&` tags.
+  final bool escape;
+
+  @override
+  void accept(Visitor visitor) => visitor.visitFilterPipeline(this);
+
+  @override
+  String toString() =>
+      '(FilterPipelineNode head=$head kind=$headKind filters=${filters.length} '
+      'escape=$escape $start $end)';
 }

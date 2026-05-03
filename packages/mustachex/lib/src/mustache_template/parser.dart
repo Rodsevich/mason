@@ -1,3 +1,4 @@
+import '../filters/pipeline_parser.dart';
 import 'node.dart';
 import 'scanner.dart';
 import 'template_exception.dart';
@@ -315,7 +316,12 @@ class Parser {
           throw _error('Tags may not contain newlines or tabs.', open.start);
         }
 
-        if (!_validIdentifier.hasMatch(name)) {
+        // Pipeline tags ({{ x | filter(args) }}) carry punctuation (",`:`,
+        // quotes, brackets, slashes) that the legacy regex rejects. When
+        // we detect pipeline syntax, defer validation to the pipeline
+        // parser at AST construction time.
+        if (!PipelineParser.looksLikePipeline(name) &&
+            !_validIdentifier.hasMatch(name)) {
           throw _error(
               'Unless in lenient mode, tags may only contain the '
               'characters a-z, A-Z, minus, underscore and period.',
@@ -348,7 +354,29 @@ class Parser {
       case TagType.unescapedVariable:
       case TagType.tripleMustache:
         var escape = tag.type == TagType.variable;
-        node = VariableNode(tag.name, tag.start, tag.end, escape: escape);
+        if (PipelineParser.looksLikePipeline(tag.name)) {
+          try {
+            final parsed = PipelineParser.fromTag(tag.name).parse();
+            node = FilterPipelineNode(
+              head: parsed.head,
+              headKind: parsed.headKind,
+              filters: parsed.filters,
+              original: parsed.original,
+              escape: escape,
+              start: tag.start,
+              end: tag.end,
+            );
+          } on PipelineSyntaxException catch (e) {
+            throw TemplateException(
+              e.toString(),
+              _templateName,
+              _source,
+              tag.start,
+            );
+          }
+        } else {
+          node = VariableNode(tag.name, tag.start, tag.end, escape: escape);
+        }
         break;
 
       case TagType.partial:

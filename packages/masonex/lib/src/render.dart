@@ -28,6 +28,8 @@ const _lambdaNames = {
   'upperCase',
 };
 
+final _aiPipelineDetector = RegExp(r'(\|\s*ai\b|\.\s*ai\s*\()');
+
 String _transpileMasonSyntax(String content) {
   final tagRegex = RegExp(r'(\{{2,3})(.*?)(\}{2,3})', dotAll: true);
 
@@ -43,6 +45,13 @@ String _transpileMasonSyntax(String content) {
         trimmedInner.startsWith('>') ||
         trimmedInner.startsWith('&') ||
         trimmedInner.startsWith('{')) {
+      return match.group(0)!;
+    }
+
+    // Skip tags that include the deferred `ai` filter; they are handled
+    // by mustachex 2.0's native pipeline support so the rest of the
+    // chain (uppercase/snakeCase/etc.) must remain visible to the parser.
+    if (_aiPipelineDetector.hasMatch(trimmedInner)) {
       return match.group(0)!;
     }
 
@@ -193,27 +202,25 @@ extension RenderTemplate on String {
     FutureOr<String> Function(String variable)? onMissingVariable,
     AiRenderOptions? aiOptions,
   }) async {
-    var working = this;
-    var allVars = <String, dynamic>{
+    final allVars = <String, dynamic>{
       ...vars,
       ..._builtInLambdas,
       ..._builtInVars,
     };
 
+    var filters = <MustachexFilter>[];
+    var resolutions = <DeferredCallId, String>{};
     if (aiOptions != null && !aiOptions.disabled) {
       final aiResult = await runAiPass(
-        working,
+        this,
         vars: vars,
         options: aiOptions,
       );
-      working = aiResult.source;
-      allVars = <String, dynamic>{
-        ...allVars,
-        ...aiResult.injectedVars,
-      };
+      filters = aiResult.filters;
+      resolutions = aiResult.deferredResolutions;
     }
 
-    final transpiled = _transpileMasonSyntax(working);
+    final transpiled = _transpileMasonSyntax(this);
 
     final processor = MustachexProcessor(
       lenient: true,
@@ -222,6 +229,8 @@ extension RenderTemplate on String {
           ? (exception) async => await onMissingVariable(exception.varName!)
           : null,
       partialsResolver: partialsResolver,
+      filters: filters,
+      deferredResolutions: resolutions,
     );
 
     try {

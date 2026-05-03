@@ -229,6 +229,18 @@ class Scanner {
           value = '.';
           break;
 
+        case _DOUBLE_QUOTE:
+        case _SINGLE_QUOTE:
+          // Quoted string literal — used by pipeline-syntax tags
+          // ({{ "x" | filter }}). Read everything until the matching
+          // closing quote, including any `}}` sequences that would
+          // otherwise be interpreted as the end of the tag. This makes
+          // the scanner forward `"hi {{name}}"` as a single identifier
+          // token, which the pipeline parser then unpacks correctly.
+          token = TokenType.identifier;
+          value = _readQuotedString(c);
+          break;
+
         default:
           // Identifier can be any other character in lenient mode.
           token = TokenType.identifier;
@@ -244,13 +256,35 @@ class Scanner {
                 _TAB,
                 _NEWLINE,
                 _RETURN,
-                _PERIOD
+                _PERIOD,
+                _DOUBLE_QUOTE,
+                _SINGLE_QUOTE,
               ].contains(c)) &&
               c != _closeDelimiterInner &&
               c != _closeDelimiter);
       }
       _append(token, value, start, _offset);
     }
+  }
+
+  // Reads a quoted string literal starting at the opening quote and
+  // returning the full text including both quotes (so the pipeline parser
+  // can re-parse it). Honors `\"` / `\'` escapes.
+  String _readQuotedString(int quoteChar) {
+    final buf = StringBuffer()..writeCharCode(_read());
+    while (_peek() != _EOF) {
+      final c = _peek();
+      if (c == _BACKSLASH) {
+        buf.writeCharCode(_read());
+        if (_peek() != _EOF) {
+          buf.writeCharCode(_read());
+        }
+        continue;
+      }
+      buf.writeCharCode(_read());
+      if (c == quoteChar) break;
+    }
+    return buf.toString();
   }
 
   // Scan close delimiter token.
@@ -354,12 +388,15 @@ const int _NEWLINE = 10;
 const int _RETURN = 13;
 const int _SPACE = 32;
 const int _EXCLAIM = 33;
+const int _DOUBLE_QUOTE = 34;
 const int _HASH = 35;
 const int _AMP = 38;
+const int _SINGLE_QUOTE = 39;
 const int _PERIOD = 46;
 const int _FORWARD_SLASH = 47;
 const int _EQUAL = 61;
 const int _GT = 62;
+const int _BACKSLASH = 92;
 const int _CARET = 94;
 
 const int _OPEN_MUSTACHE = 123;

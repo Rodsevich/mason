@@ -1,5 +1,7 @@
 export 'add.dart';
+export 'ai_budget.dart';
 export 'ai_cache.dart';
+export 'ai_context_preview.dart';
 export 'ai_trace.dart';
 export 'ai_validate.dart';
 export 'audit_ai.dart';

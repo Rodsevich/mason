@@ -3,7 +3,7 @@
 import 'dart:io';
 
 import 'package:mason_logger/mason_logger.dart';
-import 'package:masonex/src/ai/provider/builtin/claude.dart';
+import 'package:masonex/src/ai/i18n.dart';
 import 'package:masonex/src/ai/provider/config_yaml.dart';
 import 'package:masonex/src/ai/provider/registry.dart';
 
@@ -20,9 +20,10 @@ Future<SetupOutcome?> runInteractiveSetup({
   required Logger logger,
   String? configPath,
 }) async {
+  final i18n = AiI18n.fromEnv();
   logger
-    ..info('No AI provider configured (~/.masonex/providers.yaml).')
-    ..info('Detecting CLIs available on PATH...');
+    ..info(i18n.tr('noProviderConfigured'))
+    ..info(i18n.tr('detectingClis'));
   final detected = <String>[];
   for (final desc in builtinProviderDescriptors) {
     if (await _isOnPath(desc.requiredCommand)) {
@@ -30,25 +31,27 @@ Future<SetupOutcome?> runInteractiveSetup({
     }
   }
   if (detected.isEmpty) {
-    logger.warn('No known CLIs detected on PATH.');
+    logger.warn(i18n.tr('noClisDetected'));
   } else {
-    logger.info('Detected: ${detected.join(", ")}');
+    logger.info(i18n.tr('detectedList', params: {'list': detected.join(', ')}));
   }
 
+  final manualLabel = i18n.tr('configureManually');
+  final abortLabel = i18n.tr('abort');
   final choices = [
     ...detected,
-    'custom (configure manually)',
-    'abort',
+    manualLabel,
+    abortLabel,
   ];
   final chosen = logger.chooseOne(
-    'Pick a provider to configure:',
+    i18n.tr('pickProvider'),
     choices: choices,
   );
-  if (chosen == 'abort') return null;
+  if (chosen == abortLabel) return null;
 
   ProviderConfig cfg;
   String id;
-  if (chosen.startsWith('custom')) {
+  if (chosen == manualLabel) {
     final wizard = await _customWizard(logger);
     if (wizard == null) return null;
     id = wizard.id;
@@ -63,8 +66,12 @@ Future<SetupOutcome?> runInteractiveSetup({
     providers: {id: cfg},
   );
   await yaml.save(configPath);
-  logger.info('Saved provider configuration to '
-      '${configPath ?? ProvidersYaml.defaultPath()}');
+  logger.info(
+    i18n.tr(
+      'savedConfig',
+      params: {'path': configPath ?? ProvidersYaml.defaultPath()},
+    ),
+  );
   return SetupOutcome(config: yaml, providerId: id);
 }
 
@@ -102,19 +109,16 @@ Future<ProviderConfig?> _customWizard(Logger logger) async {
 }
 
 ProviderConfig _defaultConfigFor(String id) {
-  switch (id) {
-    case 'claude':
-      return ClaudeProviderAdapter.defaultConfig;
-    default:
-      // Best-effort default for known descriptors.
-      return ProviderConfig(
-        id: id,
-        cmd: [id],
-        passPrompt: PassMode.stdin,
-        timeout: const Duration(seconds: 60),
-        notes: 'auto-suggested default; verify with `masonex provider test`.',
-      );
-  }
+  final builtin = defaultConfigFor(id);
+  if (builtin != null) return builtin;
+  // Best-effort default for unknown descriptors.
+  return ProviderConfig(
+    id: id,
+    cmd: [id],
+    passPrompt: PassMode.stdin,
+    timeout: const Duration(seconds: 60),
+    notes: 'auto-suggested default; verify with `masonex provider test`.',
+  );
 }
 
 Duration _parseDurationOrDefault(String raw) {

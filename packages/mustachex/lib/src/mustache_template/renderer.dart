@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import '../filters/mustachex_filter.dart';
 import '../interfaces.dart';
 import 'lambda_context.dart';
 import 'node.dart';
@@ -9,40 +10,82 @@ import 'template_exception.dart';
 
 const Object noSuchProperty = Object();
 final RegExp _integerTag = RegExp(r'^[0-9]+$');
+final RegExp _innerMustache =
+    RegExp(r'\{\{\s*(\.|[a-zA-Z_][a-zA-Z0-9_.-]*)\s*\}\}');
 
 class Renderer extends Visitor {
   Renderer(this.sink, List stack, this.lenient, this.htmlEscapeValues,
-      this.partialResolver, this.templateName, this.indent, this.source)
+      this.partialResolver, this.templateName, this.indent, this.source,
+      {this.filters = const {},
+      this.resolutions = const {}})
       : _stack = List.from(stack);
 
   Renderer.partial(Renderer ctx, Template partial, String indent)
       : this(
-            ctx.sink,
-            ctx._stack,
-            ctx.lenient,
-            ctx.htmlEscapeValues,
-            ctx.partialResolver,
-            ctx.templateName,
-            ctx.indent + indent,
-            partial.source);
+          ctx.sink,
+          ctx._stack,
+          ctx.lenient,
+          ctx.htmlEscapeValues,
+          ctx.partialResolver,
+          ctx.templateName,
+          ctx.indent + indent,
+          partial.source,
+          filters: ctx.filters,
+          resolutions: ctx.resolutions,
+        );
 
   Renderer.subtree(Renderer ctx, StringSink sink)
-      : this(sink, ctx._stack, ctx.lenient, ctx.htmlEscapeValues,
-            ctx.partialResolver, ctx.templateName, ctx.indent, ctx.source);
+      : this(
+          sink,
+          ctx._stack,
+          ctx.lenient,
+          ctx.htmlEscapeValues,
+          ctx.partialResolver,
+          ctx.templateName,
+          ctx.indent,
+          ctx.source,
+          filters: ctx.filters,
+          resolutions: ctx.resolutions,
+        );
 
   Renderer.lambda(Renderer ctx, String source, String indent, StringSink sink,
       String delimiters)
-      : this(sink, ctx._stack, ctx.lenient, ctx.htmlEscapeValues,
-            ctx.partialResolver, ctx.templateName, ctx.indent + indent, source);
+      : this(
+          sink,
+          ctx._stack,
+          ctx.lenient,
+          ctx.htmlEscapeValues,
+          ctx.partialResolver,
+          ctx.templateName,
+          ctx.indent + indent,
+          source,
+          filters: ctx.filters,
+          resolutions: ctx.resolutions,
+        );
 
   final StringSink sink;
   final List _stack;
+
+  /// Stack of section iteration indices at the current visit position.
+  /// Empty when not inside any iterable section. Used to make
+  /// [DeferredCallId]s context-aware: the same FilterPipelineNode visited
+  /// at iteration 0 vs 1 produces different ids so each iteration has
+  /// its own resolution.
+  final List<int> _iterPath = <int>[];
+
   final bool lenient;
   final bool htmlEscapeValues;
   final PartialResolver? partialResolver;
   final String? templateName;
   final String indent;
   final String source;
+
+  /// Filter registry (name → adapter). Default empty for backward compat.
+  final Map<String, MustachexFilter> filters;
+
+  /// Resolutions map for deferred filter calls. Populated by the consumer
+  /// after `Template.collectDeferredCalls` + filter.fulfill().
+  final Map<DeferredCallId, String> resolutions;
 
   void push(value) => _stack.add(value);
 
@@ -124,7 +167,16 @@ class Renderer extends Visitor {
     if (value == null) {
       // Do nothing.
     } else if (value is Iterable) {
-      value.forEach((v) => _renderWithValue(node, v));
+      var idx = 0;
+      for (final v in value) {
+        _iterPath.add(idx);
+        try {
+          _renderWithValue(node, v);
+        } finally {
+          _iterPath.removeLast();
+        }
+        idx++;
+      }
     } else if (value is Map) {
       _renderWithValue(node, value);
     } else if (value == true) {
@@ -271,6 +323,165 @@ class Renderer extends Visitor {
     buffer.write(s.substring(startIndex));
     return buffer.toString();
   }
+
+  // ----- Filter pipeline -----
+
+  @override
+  void visitFilterPipeline(FilterPipelineNode node) {
+    final value = evaluateFilterPipeline(node);
+    if (value == null) return;
+    final escaped = node.escape && htmlEscapeValues
+        ? _htmlEscape(value)
+        : value;
+    write(escaped);
+  }
+
+  /// Evaluates a [FilterPipelineNode] and returns the resulting string, or
+  /// null when the head resolves to a missing variable in non-lenient
+  /// mode (mirrors the variable-not-found behaviour of [visitVariable]).
+  String? evaluateFilterPipeline(FilterPipelineNode node) {
+    final head = _resolveHead(node);
+    if (head == null) return null;
+    var value = head;
+    for (final call in node.filters) {
+      final filter = filters[call.name];
+      if (filter == null) {
+        throw UnknownFilterError(call.name, node.original);
+      }
+      if (filter.deferred) {
+        final id = computeDeferredCallId(node, iterPath: _iterPath);
+        final resolved = resolutions[id];
+        if (resolved == null) {
+          throw MissingDeferredResolutionError(id, call.name);
+        }
+        value = resolved;
+      } else {
+        final args = FilterArgs(
+          positional: call.positional,
+          named: call.named,
+        );
+        value = filter.renderSync(value, args, _filterContextFor(node));
+      }
+    }
+    return value;
+  }
+
+  String? _resolveHead(FilterPipelineNode node) {
+    if (node.headKind == HeadKind.literal) {
+      return _preRenderLiteralMustache(node.head);
+    }
+    final value = resolveValue(node.head);
+    if (value == noSuchProperty) {
+      if (!lenient) {
+        throw error(
+          'Value was missing for variable tag: ${node.head}.',
+          node,
+        );
+      }
+      return '';
+    }
+    if (value is Function) {
+      final ctx = LambdaContext(
+        VariableNode(node.head, node.start, node.end, escape: node.escape),
+        this,
+      );
+      final r = value(ctx);
+      ctx.close();
+      return r?.toString() ?? '';
+    }
+    return value?.toString() ?? '';
+  }
+
+  /// Resolves `{{varName}}` substitutions inside a literal head against
+  /// the current variable context. Anything else (sections, dotted
+  /// accessors with method-style invocation, etc.) is left as-is.
+  String _preRenderLiteralMustache(String literal) {
+    return literal.replaceAllMapped(_innerMustache, (m) {
+      final key = m.group(1)!;
+      final value = resolveValue(key);
+      if (value == noSuchProperty) return m.group(0)!;
+      return value?.toString() ?? '';
+    });
+  }
+
+  FilterContext _filterContextFor(FilterPipelineNode node) {
+    final pos = computeLineCol(source, node.start);
+    return FilterContext(
+      vars: _flattenVars(),
+      line: pos.line,
+      column: pos.column,
+      inline: !_tagOnOwnLine(node),
+    );
+  }
+
+  Map<String, Object?> _flattenVars() {
+    if (_stack.isEmpty) return const {};
+    final last = _stack.last;
+    if (last is Map) {
+      return Map<String, Object?>.from(last);
+    }
+    return const {};
+  }
+
+  bool _tagOnOwnLine(FilterPipelineNode node) {
+    var i = node.start - 1;
+    while (i >= 0) {
+      final c = source[i];
+      if (c == '\n') break;
+      if (c != ' ' && c != '\t' && c != '\r') return false;
+      i--;
+    }
+    var j = node.end;
+    while (j < source.length) {
+      final c = source[j];
+      if (c == '\n') break;
+      if (c != ' ' && c != '\t' && c != '\r') return false;
+      j++;
+    }
+    return true;
+  }
+
+  /// Stable identifier for a deferred call.
+  ///
+  /// Combines the AST node's source position with the current section
+  /// iteration path (`iterPath`). When the same FilterPipelineNode is
+  /// visited at different iterations of an enclosing section, each
+  /// iteration gets a distinct id so it can be resolved independently.
+  ///
+  /// `iterPath` is supplied by the caller (Renderer or
+  /// [DeferredCallCollector] tracks it as it walks the tree). Both
+  /// passes walk the same template with the same vars, so the indices
+  /// match and the ids align.
+  static DeferredCallId computeDeferredCallId(
+    FilterPipelineNode node, {
+    List<int> iterPath = const [],
+  }) {
+    final iterSuffix =
+        iterPath.isEmpty ? '' : ':iter${iterPath.join(".")}';
+    return DeferredCallId(
+      'pos:${node.start}-${node.end}:${node.original.hashCode}$iterSuffix',
+    );
+  }
+
+  static LineCol computeLineCol(String source, int offset) {
+    var line = 1;
+    var col = 1;
+    for (var i = 0; i < offset && i < source.length; i++) {
+      if (source[i] == '\n') {
+        line++;
+        col = 1;
+      } else {
+        col++;
+      }
+    }
+    return LineCol(line, col);
+  }
+}
+
+class LineCol {
+  const LineCol(this.line, this.column);
+  final int line;
+  final int column;
 }
 
 const int _AMP = 38;
@@ -287,10 +498,27 @@ const int _NEWLINE = 10;
 class BinaryRenderer extends Renderer {
   final List<List<int>> _segments = [];
 
-  BinaryRenderer(List stack, bool lenient, bool htmlEscapeValues,
-      PartialResolver? partialResolver, String? templateName, String source)
-      : super(StringBuffer(), stack, lenient, htmlEscapeValues, partialResolver,
-            templateName, '', source);
+  BinaryRenderer(
+    List stack,
+    bool lenient,
+    bool htmlEscapeValues,
+    PartialResolver? partialResolver,
+    String? templateName,
+    String source, {
+    Map<String, MustachexFilter> filters = const {},
+    Map<DeferredCallId, String> resolutions = const {},
+  }) : super(
+          StringBuffer(),
+          stack,
+          lenient,
+          htmlEscapeValues,
+          partialResolver,
+          templateName,
+          '',
+          source,
+          filters: filters,
+          resolutions: resolutions,
+        );
 
   /// Collects all segments into a single flat List<int>.
   List<int> collectBytes() {

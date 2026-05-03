@@ -89,8 +89,11 @@ class _MakeCommand extends MasonexCommand {
     final fileConflictResolution = (results['on-conflict'] as String)
         .toFileConflictResolution();
     final setExitIfChanged = results['set-exit-if-changed'] as bool;
-    final target = DirectoryGeneratorTarget(Directory(outputDir));
-    final disableHooks = results['no-hooks'] as bool;
+    final dryRunAi = results['dry-run-ai'] as bool;
+    final target = dryRunAi
+        ? _NullGeneratorTarget()
+        : DirectoryGeneratorTarget(Directory(outputDir));
+    final disableHooks = (results['no-hooks'] as bool) || dryRunAi;
     final quietMode = results['quiet'] as bool;
     final watch = results['watch'] as bool;
 
@@ -390,6 +393,36 @@ extension on ArgParser {
       help: 'Maximum simultaneous AI invocations.',
       defaultsTo: '4',
     );
+    addFlag(
+      'dry-run-ai',
+      help: 'Run AI pre-resolution but DO NOT write any files. Reports '
+          'what would be generated. Implies --no-hooks.',
+      negatable: false,
+    );
+    addOption(
+      'ai-token-budget',
+      help: 'Per-tag input token budget (heuristic chars/4). When set, '
+          'aborts the render with a clear error before invoking the '
+          'provider if any tag exceeds the budget.',
+    );
+  }
+}
+
+/// `--dry-run-ai` mode: pretends to write files but produces only logs.
+/// The generator returns `GeneratedFile` records as if everything
+/// succeeded, so the rest of the make command can report what would
+/// have been generated without touching disk.
+class _NullGeneratorTarget extends GeneratorTarget {
+  @override
+  Future<GeneratedFile> createFile(
+    String path,
+    List<int> contents, {
+    Logger? logger,
+    OverwriteRule? overwriteRule,
+  }) async {
+    logger?.info(darkGray.wrap('[dry-run] would create $path '
+        '(${contents.length} bytes)'));
+    return GeneratedFile.created(path: path);
   }
 }
 
@@ -408,6 +441,8 @@ AiRenderOptions? _buildAiRenderOptions(BrickYaml brick, ArgResults results) {
   final brickRoot = brick.path == null
       ? null
       : File(brick.path!).parent.path;
+  final budgetRaw = results['ai-token-budget'] as String?;
+  final tokenBudget = budgetRaw == null ? null : int.tryParse(budgetRaw);
   return AiRenderOptions(
     refreshAi: results['refresh-ai'] as bool,
     disableCache: results['no-cache-ai'] as bool,
@@ -418,6 +453,7 @@ AiRenderOptions? _buildAiRenderOptions(BrickYaml brick, ArgResults results) {
     brickName: brick.name,
     brickVersion: brick.version,
     brickDescription: brick.description,
+    tokenBudget: tokenBudget,
   );
 }
 

@@ -10,6 +10,7 @@ import 'package:mustachex/src/variables_resolver.dart';
 import 'package:quiver/collection.dart';
 import 'package:recase/recase.dart';
 
+import 'filters/mustachex_filter.dart';
 import 'mustache_template/template_exception.dart';
 import 'mustachex_exceptions.dart';
 
@@ -31,12 +32,23 @@ class MustachexProcessor {
   /// processMustacheThrowingIfAbsent que se ejecuta con lo mismo varias veces
   final Map<String, Map> _sourceCache = {};
 
+  /// Filters registered for `| name` and `.name(args)` pipeline syntax.
+  /// They are passed verbatim to every [Template] constructed by the
+  /// processor.
+  final List<MustachexFilter> filters;
+
+  /// Resolutions for deferred filter calls. The processor passes them to
+  /// [Template.renderString]/[Template.renderBytes].
+  final Map<DeferredCallId, String> deferredResolutions;
+
   MustachexProcessor(
       {this.lenient = false,
       Map? initialVariables,
       this.missingVarFulfiller,
       this.partialsResolver,
-      VariablesResolver? variablesResolver})
+      VariablesResolver? variablesResolver,
+      this.filters = const [],
+      this.deferredResolutions = const {}})
       : variablesResolver =
             variablesResolver ?? VariablesResolver(initialVariables);
 
@@ -65,13 +77,21 @@ class MustachexProcessor {
     var e = MissingPartialException(partialName: name);
     var templateSource = partialsResolver!(e) as String?;
     if (templateSource is! String) throw e;
-    return Template(templateSource,
-        partialResolver: _partialsResolverAdapted, lenient: lenient);
+    return Template(
+      templateSource,
+      partialResolver: _partialsResolverAdapted,
+      lenient: lenient,
+      filters: filters,
+    );
   }
 
   Map<String?, dynamic> _mustacheVars(String source) {
-    var template = Template(source,
-        partialResolver: _partialsResolverAdapted, lenient: lenient);
+    var template = Template(
+      source,
+      partialResolver: _partialsResolverAdapted,
+      lenient: lenient,
+      filters: filters,
+    );
     return _gatherTemplateRequiredVars(template);
   }
 
@@ -111,8 +131,12 @@ class MustachexProcessor {
             // ignore: unused_local_variable
             var type = matches[i].group(1);
             var contents = matches[i].group(2)!;
-            var sectionSourceTemplate = Template(contents,
-                partialResolver: _partialsResolverAdapted, lenient: lenient);
+            var sectionSourceTemplate = Template(
+              contents,
+              partialResolver: _partialsResolverAdapted,
+              lenient: lenient,
+              filters: filters,
+            );
             // if (e.contains("for inverse section")) {
             // } else if (e.contains("for section")) {
             // if (type == '^') {
@@ -138,10 +162,13 @@ class MustachexProcessor {
       {_PartialsResolver? partialsResolver}) async {
     if (_sourceCache[source] == null) {
       _sourceCache[source] = {
-        'template': Template(source,
-            lenient: lenient,
-            partialResolver: partialsResolver,
-            htmlEscapeValues: false),
+        'template': Template(
+          source,
+          lenient: lenient,
+          partialResolver: partialsResolver,
+          htmlEscapeValues: false,
+          filters: filters,
+        ),
         'variables': _mustacheVars(source)
       };
     }
@@ -153,7 +180,10 @@ class MustachexProcessor {
       try {
         final updatedVars = Map.from(variablesResolver.getAll)
           ..addAll(mustache_recase.cases);
-        return template.renderString(updatedVars);
+        return template.renderString(
+          updatedVars,
+          resolutions: deferredResolutions,
+        );
       } on TemplateException catch (e) {
         // print(
         //     "There is a missing value for '${ex.humanReadableVariable}' mustache "
@@ -274,7 +304,10 @@ class MustachexProcessor {
     Template template = _sourceCache[source]!['template'];
     final updatedVars = Map.from(variablesResolver.getAll)
       ..addAll(mustache_recase.cases);
-    return template.renderBytes(updatedVars);
+    return template.renderBytes(
+      updatedVars,
+      resolutions: deferredResolutions,
+    );
   }
 
   _MustacheIteration _getPrimigenicMustacheIteration(
@@ -339,6 +372,15 @@ TemplateException? _failing_gathering(Template template, Map vars,
   } on TemplateException catch (e) {
     if (printMessage) print(e.message);
     return e;
+  } on MissingDeferredResolutionError {
+    // The gathering pass renders the template with no resolutions on
+    // purpose; deferred filter calls are not relevant for variable
+    // discovery. Treat as a successful "no-missing-vars" outcome.
+    return null;
+  } on UnknownFilterError {
+    // Same idea: the gathering pass can encounter user-registered
+    // filters whose names mustachex does not know. Skip.
+    return null;
   }
 }
 

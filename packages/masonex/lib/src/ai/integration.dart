@@ -2,16 +2,18 @@
 
 import 'dart:io';
 
+import 'package:masonex/src/ai/ai_filter.dart';
 import 'package:masonex/src/ai/cache/cache.dart';
 import 'package:masonex/src/ai/cache/trace.dart';
+import 'package:masonex/src/ai/compat_filters.dart';
 import 'package:masonex/src/ai/envelope/envelope.dart';
 import 'package:masonex/src/ai/errors.dart';
 import 'package:masonex/src/ai/orchestrator/orchestrator.dart';
-import 'package:masonex/src/ai/pipeline/rewriter.dart';
 import 'package:masonex/src/ai/provider/adapter.dart';
 import 'package:masonex/src/ai/provider/builtin/mock.dart';
 import 'package:masonex/src/ai/provider/config_yaml.dart';
 import 'package:masonex/src/ai/provider/registry.dart';
+import 'package:mustachex/mustachex.dart' as mx;
 import 'package:path/path.dart' as p;
 
 /// Caller-controlled knobs that survive the boundary between the public
@@ -32,6 +34,7 @@ class AiRenderOptions {
     this.brickVersion = '0.0.0',
     this.brickDescription,
     this.cacheRootOverride,
+    this.tokenBudget,
   });
 
   /// When true, the rewriter is bypassed entirely and the source is returned
@@ -69,6 +72,11 @@ class AiRenderOptions {
   /// [brickRoot] or current working directory).
   final String? cacheRootOverride;
 
+  /// Per-tag input token budget (heuristic chars/4). When non-null and
+  /// any tag's envelope exceeds the budget, masonex aborts with
+  /// [AiContextOverflowError] before invoking the provider.
+  final int? tokenBudget;
+
   /// Returns a copy with the given fields overridden. Used by the
   /// generator to inject per-file metadata (relative path) without
   /// rewriting all the call-site options.
@@ -87,6 +95,7 @@ class AiRenderOptions {
     String? brickVersion,
     String? brickDescription,
     String? cacheRootOverride,
+    int? tokenBudget,
   }) {
     return AiRenderOptions(
       disabled: disabled ?? this.disabled,
@@ -103,38 +112,44 @@ class AiRenderOptions {
       brickVersion: brickVersion ?? this.brickVersion,
       brickDescription: brickDescription ?? this.brickDescription,
       cacheRootOverride: cacheRootOverride ?? this.cacheRootOverride,
+      tokenBudget: tokenBudget ?? this.tokenBudget,
     );
   }
 }
 
-/// The result of running a two-pass AI render.
+/// The result of running the AI pre-resolution pass.
+///
+/// In v2 (mustachex 2.0+), the source is no longer rewritten — mustachex
+/// natively understands the pipeline syntax. The pre-resolution pass only
+/// produces the resolutions map and the filter list to feed into the
+/// processor.
 class AiRenderResult {
   const AiRenderResult({
-    required this.source,
-    required this.injectedVars,
-    required this.resolutions,
+    required this.filters,
+    required this.deferredResolutions,
   });
 
-  /// Rewritten template source: AI tags replaced by `{{{__masonex_ai_<n>}}}`.
-  final String source;
+  /// Filters to register with [MustachexProcessor] (AI + legacy compat).
+  /// Empty when [AiRenderOptions.disabled] is true.
+  final List<mx.MustachexFilter> filters;
 
-  /// Map of synthetic variable name -> resolved value, ready to be merged
-  /// into the user's `vars` map for the regular Mustache render.
-  final Map<String, String> injectedVars;
-
-  /// All resolutions, in the order they completed. Available for traces /
-  /// audit output.
-  final List<ResolutionResult> resolutions;
+  /// Resolutions for deferred filter calls, keyed by [mx.DeferredCallId].
+  /// Empty when no `| ai` tags were observed.
+  final Map<mx.DeferredCallId, String> deferredResolutions;
 }
 
 /// Runs the AI pre-resolution pass for a single template source.
 ///
-/// Returns:
-///   - the rewritten source (with synthetic vars in place of `| ai` tags)
-///   - the synthetic var values, ready to be merged into the Mustache vars
+/// In v2 the pass returns:
+///   - the filter list (AiFilter + legacy compat sync filters)
+///   - the resolutions map for deferred calls
 ///
-/// Throws [AiAbortedRenderError] (or its cause) if any tag could not be
-/// resolved. Callers MUST treat that as "render aborted, no files touched".
+/// Both are then handed to the [mx.MustachexProcessor] / [mx.Template]
+/// rendering the brick. The source itself is NOT rewritten.
+///
+/// Throws [AiAbortedRenderError] (or its cause) if any deferred call
+/// could not be resolved. Callers MUST treat that as "render aborted,
+/// no files touched".
 Future<AiRenderResult> runAiPass(
   String source, {
   required Map<String, dynamic> vars,
@@ -142,25 +157,34 @@ Future<AiRenderResult> runAiPass(
 }) async {
   if (options.disabled) {
     return AiRenderResult(
-      source: source,
-      injectedVars: const {},
-      resolutions: const [],
+      filters: const [],
+      deferredResolutions: const {},
     );
   }
 
-  final rewriter = AiTagRewriter(
-    relativePath: options.relativePath,
-    varsForPrompt: vars,
+  final compat = buildLegacyCompatFilters();
+
+  // Cheap: build a Template, ask mustachex to scan for deferred calls.
+  // The filter doesn't need to be configured yet, since we only inspect
+  // structure here.
+  final stubFilters = <mx.MustachexFilter>[
+    _StubAiFilter(),
+    ...compat,
+  ];
+  final probe = mx.Template(
+    source,
+    lenient: true,
+    filters: stubFilters,
   );
-  final rewrite = rewriter.rewrite(source);
-  if (rewrite.requests.isEmpty) {
+  final calls = probe.collectDeferredCalls(vars);
+  if (calls.isEmpty) {
     return AiRenderResult(
-      source: rewrite.rewrittenSource,
-      injectedVars: const {},
-      resolutions: const [],
+      filters: compat,
+      deferredResolutions: const {},
     );
   }
 
+  // We have AI work. Build the real provider/cache/orchestrator stack.
   final cacheRoot = options.cacheRootOverride
       ?? p.join(
         options.brickRoot ?? Directory.current.path,
@@ -170,7 +194,6 @@ Future<AiRenderResult> runAiPass(
       );
   final cache = AiCache(cacheRoot);
   final trace = AiTrace(cacheRoot);
-
   final provider = await _selectProvider(options);
 
   final brickContext = BrickContext(
@@ -183,31 +206,37 @@ Future<AiRenderResult> runAiPass(
     brickFiles: const [],
   );
 
-  final orchestrator = AiOrchestrator(
+  final aiFilter = AiFilter(
     provider: provider,
     cache: cache,
     trace: trace,
     brickContext: brickContext,
-    currentFileSource: (_) => source,
     options: OrchestratorOptions(
       concurrency: options.concurrency,
       refreshAi: options.refreshAi,
       disableCache: options.disableCache,
       refreshGlob: options.refreshGlob,
+      tokenBudget: options.tokenBudget,
     ),
   );
 
-  final results = await orchestrator.resolveAll(rewrite.requests);
-  final injected = <String, String>{
-    for (final r in results)
-      r.request.syntheticVarName: r.value,
-  };
+  final resolutions = await aiFilter.fulfill(calls);
 
   return AiRenderResult(
-    source: rewrite.rewrittenSource,
-    injectedVars: injected,
-    resolutions: results,
+    filters: <mx.MustachexFilter>[aiFilter, ...compat],
+    deferredResolutions: resolutions,
   );
+}
+
+/// Stub AI filter used only during the probe pass: marks `ai` as a known
+/// deferred filter so [mx.Template.collectDeferredCalls] can be invoked
+/// without setting up the real provider stack. It is never called.
+class _StubAiFilter extends mx.MustachexFilter {
+  _StubAiFilter();
+  @override
+  String get name => 'ai';
+  @override
+  bool get deferred => true;
 }
 
 Future<AiProviderAdapter> _selectProvider(AiRenderOptions options) async {

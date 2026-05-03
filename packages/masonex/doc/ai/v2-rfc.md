@@ -2,11 +2,21 @@
 
 | Field         | Value                                                  |
 |---------------|--------------------------------------------------------|
-| Status        | Draft                                                  |
-| Version       | 0.1.0                                                  |
+| Status        | **Implemented** (mustachex 2.0.0-dev.1, masonex 0.3.0-dev.1) |
+| Version       | 0.2.0                                                  |
 | Targets       | mustachex 2.0, masonex 0.3.0                           |
 | Supersedes    | The pre-processor approach in `rfc.md` (v1)            |
-| Last edited   | 2026-05-02                                             |
+| Last edited   | 2026-05-03                                             |
+
+> **Implementation note (2026-05-03):** v2 shipped behind a dev-1
+> release. AST and Template surface match this RFC. masonex's
+> `AiTagRewriter` and the standalone tag rewriter have been removed;
+> `runAiPass` is now a thin wrapper around
+> `Template.collectDeferredCalls` + `AiFilter.fulfill`. Legacy recase
+> lambdas are registered as sync filters via `compat_filters.dart`, with
+> `_transpileMasonSyntax` bypassed for any tag containing `| ai` so the
+> filter chain reaches mustachex untouched. All 116 mustachex tests +
+> 45 masonex AI tests pass against the new architecture.
 
 ## 1. Motivation
 

@@ -29,12 +29,19 @@ class OrchestratorOptions {
     this.refreshAi = false,
     this.disableCache = false,
     this.refreshGlob,
+    this.tokenBudget,
   });
 
   final int concurrency;
   final bool refreshAi;
   final bool disableCache;
   final String? refreshGlob;
+
+  /// Per-tag token budget. When non-null, the orchestrator estimates the
+  /// envelope size (chars/4 heuristic) and aborts with
+  /// [AiContextOverflowError] before invoking the provider when an
+  /// invocation exceeds the budget. Default null = no enforcement.
+  final int? tokenBudget;
 }
 
 /// Per-tag source provider: the orchestrator uses this to pull the contents
@@ -226,6 +233,18 @@ class AiOrchestrator {
       final timeout = timeoutArg is PvDuration
           ? timeoutArg.value
           : const Duration(seconds: 60);
+
+      // Token budget enforcement (heuristic: chars / 4). Abort BEFORE
+      // hitting the provider so the caller sees a structured error
+      // instead of letting the CLI fail mid-flight.
+      final budget = options.tokenBudget;
+      if (budget != null) {
+        final estimate =
+            ((systemPrompt.length + envelopeXml.length) / 4).round();
+        if (estimate > budget) {
+          throw AiContextOverflowError(req.id, estimate, budget);
+        }
+      }
 
       final result = await provider.invoke(invocation, timeout: timeout);
 

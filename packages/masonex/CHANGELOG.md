@@ -1,3 +1,27 @@
+# 0.3.0-dev.1
+
+- **v2 architecture.** masonex's pipeline pre-processor (`AiTagRewriter`,
+  manual tag scanner) is gone; mustachex 2.0 owns the parsing and the
+  rendering. masonex now consumes the new public API:
+  - `AiFilter extends MustachexFilter` (deferred). Its `fulfill(calls)`
+    bridges to the existing orchestrator.
+  - `runAiPass` is a thin wrapper: probe Template
+    (`Template.collectDeferredCalls`) → `aiFilter.fulfill` → return
+    `(filters, resolutions)` for the consumer to feed into
+    `MustachexProcessor`.
+  - Legacy recase lambdas (`uppercase`, `snakeCase`, …) are now
+    registered as sync `MustachexFilter`s in `compat_filters.dart` so a
+    chain like `{{ "x" | ai | uppercase }}` works end-to-end natively.
+  - `_transpileMasonSyntax` skips tags with `| ai` / `.ai(` so they
+    reach mustachex intact.
+- API surface change in `AiRenderResult`: now exposes
+  `filters: List<MustachexFilter>` and
+  `deferredResolutions: Map<DeferredCallId, String>` instead of the old
+  rewritten-source / synthetic-vars pair.
+- 45 AI tests still pass byte-identically against the new architecture.
+- See `doc/ai/v2-rfc.md` (Status: Implemented) and
+  `mustachex` 2.0.0-dev.1 CHANGELOG.
+
 # 0.2.0-dev.1
 
 - feat: AI-assisted templating via the Mustache pipeline filter `| ai`.

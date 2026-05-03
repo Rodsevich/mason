@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:mason_logger/mason_logger.dart';
 import 'package:masonex/src/ai/errors.dart';
+import 'package:masonex/src/ai/i18n.dart';
 import 'package:masonex/src/ai/provider/config_yaml.dart';
 
 /// Outcome of an interactive recovery prompt after a provider failure.
@@ -16,32 +17,34 @@ Future<RecoveryDecision> recoverFromProviderFailure({
   required AiException cause,
   String? configPath,
 }) async {
+  final i18n = AiI18n.fromEnv();
   logger
-    ..err('AI provider failed: ${cause.message}')
+    ..err(i18n.tr('providerFailed', params: {'message': cause.message}))
     ..info('');
+  final editLabel = i18n.tr('editAndRetry');
+  final abortLabel = i18n.tr('abortRender');
   final choice = logger.chooseOne(
-    'Choose:',
-    choices: [
-      'edit ~/.masonex/providers.yaml and retry',
-      'abort the render',
-    ],
+    i18n.tr('choose'),
+    choices: [editLabel, abortLabel],
   );
-  if (choice.startsWith('abort')) return RecoveryDecision.abort;
-  await _openEditor(configPath ?? ProvidersYaml.defaultPath(), logger);
+  if (choice == abortLabel) return RecoveryDecision.abort;
+  await _openEditor(configPath ?? ProvidersYaml.defaultPath(), logger, i18n);
   return RecoveryDecision.editAndRetry;
 }
 
-Future<void> _openEditor(String path, Logger logger) async {
+Future<void> _openEditor(String path, Logger logger, AiI18n i18n) async {
   final editor = Platform.environment['EDITOR']
       ?? Platform.environment['VISUAL']
       ?? (Platform.isWindows ? 'notepad' : 'vi');
-  logger.info('Opening $path in $editor...');
+  logger.info(i18n.tr('openingEditor', params: {'path': path, 'editor': editor}));
   try {
     final result = await Process.run(editor, [path], runInShell: true);
     if (result.exitCode != 0) {
-      logger.warn('Editor exited with code ${result.exitCode}.');
+      logger.warn(
+        i18n.tr('editorExitedNonZero', params: {'code': '${result.exitCode}'}),
+      );
     }
   } on ProcessException catch (e) {
-    logger.warn('Could not launch editor: ${e.message}');
+    logger.warn(i18n.tr('launchFailed', params: {'message': e.message}));
   }
 }

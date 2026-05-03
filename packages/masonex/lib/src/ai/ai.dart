@@ -6,6 +6,7 @@
 /// `lib/src/ai/`.
 library masonex.ai;
 
+export 'ai_filter.dart' show AiFilter;
 export 'cache/cache.dart' show AiCache, CachePolicy, parseCachePolicy;
 export 'cache/keys.dart' show computeCacheKey;
 export 'cache/trace.dart' show AiTrace;
@@ -35,7 +36,6 @@ export 'orchestrator/orchestrator.dart'
 export 'pipeline/ai_tag_request.dart' show AiTagRequest;
 export 'pipeline/parser.dart' show PipelineParser;
 export 'pipeline/pipeline_node.dart';
-export 'pipeline/rewriter.dart' show AiTagRewriter, RewriteResult;
 export 'pipeline/tag_finder.dart' show FoundTag, TagFinder;
 export 'provider/adapter.dart' show AiProviderAdapter;
 export 'provider/builtin/claude.dart' show ClaudeProviderAdapter;
