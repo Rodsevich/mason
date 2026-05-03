@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'test/helpers/get_brick_path.dart';
 
 void main() {

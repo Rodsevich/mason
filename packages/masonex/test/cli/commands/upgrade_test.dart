@@ -128,7 +128,7 @@ bricks:
         final workspace = Directory.current.path;
         Directory.current = nested.path;
         final upgradeResult = await commandRunner.run(['upgrade']);
-        Directory.current = workspace.path;
+        Directory.current = workspace;
         expect(upgradeResult, equals(ExitCode.success.code));
         expect(
           File(
