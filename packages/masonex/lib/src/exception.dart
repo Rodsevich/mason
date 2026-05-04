@@ -13,7 +13,8 @@ class MasonexException implements Exception {
 }
 
 /// {@template brick_not_found_exception}
-/// Thrown when a brick registered in the `masonex.yaml` cannot be found locally.
+/// Thrown when a brick registered in the `masonex.yaml` cannot be found
+/// locally.
 /// {@endtemplate}
 class BrickNotFoundException extends MasonexException {
   /// {@macro brick_not_found_exception}

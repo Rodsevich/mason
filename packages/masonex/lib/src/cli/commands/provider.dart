@@ -63,7 +63,7 @@ class _ProviderEditCommand extends MasonexCommand {
   _ProviderEditCommand({super.logger});
 
   @override
-  String get description => 'Open ~/.masonex/providers.yaml in \$EDITOR.';
+  String get description => r'Open ~/.masonex/providers.yaml in $EDITOR.';
 
   @override
   String get name => 'edit';
@@ -108,10 +108,14 @@ class _ProviderTestCommand extends MasonexCommand {
     }
     final adapter = buildAdapter(entry);
     logger.info('Testing provider "${entry.id}" ...');
-    final invocation = AiInvocation(
+    const invocation = AiInvocation(
       systemPrompt: aiSystemPrompt,
-      userEnvelope: '<masonex_render_request version="1">'
+      userEnvelope:
+          // ignore: missing_whitespace_between_adjacent_strings
+          '<masonex_render_request version="1">'
+          // ignore: missing_whitespace_between_adjacent_strings
           '<task><prompt><![CDATA[Respond with exactly the word: ok]]>'
+          // ignore: missing_whitespace_between_adjacent_strings
           '</prompt><expected_shape>a single word</expected_shape>'
           '<constraints/><post_filters/><author_note/>'
           '</task></masonex_render_request>',
@@ -179,4 +183,3 @@ class _ProviderSetupCommand extends MasonexCommand {
     return ExitCode.success.code;
   }
 }
-

@@ -1,0 +1,13 @@
+name: taskflow_task
+description: Generate a single Task class for the taskflow project.
+version: 0.1.0+1
+
+environment:
+  masonex: any
+
+vars:
+  name:
+    type: string
+    description: PascalCase task name (e.g. ShipOrder).
+    default: ShipOrder
+    prompt: What is the task class name?

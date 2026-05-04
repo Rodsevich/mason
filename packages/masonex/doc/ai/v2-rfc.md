@@ -180,7 +180,7 @@ class Template {
 
 ## 5. Pipeline grammar (no changes from v1)
 
-```
+```text
 tag        := head ( filterOp )*
 head       := stringLiteral | identifier | bareLiteral
 filterOp   := pipeFilter | dotFilter
@@ -197,7 +197,7 @@ v2 moves it into mustachex unchanged.
 
 ## 6. Render flow
 
-```
+```text
 Template(source, filters: [...])
    │
    ▼

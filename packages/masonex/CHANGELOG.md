@@ -583,7 +583,7 @@ vars:
 
   Example:
 
-  ```
+  ```text
   ├── HELLO.md
   ├── {{~ footer.md }}
   └── {{~ header.md }}

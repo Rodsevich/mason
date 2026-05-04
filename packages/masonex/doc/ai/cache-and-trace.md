@@ -2,7 +2,7 @@
 
 ## Layout
 
-```
+```text
 <projectRoot>/.masonex/cache/ai/
   trace.jsonl            # append-only log of invocations
   outputs/<hash>.txt     # cached AI replies (raw, post-validation)
@@ -13,7 +13,7 @@
 
 ## Cache key
 
-```
+```text
 sha256(
   prompt_normalized || envelope_normalized || system_prompt
   || provider_id || model || temperature

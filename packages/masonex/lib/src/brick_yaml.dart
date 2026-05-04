@@ -332,7 +332,7 @@ class BrickEnvironment {
     if (json is String) {
       return BrickEnvironment(masonex: json);
     }
-    final Map<dynamic, dynamic> map = json as Map;
+    final map = json as Map;
     final masonex = map['masonex'] ?? map['mason'] ?? 'any';
     return BrickEnvironment(masonex: masonex as String);
   }
@@ -345,8 +345,10 @@ class BrickEnvironment {
   final String masonex;
 }
 
+/// Converts [BrickEnvironment] to and from JSON-friendly values.
 class BrickEnvironmentConverter
     implements JsonConverter<BrickEnvironment, dynamic> {
+  /// {@macro brick_environment_converter}
   const BrickEnvironmentConverter();
 
   @override

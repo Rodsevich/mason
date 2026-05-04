@@ -1,0 +1,15 @@
+# Bricks visible to `masonex make ...` from this directory.
+# Run `masonex get` to populate the local cache.
+bricks:
+  # Local path (relative to this masonex.yaml file).
+  task:
+    path: bricks/task
+
+  # Git source (commented out — uncomment to import on `masonex get`).
+  # widget:
+  #   git:
+  #     url: https://github.com/felangel/mason
+  #     path: bricks/widget
+
+  # Hosted on brickhub.dev — version constraint.
+  # greeting: ^0.1.0

@@ -4,8 +4,8 @@ import 'dart:typed_data';
 
 import 'package:args/args.dart';
 import 'package:checked_yaml/checked_yaml.dart';
-import 'package:masonex/masonex.dart';
 import 'package:mason_api/mason_api.dart';
+import 'package:masonex/masonex.dart';
 import 'package:masonex/src/cli/command.dart';
 import 'package:masonex/src/cli/command_runner.dart';
 import 'package:path/path.dart' as path;

@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
-import 'package:masonex/masonex.dart';
 import 'package:mason_api/mason_api.dart';
+import 'package:masonex/masonex.dart';
 import 'package:masonex/src/cli/commands/commands.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
-import '../helpers/helpers.dart';
 import '../../helpers/get_brick_path.dart';
+import '../helpers/helpers.dart';
 
 class _MockLogger extends Mock implements Logger {}
 

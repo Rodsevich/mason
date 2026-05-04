@@ -1,7 +1,6 @@
 library mustache_test;
 
 import 'package:mustachex/mustachex.dart';
-import 'package:mustachex/src/mustache_template/lambda_context.dart';
 import 'package:test/test.dart';
 
 const MISMATCHED_TAG = 'Mismatched tag';

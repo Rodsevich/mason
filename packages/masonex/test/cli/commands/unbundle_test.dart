@@ -7,8 +7,8 @@ import 'package:path/path.dart' as path;
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
-import '../helpers/helpers.dart';
 import '../../helpers/get_brick_path.dart';
+import '../helpers/helpers.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -112,8 +112,9 @@ void main() {
         final progress = _MockProgress();
         when(() => progress.complete(any())).thenAnswer((invocation) {
           final update = invocation.positionalArguments[0] as String?;
-          if (update == 'Generated 1 brick.')
+          if (update == 'Generated 1 brick.') {
             throw const MasonexException('oops');
+          }
         });
         when(() => logger.progress(any())).thenReturn(progress);
         final bundlePath = getBundlePath('greeting.bundle');

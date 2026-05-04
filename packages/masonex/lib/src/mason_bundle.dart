@@ -79,7 +79,8 @@ class MasonexBundle {
     return MasonexBundle.fromJson(bundleJson);
   }
 
-  /// List of all [MasonexBundledFile] instances within the `__brick__` directory.
+  /// List of all [MasonexBundledFile] instances within the `__brick__`
+  /// directory.
   final List<MasonexBundledFile> files;
 
   /// List of all [MasonexBundledFile] instances within the `hooks` directory.

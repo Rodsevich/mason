@@ -1,0 +1,8 @@
+name: taskflow_hooked_task_hooks
+description: Hooks for the taskflow_hooked_task brick.
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  masonex: any

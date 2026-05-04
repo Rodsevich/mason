@@ -180,7 +180,7 @@ class YamlMerger extends Merger {
       return wrapAsYamlNode(v, scalarStyle: style);
     }
     if (value is String && value.contains('\n')) {
-      var v = value.endsWith('\n')
+      final v = value.endsWith('\n')
           ? value.replaceAll(RegExp(r'\n+$'), '')
           : value;
       return wrapAsYamlNode(v, scalarStyle: ScalarStyle.LITERAL);
@@ -312,7 +312,8 @@ abstract class DartMerger extends Merger {
     }
 
     throw Exception(
-      'Cannot merge variables with name "${existing.name.lexeme}" because their types mismatch or are not supported for merging.',
+      'Cannot merge variables with name "${existing.name.lexeme}" because '
+      'their types mismatch or are not supported for merging.',
     );
   }
 }

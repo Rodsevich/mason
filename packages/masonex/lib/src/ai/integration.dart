@@ -129,7 +129,7 @@ class AiRenderResult {
     required this.deferredResolutions,
   });
 
-  /// Filters to register with [MustachexProcessor] (AI + legacy compat).
+  /// Filters to register with `MustachexProcessor` (AI + legacy compat).
   /// Empty when [AiRenderOptions.disabled] is true.
   final List<mx.MustachexFilter> filters;
 
@@ -156,9 +156,9 @@ Future<AiRenderResult> runAiPass(
   required AiRenderOptions options,
 }) async {
   if (options.disabled) {
-    return AiRenderResult(
-      filters: const [],
-      deferredResolutions: const {},
+    return const AiRenderResult(
+      filters: [],
+      deferredResolutions: {},
     );
   }
 

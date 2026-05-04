@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "masonex": {
+      "command": "/ABSOLUTE/PATH/TO/dart",
+      "args": [
+        "run",
+        "/ABSOLUTE/PATH/TO/mason/packages/mcp_masonex/bin/mcp_masonex.dart",
+        "--workspace",
+        "/ABSOLUTE/PATH/TO/your/project"
+      ],
+      "env": {}
+    }
+  }
+}

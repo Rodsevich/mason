@@ -17,7 +17,7 @@ class BrickFileEntry {
   final String? content;
 }
 
-/// Per-render context passed to the [EnvelopeBuilder].
+/// Per-render context passed to the `EnvelopeBuilder`.
 class BrickContext {
   const BrickContext({
     required this.brickName,

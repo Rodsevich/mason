@@ -1,0 +1,5 @@
+# `!` prefix: this file is created ONLY if it does not yet exist. Safe
+# to keep in the brick — re-running won't clobber the user's edits.
+.dart_tool/
+.packages
+build/

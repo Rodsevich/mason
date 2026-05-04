@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:mustachex/src/variable_recase_decomposer.dart';
-import 'package:mustachex/src/mustache_template/renderer.dart'
-    show noSuchProperty;
 import 'package:recase/recase.dart';
 
 /// Will hold a bunch of variables and provide tools for obtaining them

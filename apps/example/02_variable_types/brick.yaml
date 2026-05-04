@@ -1,0 +1,48 @@
+name: taskflow_config
+description: Generate the taskflow runtime config file using every BrickVariableType.
+version: 0.1.0+1
+
+environment:
+  masonex: any
+
+vars:
+  projectName:
+    type: string
+    description: PascalCase project name.
+    default: Taskflow
+    prompt: Project name?
+  defaultDueDays:
+    type: number
+    description: Default number of days a task is due in.
+    default: 7
+    prompt: Default due-in days?
+  withReminders:
+    type: boolean
+    description: Whether the Task model has a remindAt field.
+    default: true
+    prompt: Generate reminder support?
+  storage:
+    type: enum
+    description: Persistence backend.
+    default: sqlite
+    prompt: Storage backend?
+    values:
+      - memory
+      - sqlite
+      - postgres
+  flavors:
+    type: array
+    description: Build flavors to scaffold.
+    prompt: Which flavors?
+    defaults:
+      - dev
+      - prod
+    values:
+      - dev
+      - staging
+      - prod
+  tags:
+    type: list
+    description: Free-form default task tags.
+    prompt: Default tags (comma-separated)?
+    separator: ','

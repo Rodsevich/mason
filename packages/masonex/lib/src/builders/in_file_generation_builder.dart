@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
 
+/// A `build_runner` [Builder] that scans annotated Dart sources for
+/// in-file generation markers and emits their template payloads.
 class InFileGenerationBuilder implements Builder {
   @override
   final buildExtensions = const {

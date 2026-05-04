@@ -13,7 +13,7 @@ abstract class AiProviderAdapter {
   Future<bool> isAvailable();
 
   /// Performs a single invocation. Implementations are responsible for:
-  ///   - propagating timeouts (throw [AiTimeoutError] from the errors module)
+  ///   - propagating timeouts (throw `AiTimeoutError` from the errors module)
   ///   - producing structured errors (auth, invocation, etc.)
   ///   - writing prompt material to a temporary file when the CLI requires it
   Future<AiInvocationResult> invoke(

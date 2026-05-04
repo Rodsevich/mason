@@ -30,8 +30,9 @@ class BuildCommand extends MasonexCommand {
       progress.complete('build_runner completed successfully.');
     } else {
       progress.fail('build_runner failed.');
-      logger.err(result.stderr as String);
-      logger.info(result.stdout as String);
+      logger
+        ..err(result.stderr as String)
+        ..info(result.stdout as String);
     }
 
     return result.exitCode;

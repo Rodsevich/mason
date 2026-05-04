@@ -482,7 +482,9 @@ void main() {
         getFixturePath(['relative_imports', 'hooks', 'legacy', 'pre_gen.dill']),
       );
       final legacyPostGen = File(
-        getFixturePath(['relative_imports', 'hooks', 'legacy', 'post_gen.dill']),
+        getFixturePath(
+          ['relative_imports', 'hooks', 'legacy', 'post_gen.dill'],
+        ),
       );
       final legacyPreGenBytes = legacyPreGen.readAsBytesSync();
       final legacyPostGenBytes = legacyPostGen.readAsBytesSync();

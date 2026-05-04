@@ -10,8 +10,8 @@ import 'package:path/path.dart' as path;
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
-import '../helpers/helpers.dart';
 import '../../helpers/get_brick_path.dart';
+import '../helpers/helpers.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
@@ -115,9 +115,10 @@ bricks:
 
         final result = await commandRunner.run(['get']);
         if (result != 0) {
-          // Since logger is a mock, we can't easily see its calls without verify.
-          // But we can verify it here for debugging.
+          // Since logger is a mock, we can't easily see its calls without
+          // verify. But we can verify it here for debugging.
           try {
+            // ignore: avoid_print
             verify(() => logger.err(any())).captured.forEach(print);
           } catch (_) {}
         }

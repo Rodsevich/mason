@@ -11,7 +11,7 @@ import 'package:masonex/src/ai/provider/config_yaml.dart';
 enum RecoveryDecision { editAndRetry, abort }
 
 /// Shows a recovery prompt and either opens the user's $EDITOR on the
-/// providers.yaml file (returning [editAndRetry]) or returns [abort].
+/// providers.yaml file (returning `editAndRetry`) or returns `abort`.
 Future<RecoveryDecision> recoverFromProviderFailure({
   required Logger logger,
   required AiException cause,

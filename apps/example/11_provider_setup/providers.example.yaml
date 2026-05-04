@@ -1,0 +1,39 @@
+# Drop this file at ~/.masonex/providers.yaml (or use
+# `masonex provider setup` to build it interactively).
+#
+# Each provider is a thin wrapper over an external CLI. masonex does
+# NOT ship vendor SDKs; it pipes the prompt to the binary you choose.
+
+default: claude
+
+providers:
+  # Claude CLI via stdin.
+  claude:
+    cmd: ["claude", "--print", "--model", "claude-sonnet-4-5"]
+    pass_prompt: stdin
+    pass_system: null            # masonex will prepend the system msg
+    timeout: 60s
+    notes: "Used for prose-heavy bricks (dartdocs, taglines)."
+
+  # OpenAI-compatible CLI that wants the prompt in a temp file.
+  openai_codex:
+    cmd: ["codex", "--prompt-file"]
+    pass_prompt: tmpfile
+    pass_system: ["--system-file"]
+    timeout: 90s
+
+  # A CLI that takes the prompt as a positional arg.
+  llamafile:
+    cmd: ["llamafile", "-p"]
+    pass_prompt: arg
+    pass_system: null
+    timeout: 30s
+    notes: "Local model, no network required."
+
+  # Mock provider for tests and CI: replays brick_test/ai_fixtures.yaml.
+  # Activate per-run with `--use-mock-ai` instead of switching default.
+  mock:
+    cmd: ["mock"]
+    pass_prompt: stdin
+    pass_system: null
+    timeout: 5s

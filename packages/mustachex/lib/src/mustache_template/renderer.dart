@@ -240,7 +240,7 @@ class Renderer extends Visitor {
     var partialName = node.name;
     var template = partialResolver == null
         ? null
-        : (partialResolver!(partialName) as Template?);
+        : partialResolver!(partialName);
     if (template != null) {
       var renderer = Renderer.partial(this, template, node.indent);
       var nodes = getTemplateNodes(template);

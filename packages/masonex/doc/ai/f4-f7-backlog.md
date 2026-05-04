@@ -69,6 +69,30 @@ so the tutorial is mostly a write-up of what's already in code.
 - `examples` (few-shot) parameter.
 - HTTP/MCP transport (only if a strong use-case appears).
 
+## v3 ideas
+
+- **Placeholder mode for Dart bricks** — brick authors edit
+  `__brick__/*.dart` as valid Dart (analyzer-clean, autocomplete,
+  refactor) using two interchangeable forms:
+  - **Inline**: wrap Mustache tags in block comments next to a dummy
+    token (`class /*{{className}}*/ Foo`). Sections work the same
+    way (`/*{{#xs}}*/...{{/xs}}*/`).
+  - **Pragma**: attach `@pragma('masonex:replace', {...})` (or
+    `'masonex:header'` on a `library;` directive for file-wide
+    scope) with a `Map<String, String>` of `'token' -> '{{tag}}'`
+    entries. Token-level rewrite, scoped to the annotated
+    declaration. Replaces keywords (`final`), types (`int`), and
+    identifiers under one mechanism.
+  Both can mix in the same file. masonex pre-processor turns either
+  form into the equivalent Mustache before render. No DSL, no loop
+  IDs — implementation walks the Dart AST via `package:analyzer`
+  (already a transitive dep) so rewrites are safe across strings,
+  comments, and import URIs. A regex-based fallback handles
+  non-Dart files (markdown, yaml, etc.). Detailed design in
+  [`../brick-authoring/placeholder-mode-rfc.md`](../brick-authoring/placeholder-mode-rfc.md).
+  Targets masonex 0.4.0; companion `vscode-masonex` extension drives
+  the visual UX.
+
 ## Non-goals (do not implement)
 
 - Direct API integration with Anthropic / OpenAI / Google. CLIs only.

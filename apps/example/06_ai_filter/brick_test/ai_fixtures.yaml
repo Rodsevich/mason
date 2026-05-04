@@ -1,0 +1,12 @@
+# Mock responses replayed by `--use-mock-ai`. Each entry matches a
+# substring of the rendered prompt; the first match wins. Used by CI
+# and by `dart test` so the brick can be exercised without a network.
+fixtures:
+  - match: "Write a one-line dartdoc"
+    output: "Represents a unit of work in the taskflow domain."
+  - match: "Generate a unique kebab-case slug"
+    output: "ship-order"
+  - match: "Compose a one-sentence prompt"
+    output: "Write a punchy customer-facing tagline for ShipOrder."
+  - match: "punchy customer-facing tagline"
+    output: "Get your orders out the door, on time, every time."

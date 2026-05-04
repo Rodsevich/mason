@@ -112,7 +112,7 @@ strings con comillas son válidos.
 Antes de ser usado como prompt, un head literal se renderiza con Mustache contra
 el contexto actual. Eso permite:
 
-```
+```mustache
 {{ "doc para {{className}}" | ai(expect: line) }}
 ```
 
@@ -123,14 +123,14 @@ El prompt que llega al envelope ya es `doc para FooRepository`, no el literal co
 
 Las dos formas se compilan al mismo `FilterPipelineNode`:
 
-```
+```mustache
 {{ "campeón mundial" | ai(expect: word) | uppercase }}
 {{ "campeón mundial".ai(expect: word).uppercase() }}
 ```
 
 Mezcla permitida:
 
-```
+```mustache
 {{ varName.ai(expect: word) | uppercase }}
 {{ varName | ai(expect: word).uppercase() }}
 ```
@@ -240,7 +240,7 @@ Vive en `packages/masonex/lib/src/ai/system_prompt.md` y se versiona junto con e
 código. Su hash se incluye en la cache key, así un cambio de redacción invalida
 los outputs cacheados.
 
-```
+```text
 You are an AI invoked by masonex during the rendering of a mason brick.
 
 TOOL CONTEXT
@@ -410,7 +410,7 @@ Schema validado con `checked_yaml`. Errores claros si está mal escrito.
 1. masonex detecta CLIs disponibles en PATH.
 2. Imprime, vía `mason_logger`:
 
-   ```
+   ```text
    masonex: no AI provider configured (~/.masonex/providers.yaml not found).
    Detected on PATH:
      1) claude   (Claude Code CLI)
@@ -426,7 +426,7 @@ Schema validado con `checked_yaml`. Errores claros si está mal escrito.
 
 ### 9.5. Flujo en runtime — provider falla
 
-```
+```text
 masonex: provider 'claude' failed:
   <stderr preview>
 
@@ -462,7 +462,7 @@ En ese modo:
 
 ### 10.1. Layout
 
-```
+```text
 .masonex/cache/ai/
   index.json                   # mapa tag_id -> último cache key
   trace.jsonl                  # append-only: una línea por invocación
@@ -474,7 +474,7 @@ En ese modo:
 
 ### 10.2. Cache key
 
-```
+```text
 sha256(
   prompt_normalized || "\0" ||
   envelope_normalized || "\0" ||
@@ -683,7 +683,7 @@ viven aparte.
 
 ### 15.1. Estructura nueva
 
-```
+```text
 packages/masonex/lib/src/ai/
   ai.dart                       # barrel
   errors.dart                   # taxonomía de errores
@@ -811,7 +811,6 @@ Test específico:
 | `doc/ai/rfc.md` (este) | F0 | Antes de F1 |
 | `doc/ai/architecture.md` | F0 | Junto al spike |
 | `doc/ai/syntax.md` | F1 | Junto al parser |
-| `doc/ai/equivalences.md` | F1 | Junto al parser |
 | `doc/ai/parameters.md` | F2 | Junto a cada parámetro |
 | `doc/ai/envelope.md` | F2 | Junto a `EnvelopeBuilder` |
 | `doc/ai/system-prompt.md` | F2 | Junto al asset |
@@ -822,14 +821,11 @@ Test específico:
 | `doc/ai/providers.md` | F3 | Junto al adapter |
 | `doc/ai/providers/claude.md` | F3 | Junto al adapter |
 | `doc/ai/providers/<gemini\|codex\|cursor-agent\|aider\|ollama>.md` | F4 | Uno por adapter |
-| `doc/ai/providers/custom.md` | F4 | Junto al `CustomProviderAdapter` |
 | `doc/ai/troubleshooting.md` | F3+F4 | Iterativo |
 | `doc/ai/cli.md` | F2/F3/F5 | Iterativo |
 | `doc/ai/recipes.md` | F5+F6 | Junto al brick referencia |
-| `doc/ai/budget.md` | F5 | Junto a truncado |
 | `doc/ai/tutorial.md` | F6 | Junto al brick referencia |
 | `doc/ai/migration.md` | F6 | Para usuarios de `ai_agent_configs` |
-| `doc/ai/faq.md` | F7 | Antes de release |
 | `doc/ai/README.md` (landing) | F7 | Antes de release |
 | `bricks/ai_codegen_example/README.md` | F6 | Junto al brick |
 | `packages/masonex/README.md` (sección AI) | F7 | Antes de release |
@@ -896,7 +892,7 @@ Total: ~30-40 días-persona sin contar review.
 
 ## 22. Referencias
 
-- mason: https://docs.brickhub.dev/
+- mason: <https://docs.brickhub.dev/>
 - mustachex: `packages/mustachex/`
 - mason_logger: `packages/masonex_logger/`
 - Plan original (sesión de planning): se consolida en este RFC.

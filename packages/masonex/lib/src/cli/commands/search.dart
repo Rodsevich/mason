@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:masonex/masonex.dart' hide Brick, packageVersion;
 import 'package:mason_api/mason_api.dart';
+import 'package:masonex/masonex.dart' hide Brick, packageVersion;
 import 'package:masonex/src/cli/command.dart';
 import 'package:masonex/src/cli/command_runner.dart';
 

@@ -73,7 +73,7 @@ at the binary and pick a `pass_prompt` mode.
 
 When a provider invocation fails (auth, exit≠0, timeout) masonex shows:
 
-```
+```text
 AI provider failed: <stderr preview>
 
 Choose:

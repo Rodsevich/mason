@@ -112,7 +112,8 @@ version: 0.1.0
       await generator.generate(DirectoryGeneratorTarget(targetDir));
 
       final content = targetFile.readAsStringSync();
-      // Use contains to be less sensitive to formatting if needed, but masonex uses json.encode
+      // Use contains to be less sensitive to formatting if needed, but masonex
+      // uses json.encode
       expect(content, contains('"list":[1,2,3]'));
       expect(content, contains('"map":{"a":1,"b":2}'));
     });

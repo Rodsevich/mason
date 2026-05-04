@@ -1,0 +1,13 @@
+name: taskflow_hooked_task
+description: A Task brick that derives extra variables in pre_gen and logs in post_gen.
+version: 0.1.0+1
+
+environment:
+  masonex: any
+
+vars:
+  name:
+    type: string
+    description: Free-form task title; pre_gen derives a slug from it.
+    default: Send weekly report
+    prompt: What is the task title?

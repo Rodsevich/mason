@@ -1,0 +1,13 @@
+name: taskflow_plugin
+description: Adds a new plugin id to TaskRegistry via in-file generation.
+version: 0.1.0+1
+
+environment:
+  masonex: any
+
+vars:
+  new_plugin_id:
+    type: string
+    description: Slug of the new plugin (lowercase, no spaces).
+    default: slack
+    prompt: New plugin id?

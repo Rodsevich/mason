@@ -1,0 +1,25 @@
+name: mcp_masonex
+description: >
+  MCP (Model Context Protocol) server that exposes the masonex CLI as a set
+  of structured tools so AI agents can list, search, scaffold, generate and
+  publish bricks safely.
+version: 0.1.0
+publish_to: none
+homepage: https://github.com/Rodsevich/masonex
+repository: https://github.com/Rodsevich/masonex
+issue_tracker: https://github.com/Rodsevich/masonex/issues
+topics: [masonex, mcp, ai-agent, brick-generator]
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  mcp_dart: ^2.1.1
+  path: ^1.9.0
+  yaml: ^3.1.2
+
+dev_dependencies:
+  test: ^1.25.0
+
+executables:
+  mcp_masonex:

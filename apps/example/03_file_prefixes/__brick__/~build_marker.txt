@@ -1,0 +1,3 @@
+`~` prefix: written then immediately deleted by masonex after generation.
+Useful for triggering hooks (e.g. a post_gen.dart that watches a marker).
+This file should NEVER appear in the output directory.

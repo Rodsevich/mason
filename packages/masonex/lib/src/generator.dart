@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Directory, File, FileMode, FileSystemEntity, Process;
+import 'dart:io' show Directory, File, FileSystemEntity, Process;
 import 'dart:io';
 import 'dart:isolate';
 
@@ -346,10 +346,11 @@ abstract class Generator implements Comparable<Generator> {
             if (fileName.startsWith('*')) {
               final parts = fileName.split('*');
               if (parts.length >= 3) {
-                // Iterator is handled by runSubstitution, so we just remove the prefix
-                // and let the generator proceed with substitution.
+                // Iterator is handled by runSubstitution, so we just remove
+                // the prefix and let the generator proceed with substitution.
                 // However, we need to know the rule for all substituted files.
-                // Re-parsing iterators here is mostly to strip the prefix for recursion.
+                // Re-parsing iterators here is mostly to strip the prefix for
+                // recursion.
                 fileName = parts.sublist(2).join('*');
                 continue;
               }
@@ -408,7 +409,7 @@ abstract class Generator implements Comparable<Generator> {
 
           // Handle in-file generation: %id%
           if (fileName.startsWith('%')) {
-            final idMatch = RegExp(r"%((.+?)|(.*?))%").firstMatch(fileName);
+            final idMatch = RegExp('%((.+?)|(.*?))%').firstMatch(fileName);
             if (idMatch != null) {
               final id = idMatch.group(1)!;
               for (final entry in inFileGenerations.entries) {
@@ -703,7 +704,7 @@ class DirectoryGeneratorTarget extends GeneratorTarget {
         await file
             .create(recursive: true)
             .then<File>(
-              (_) => file.writeAsBytes(finalContents, mode: FileMode.write),
+              (_) => file.writeAsBytes(finalContents),
             )
             .whenComplete(() {
               final label = status == GeneratedFileStatus.appended

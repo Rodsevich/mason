@@ -1,0 +1,22 @@
+name: taskflow_pkg
+description: Showcase masonex filename prefixes (merge / overwrite / append / prepend / safe / temp / conditional / iterator).
+version: 0.1.0+1
+
+environment:
+  masonex: any
+
+vars:
+  projectName:
+    type: string
+    description: Package name in PascalCase.
+    default: Taskflow
+  withReminders:
+    type: boolean
+    description: Whether to emit lib/reminders.dart.
+    default: true
+    prompt: Enable reminders?
+  plugins:
+    type: list
+    description: Plugins to scaffold (one file each).
+    prompt: Plugin slugs (comma-separated)?
+    separator: ','

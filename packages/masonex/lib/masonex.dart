@@ -16,6 +16,7 @@ export 'package:mason_logger/mason_logger.dart';
 export 'package:pub_semver/pub_semver.dart'
     show Version, VersionConstraint, VersionRange;
 
+export 'src/annotations.dart';
 export 'src/brick.dart' show Brick;
 export 'src/brick_compatibility.dart' show isBrickCompatibleWithMasonex;
 export 'src/brick_yaml.dart'
@@ -49,4 +50,3 @@ export 'src/render.dart' show RenderTemplate;
 export 'src/string_case_extensions.dart' show StringCaseExtensions;
 export 'src/version.dart' show packageVersion;
 export 'src/yaml_encode.dart' show MasonexYamlEncoder;
-export 'src/annotations.dart';

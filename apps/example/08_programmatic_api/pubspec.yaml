@@ -1,0 +1,10 @@
+name: taskflow_programmatic_example
+description: Drive masonex from a plain Dart binary, no CLI involved.
+publish_to: none
+version: 0.0.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  masonex: any

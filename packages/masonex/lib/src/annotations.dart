@@ -1,5 +1,6 @@
 /// {@template generate_before}
-/// Annotation to specify that code should be generated before the annotated element.
+/// Annotation to specify that code should be generated before the annotated
+/// element.
 /// {@endtemplate}
 class GenerateBefore {
   /// {@macro generate_before}
@@ -10,7 +11,8 @@ class GenerateBefore {
 }
 
 /// {@template generate_after}
-/// Annotation to specify that code should be generated after the annotated element.
+/// Annotation to specify that code should be generated after the annotated
+/// element.
 /// {@endtemplate}
 class GenerateAfter {
   /// {@macro generate_after}

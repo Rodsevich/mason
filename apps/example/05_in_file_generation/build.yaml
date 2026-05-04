@@ -1,0 +1,7 @@
+builders:
+  masonex|inFileGenerationBuilder:
+    import: "package:masonex/builders.dart"
+    builder_factories: ["inFileGenerationBuilder"]
+    build_extensions: { $lib$: ["inFileGenerations.json"] }
+    auto_apply: root_package
+    build_to: source

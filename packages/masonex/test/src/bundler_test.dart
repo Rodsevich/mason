@@ -367,12 +367,13 @@ void main() {
         expect(
           preGenHookFile.readAsStringSync(),
           equals(
-            'import \'dart:io\';\n'
-            'import \'package:masonex/masonex.dart\';\n'
+            "import 'dart:io';\n"
+            "import 'package:masonex/masonex.dart';\n"
             '\n'
             'void run(HookContext context) {\n'
-            '  final file = File(\'.pre_gen.txt\');\n'
-            '  file.writeAsStringSync(\'pre_gen: \${context.vars[\'name\']}\');\n'
+            "  final file = File('.pre_gen.txt');\n"
+            // ignore: lines_longer_than_80_chars
+            "  file.writeAsStringSync('pre_gen: \${context.vars['name']}');\n"
             '}\n',
           ),
         );
@@ -383,12 +384,13 @@ void main() {
         expect(
           postGenHookFile.readAsStringSync(),
           equals(
-            'import \'dart:io\';\n'
-            'import \'package:masonex/masonex.dart\';\n'
+            "import 'dart:io';\n"
+            "import 'package:masonex/masonex.dart';\n"
             '\n'
             'void run(HookContext context) {\n'
-            '  final file = File(\'.post_gen.txt\');\n'
-            '  file.writeAsStringSync(\'post_gen: \${context.vars[\'name\']}\');\n'
+            "  final file = File('.post_gen.txt');\n"
+            // ignore: lines_longer_than_80_chars
+            "  file.writeAsStringSync('post_gen: \${context.vars['name']}');\n"
             '}\n',
           ),
         );
@@ -494,6 +496,7 @@ void postGen(HookContext context) {
           yaml.readAsStringSync(),
           equals(
             'name: custom_registry\n'
+            // ignore: lines_longer_than_80_chars
             'description: A Simple Template that should be published to a custom registry\n'
             'version: 0.1.0+1\n'
             'environment:\n'

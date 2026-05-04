@@ -1,0 +1,22 @@
+name: taskflow_ai_task
+description: Generate a Task class whose dartdoc and tagline are produced by AI.
+version: 0.1.0+1
+
+environment:
+  masonex: any
+
+vars:
+  taskName:
+    type: string
+    description: PascalCase task name (e.g. ShipOrder).
+    default: ShipOrder
+    prompt: Task class name?
+  audience:
+    type: enum
+    description: Who reads the generated tagline.
+    default: customer
+    prompt: Tagline audience?
+    values:
+      - customer
+      - operator
+      - developer

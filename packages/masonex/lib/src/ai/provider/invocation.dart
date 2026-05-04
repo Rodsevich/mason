@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, lines_longer_than_80_chars
 
-/// Inputs required by an [AiProviderAdapter] to perform a single AI call.
+/// Inputs required by an `AiProviderAdapter` to perform a single AI call.
 class AiInvocation {
   const AiInvocation({
     required this.systemPrompt,
@@ -12,7 +12,7 @@ class AiInvocation {
 
   final String systemPrompt;
 
-  /// XML-serialized [Envelope] sent as the user prompt.
+  /// XML-serialized `Envelope` sent as the user prompt.
   final String userEnvelope;
   final String? modelOverride;
   final double? temperature;

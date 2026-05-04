@@ -144,7 +144,7 @@ class ProvidersYaml {
     if (s.contains(RegExp(r'[:#\[\]\{\}\?\*\&\!\|\>\<\"\,\%\@\`]'))
         || s.startsWith('-')
         || s.contains('\n')) {
-      final escaped = s.replaceAll('\\', r'\\').replaceAll('"', r'\"');
+      final escaped = s.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
       return '"$escaped"';
     }
     return s;

@@ -18,8 +18,7 @@ void main() {
 
     test('verifies all advanced features in tandem', () async {
       final brickDir = Directory(p.join(tempDir.path, 'brick'))..createSync();
-      final brickYamlFile = File(p.join(brickDir.path, 'brick.yaml'));
-      brickYamlFile.writeAsStringSync('''
+      File(p.join(brickDir.path, 'brick.yaml')).writeAsStringSync('''
 name: complex_brick
 description: A complex brick for testing
 version: 0.1.0
@@ -41,37 +40,34 @@ in_file_generations:
 
       // Iterator and Conditional
       // *items*?include_meta?{{item}}.meta
-      final iteratorFile = File(
+      File(
         p.join(brickTemplateDir.path, '*items*?include_meta?{{item}}.meta'),
-      );
-      iteratorFile.writeAsStringSync('Meta for {{item}}');
+      ).writeAsStringSync('Meta for {{item}}');
 
       // Merge JSON
-      final jsonMergeFile = File(p.join(brickTemplateDir.path, '>>>data.json'));
-      jsonMergeFile.writeAsStringSync('{"new_key": "{{name}}"}');
+      File(p.join(brickTemplateDir.path, '>>>data.json'))
+          .writeAsStringSync('{"new_key": "{{name}}"}');
 
       // Merge YAML
-      final yamlMergeFile = File(
+      File(
         p.join(brickTemplateDir.path, '>>>config.yaml'),
-      );
-      yamlMergeFile.writeAsStringSync('''
+      ).writeAsStringSync('''
 settings:
   feature_x: true
   name: {{name}}
 ''');
 
       // Append/Prepend
-      final appendFile = File(p.join(brickTemplateDir.path, '>>log.txt'));
-      appendFile.writeAsStringSync('End of log for {{name}}\n');
+      File(p.join(brickTemplateDir.path, '>>log.txt'))
+          .writeAsStringSync('End of log for {{name}}\n');
 
-      final prependFile = File(p.join(brickTemplateDir.path, '<<log.txt'));
-      prependFile.writeAsStringSync('Start of log for {{name}}\n');
+      File(p.join(brickTemplateDir.path, '<<log.txt'))
+          .writeAsStringSync('Start of log for {{name}}\n');
 
       // In-file generation
-      final inFileSnippet = File(
+      File(
         p.join(brickTemplateDir.path, '%imports%.dart'),
-      );
-      inFileSnippet.writeAsStringSync(
+      ).writeAsStringSync(
         "import 'package:{{name}}/{{name}}.dart';",
       );
 

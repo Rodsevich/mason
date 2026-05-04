@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
-import 'package:masonex/masonex.dart';
 import 'package:mason_api/mason_api.dart';
+import 'package:masonex/masonex.dart';
 import 'package:masonex/src/cli/commands/commands.dart';
 import 'package:pub_updater/pub_updater.dart';
 

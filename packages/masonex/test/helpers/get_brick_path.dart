@@ -51,7 +51,9 @@ String getFixturePath(List<String> parts) {
   }
 
   // Case 2: Running from workspace root
-  final path2 = p.joinAll([cwd, 'packages', 'masonex', 'test', 'fixtures', ...parts]);
+  final path2 = p.joinAll(
+    [cwd, 'packages', 'masonex', 'test', 'fixtures', ...parts],
+  );
   if (FileSystemEntity.isFileSync(path2) ||
       FileSystemEntity.isDirectorySync(path2)) {
     return p.normalize(path2);
@@ -103,11 +105,15 @@ String getBundlePath(String bundleName) {
   }
 
   // Case 2: Running from workspace root
-  final path2 = p.join(cwd, 'packages', 'masonex', 'test', 'bundles', bundleName);
+  final path2 = p.join(
+    cwd, 'packages', 'masonex', 'test', 'bundles', bundleName,
+  );
   if (File(path2).existsSync()) {
     return p.normalize(path2);
   }
-  final path2cli = p.join(cwd, 'packages', 'masonex', 'test', 'cli', 'bundles', bundleName);
+  final path2cli = p.join(
+    cwd, 'packages', 'masonex', 'test', 'cli', 'bundles', bundleName,
+  );
   if (File(path2cli).existsSync()) {
     return p.normalize(path2cli);
   }

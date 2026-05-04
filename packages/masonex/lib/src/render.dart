@@ -35,7 +35,7 @@ String _transpileMasonSyntax(String content) {
 
   return content.replaceAllMapped(tagRegex, (match) {
     var opening = match.group(1)!;
-    var inner = match.group(2)!;
+    final inner = match.group(2)!;
     var closing = match.group(3)!;
 
     final trimmedInner = inner.trim();
@@ -67,12 +67,12 @@ String _transpileMasonSyntax(String content) {
     final lambdas = <String>[];
     var currentInner = inner;
 
-    bool changed = true;
+    var changed = true;
     while (changed) {
       changed = false;
       final currentTrimmed = currentInner.trim();
 
-      bool foundInThisPass = false;
+      var foundInThisPass = false;
       for (final lambda in _lambdaNames) {
         final dotRegex = RegExp(r'\.\s*' + lambda + r'\s*\(\s*\)\s*$');
         final dotMatch = dotRegex.firstMatch(currentTrimmed);
@@ -109,8 +109,8 @@ String _transpileMasonSyntax(String content) {
     }
 
     final varPart = currentInner;
-    final varName = (varPart.trim().isEmpty || varPart.trim() == "..")
-        ? "."
+    final varName = (varPart.trim().isEmpty || varPart.trim() == '..')
+        ? '.'
         : varPart;
     // We use triple braces if the original was triple, but we must ensure
     // it doesn't merge with a prefix brace.
@@ -180,7 +180,9 @@ final _builtInLambdas = <String, LambdaFunction>{
   'upperCase': (ctx) => ctx.renderString().toUpperCase(),
 };
 
+/// Adds template-rendering helpers ([render], [renderBytes]) to [String].
 extension RenderTemplate on String {
+  /// Renders this template string against [vars] and returns the result.
   Future<String> render(
     Map<String, dynamic> vars, {
     PartialResolverFunction? partialsResolver,
@@ -196,6 +198,7 @@ extension RenderTemplate on String {
     return _sanitizeOutput(utf8.decode(renderedBytes));
   }
 
+  /// Renders this template string against [vars] and returns the raw bytes.
   Future<List<int>> renderBytes(
     Map<String, dynamic> vars, {
     PartialResolverFunction? partialsResolver,
@@ -236,13 +239,16 @@ extension RenderTemplate on String {
     try {
       return await processor.processBytes(transpiled);
     } catch (e, st) {
+      // ignore: avoid_print
       print('Render error for $this: $e\n$st');
       return utf8.encode(this);
     }
   }
 }
 
+/// Adds [resolve] for looking up partial templates by name from a byte map.
 extension ResolvePartial on Map<String, List<int>> {
+  /// Returns the partial [Template] registered under [name], or `null`.
   Template? resolve(String name) {
     final content = this[name];
     if (content == null) return null;

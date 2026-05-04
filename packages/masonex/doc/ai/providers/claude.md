@@ -26,7 +26,7 @@ masonex provider test
 
 Expected output:
 
-```
+```text
 Testing provider "claude" ...
   reply: ok
   duration: 1234ms

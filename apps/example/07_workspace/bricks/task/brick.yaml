@@ -1,0 +1,13 @@
+name: task
+description: Minimal Task brick reachable via the workspace masonex.yaml.
+version: 0.1.0+1
+
+environment:
+  masonex: any
+
+vars:
+  name:
+    type: string
+    description: Task class name (PascalCase).
+    default: AuditOrders
+    prompt: Task name?

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:masonex/masonex.dart';
 import 'package:path/path.dart' as p;
 
@@ -12,26 +13,29 @@ Future<void> main() async {
     'greeting': p.join(bricksPath, 'greeting'),
     'hooks': p.join(bricksPath, 'hooks'),
     'photos': p.join(bricksPath, 'photos'),
-    'relative_imports': p.join(masonexPath, 'test', 'fixtures', 'relative_imports'),
+    'relative_imports':
+        p.join(masonexPath, 'test', 'fixtures', 'relative_imports'),
   };
 
   for (final entry in bundles.entries) {
     final name = entry.key;
     final path = entry.value;
+    // ignore: avoid_print
     print('Bundling $name from $path...');
 
-    final bundle = await createBundle(Directory(path));
+    final bundle = createBundle(Directory(path));
     // Use json encode/decode to get a deep Map<String, dynamic>
-    final bundleJson = json.decode(json.encode(bundle.toJson())) as Map<String, dynamic>;
+    final bundleJson =
+        json.decode(json.encode(bundle.toJson())) as Map<String, dynamic>;
     final bundleName = '${name}_bundle';
     final outputFiles = [
       File(p.join(masonexPath, 'test', 'bundles', '$bundleName.dart')),
       File(p.join(masonexPath, 'test', 'cli', 'bundles', '$bundleName.dart')),
     ];
 
-    final variableName = name == 'relative_imports' 
-        ? 'relativeImportsBundle' 
-        : name == 'greeting' 
+    final variableName = name == 'relative_imports'
+        ? 'relativeImportsBundle'
+        : name == 'greeting'
             ? 'greetingBundle'
             : name == 'hooks'
                 ? 'hooksBundle'
@@ -40,14 +44,16 @@ Future<void> main() async {
                     : '${name}Bundle';
 
     // Inject absolute path overrides into pubspec if it has hooks
-    if (bundleJson['hooks'] != null && (bundleJson['hooks'] as List).isNotEmpty) {
-      final hooks = (bundleJson['hooks'] as List);
-      final pubspecIndex = hooks.indexWhere((h) => (h as Map)['path'] == 'pubspec.yaml');
+    if (bundleJson['hooks'] != null &&
+        (bundleJson['hooks'] as List).isNotEmpty) {
+      final hooks = bundleJson['hooks'] as List;
+      final pubspecIndex =
+          hooks.indexWhere((h) => (h as Map)['path'] == 'pubspec.yaml');
       if (pubspecIndex != -1) {
         final mustachexPath = p.join(repoRoot, 'packages', 'mustachex');
         final masonLoggerPath = p.join(repoRoot, 'packages', 'mason_logger');
         final currentMasonexPath = p.join(repoRoot, 'packages', 'masonex');
-        
+
         final pubspecContent = '''
 name: ${name}_hooks
 environment:
@@ -62,7 +68,8 @@ dependency_overrides:
   mason_logger:
     path: $masonLoggerPath
 ''';
-        (hooks[pubspecIndex] as Map)['data'] = base64.encode(utf8.encode(pubspecContent));
+        (hooks[pubspecIndex] as Map)['data'] =
+            base64.encode(utf8.encode(pubspecContent));
       }
 
       // Also ensure hook code imports masonex, not mason
@@ -71,25 +78,33 @@ dependency_overrides:
         final hookPath = hook['path'] as String;
         if (hookPath.endsWith('.dart')) {
           var hookCode = utf8.decode(base64.decode(hook['data'] as String));
-          hookCode = hookCode.replaceAll("import 'package:mason/mason.dart';", "import 'package:masonex/masonex.dart';");
-          hookCode = hookCode.replaceAll("import 'package:mason/src/generator.dart';", "import 'package:masonex/masonex.dart';");
+          hookCode = hookCode.replaceAll(
+            "import 'package:mason/mason.dart';",
+            "import 'package:masonex/masonex.dart';",
+          );
+          hookCode = hookCode.replaceAll(
+            "import 'package:mason/src/generator.dart';",
+            "import 'package:masonex/masonex.dart';",
+          );
           hook['data'] = base64.encode(utf8.encode(hookCode));
         }
       }
     }
 
-    final content = '''
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, implicit_dynamic_list_literal, implicit_dynamic_map_literal, inference_failure_on_collection_literal
-
-import 'package:masonex/masonex.dart';
-
-final $variableName = MasonexBundle.fromJson(<String, dynamic>${_formatJson(bundleJson)});
-''';
+    const generatedHeader =
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+        // ignore: lines_longer_than_80_chars
+        '// ignore_for_file: type=lint, implicit_dynamic_list_literal, implicit_dynamic_map_literal, inference_failure_on_collection_literal\n';
+    final content =
+        '$generatedHeader\n'
+        "import 'package:masonex/masonex.dart';\n\n"
+        // ignore: lines_longer_than_80_chars
+        'final $variableName = MasonexBundle.fromJson(<String, dynamic>${_formatJson(bundleJson)});\n';
 
     for (final outputFile in outputFiles) {
       if (outputFile.parent.existsSync()) {
         await outputFile.writeAsString(content);
+        // ignore: avoid_print
         print('Generated ${outputFile.path}');
       }
     }

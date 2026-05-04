@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:path/path.dart' as p;
 
 void main() {
@@ -7,6 +8,7 @@ void main() {
   final fixturesDir = Directory(fixturesPath);
 
   if (!fixturesDir.existsSync()) {
+    // ignore: avoid_print
     print('Fixtures directory not found at $fixturesPath');
     return;
   }
@@ -14,12 +16,17 @@ void main() {
   fixturesDir.listSync(recursive: true).forEach((entity) {
     if (entity is File) {
       final ext = p.extension(entity.path);
-      if (ext == '.md' || ext == '.yaml' || ext == '.dart' || ext == '.lock' || p.basename(entity.path) == 'LICENSE') {
+      if (ext == '.md' ||
+          ext == '.yaml' ||
+          ext == '.dart' ||
+          ext == '.lock' ||
+          p.basename(entity.path) == 'LICENSE') {
         _migrateFile(entity);
       }
     }
   });
-  
+
+  // ignore: avoid_print
   print('Idempotent fixture migration (Take 6) complete.');
 }
 
@@ -37,27 +44,33 @@ void _migrateFile(File file) {
     changed = true;
   }
 
-  // 2. Use negative lookahead to only replace 'mason' if not already followed by 'ex'
-  final masonRegExp = RegExp(r'mason(?![eE]x)', caseSensitive: true);
-  final MasonRegExp = RegExp(r'Mason(?![eE]x)', caseSensitive: true);
+  // 2. Use negative lookahead to only replace 'mason' if not already followed
+  // by 'ex'
+  final masonRegExp = RegExp('mason(?![eE]x)');
+  final masonRegExpUpper = RegExp('Mason(?![eE]x)');
 
-  if (MasonRegExp.hasMatch(content)) {
-    content = content.replaceAll(MasonRegExp, 'Masonex');
+  if (masonRegExpUpper.hasMatch(content)) {
+    content = content.replaceAll(masonRegExpUpper, 'Masonex');
     changed = true;
   }
   if (masonRegExp.hasMatch(content)) {
     content = content.replaceAll(masonRegExp, 'masonex');
     changed = true;
   }
-  
+
   // Specific fix for version
-  if (content.contains('masonex: ^0.1.2') || content.contains('masonex: ^0.1.0')) {
-     content = content.replaceAll(RegExp(r'masonex: \^0\.1\.[02]'), 'masonex: ^0.0.1');
-     changed = true;
+  if (content.contains('masonex: ^0.1.2') ||
+      content.contains('masonex: ^0.1.0')) {
+    content = content.replaceAll(
+      RegExp(r'masonex: \^0\.1\.[02]'),
+      'masonex: ^0.0.1',
+    );
+    changed = true;
   }
 
   if (changed) {
     file.writeAsStringSync(content);
+    // ignore: avoid_print
     print('Migrated ${file.path}');
   }
 }

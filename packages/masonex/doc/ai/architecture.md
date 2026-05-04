@@ -1,6 +1,6 @@
 # Architecture
 
-```
+```text
                           ┌────────────────────────────────────┐
                           │  String.render(vars, aiOptions:..) │  public API
                           └─────────────┬──────────────────────┘
@@ -42,7 +42,7 @@
 
 ## Module map
 
-```
+```text
 lib/src/ai/
   ai.dart                  # public barrel
   errors.dart              # exception taxonomy
@@ -99,7 +99,7 @@ lib/src/ai/
 
 ## CLI surface
 
-```
+```text
 lib/src/cli/commands/
   ai_cache.dart      # stats / clear
   ai_trace.dart      # tail trace.jsonl

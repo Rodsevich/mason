@@ -7,8 +7,8 @@ import 'package:path/path.dart' as p;
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
-import '../helpers/helpers.dart';
 import '../../helpers/get_brick_path.dart';
+import '../helpers/helpers.dart';
 
 class _MockLogger extends Mock implements Logger {}
 

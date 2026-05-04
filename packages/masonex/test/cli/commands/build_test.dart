@@ -35,8 +35,10 @@ void main() {
     });
 
     test('runs build_runner successfully', () async {
-      // NOTE: This test might actually invoke build_runner in the current directory.
-      // Alternatively, we can mock Process.run, but Process.run is a static method.
+      // NOTE: This test might actually invoke build_runner in the current
+      // directory.
+      // Alternatively, we can mock Process.run, but Process.run is a static
+      // method.
       // If we don't mock it, it will try to run build_runner.
       // Since masonex itself has build_runner, it should exit with 0.
       final result = await commandRunner.run(['build']);
