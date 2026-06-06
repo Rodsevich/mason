@@ -135,7 +135,7 @@ class MasonexRunner {
     final exitCodeFuture = process.exitCode;
     final timer = Timer(effectiveTimeout, () {
       timedOut = true;
-      process.kill(ProcessSignal.sigterm);
+      process.kill();
     });
 
     final exitCode = await exitCodeFuture;

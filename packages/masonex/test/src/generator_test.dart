@@ -1,4 +1,5 @@
 // ignore_for_file: missing_whitespace_between_adjacent_strings
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:masonex/masonex.dart';
@@ -1116,6 +1117,48 @@ void main() {
           final set = await template.runSubstitution(<String, dynamic>{}, {});
           expect(set.length, equals(1));
           expect(set.first.content, equals(bytes));
+        });
+
+        test('strips trailing .mustache from rendered destination path',
+            () async {
+          final template = TemplateFile(
+            'lib/foo.dart.mustache',
+            "const x = '{{value}}';",
+          );
+          final set = await template.runSubstitution(
+            <String, dynamic>{'value': 'hi'},
+            {},
+          );
+          expect(set.length, equals(1));
+          expect(set.first.path, equals('lib/foo.dart'));
+          expect(utf8.decode(set.first.content), equals("const x = 'hi';"));
+        });
+
+        test('strips trailing .masonex from rendered destination path',
+            () async {
+          final template = TemplateFile(
+            'lib/foo.dart.masonex',
+            "const x = '{{value}}';",
+          );
+          final set = await template.runSubstitution(
+            <String, dynamic>{'value': 'hi'},
+            {},
+          );
+          expect(set.length, equals(1));
+          expect(set.first.path, equals('lib/foo.dart'));
+          expect(utf8.decode(set.first.content), equals("const x = 'hi';"));
+        });
+
+        test('keeps non-mustache extensions untouched', () async {
+          final template = TemplateFile(
+            'lib/foo.dart',
+            "const x = '{{value}}';",
+          );
+          final set = await template.runSubstitution(
+            <String, dynamic>{'value': 'hi'},
+            {},
+          );
+          expect(set.first.path, equals('lib/foo.dart'));
         });
       });
     });

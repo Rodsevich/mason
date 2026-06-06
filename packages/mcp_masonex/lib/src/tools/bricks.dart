@@ -112,7 +112,7 @@ void _registerAdd(McpServer server, MasonexRunner runner) {
       properties: <String, JsonSchema>{
         'name': JsonSchema.string(
           description: 'Name of the brick to add (must match the name '
-              'declared in the brick\'s `brick.yaml`).',
+              "declared in the brick's `brick.yaml`).",
         ),
         'workspace': workspaceSchema(),
         'global': JsonSchema.boolean(
@@ -221,8 +221,8 @@ void _registerRemove(McpServer server, MasonexRunner runner) {
       final confirm = optionalBool(args, 'confirm');
       final cmd = <String>['remove', if (isGlobal) '-g', name];
       if (!confirm) {
-        return CallToolResult.fromContent(
-          [
+        return CallToolResult(
+          content: [
             TextContent(
               text: 'Dry-run: would execute `${[
                 runner.executable,
@@ -232,7 +232,6 @@ void _registerRemove(McpServer server, MasonexRunner runner) {
                   'Re-invoke with `confirm: true` to actually remove.',
             ),
           ],
-          isError: false,
         );
       }
       final result = await runner.run(cmd, workingDirectory: workspace);
@@ -270,7 +269,7 @@ void _registerDescribe(McpServer server) {
   server.registerTool(
     'masonex_describe_brick',
     description:
-        'Read a brick\'s `brick.yaml` from disk and return its metadata: '
+        "Read a brick's `brick.yaml` from disk and return its metadata: "
         'name, version, description, environment requirements, declared '
         'variables (with type, default, prompt, allowed values), and the '
         '`in_file_generations` map. Use this BEFORE `masonex_make` to know '

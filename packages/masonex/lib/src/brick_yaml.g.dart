@@ -51,16 +51,25 @@ BrickVariableProperties _$BrickVariablePropertiesFromJson(Map json) =>
     );
 
 Map<String, dynamic> _$BrickVariablePropertiesToJson(
-        BrickVariableProperties instance) =>
-    <String, dynamic>{
-      'type': _$BrickVariableTypeEnumMap[instance.type]!,
-      'description': instance.description,
-      'default': instance.defaultValue,
-      'defaults': instance.defaultValues,
-      'prompt': instance.prompt,
-      'values': instance.values,
-      'separator': instance.separator,
-    };
+    BrickVariableProperties instance) {
+  final val = <String, dynamic>{
+    'type': _$BrickVariableTypeEnumMap[instance.type]!,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('description', instance.description);
+  writeNotNull('default', instance.defaultValue);
+  writeNotNull('defaults', instance.defaultValues);
+  writeNotNull('prompt', instance.prompt);
+  writeNotNull('values', instance.values);
+  writeNotNull('separator', instance.separator);
+  return val;
+}
 
 const _$BrickVariableTypeEnumMap = {
   BrickVariableType.array: 'array',

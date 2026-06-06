@@ -9,7 +9,7 @@ part 'mason_yaml.g.dart';
 /// Masonex configuration yaml file which contains metadata
 /// used when interacting with the Masonex CLI.
 /// {@endtemplate}
-@JsonSerializable(anyMap: true, explicitToJson: true)
+@JsonSerializable(anyMap: true, explicitToJson: true, includeIfNull: false)
 class MasonexYaml {
   /// {@macro masonex_yaml}
   const MasonexYaml(Map<String, BrickLocation>? bricks)
@@ -52,7 +52,7 @@ class MasonexYaml {
 ///
 /// Used by [MasonexYaml].
 /// {@endtemplate}
-@JsonSerializable(anyMap: true, explicitToJson: true)
+@JsonSerializable(anyMap: true, explicitToJson: true, includeIfNull: false)
 class BrickLocation {
   /// {@macro brick_location}
   const BrickLocation({this.path, this.git, this.version});
@@ -83,7 +83,7 @@ class BrickLocation {
 /// {@template git_path}
 /// Path to templates in git.
 /// {@endtemplate}
-@JsonSerializable(anyMap: true, explicitToJson: true)
+@JsonSerializable(anyMap: true, explicitToJson: true, includeIfNull: false)
 class GitPath {
   /// {@macro git_path}
   const GitPath(this.url, {String? path, this.ref}) : path = path ?? '';

@@ -37,7 +37,7 @@ void _registerMake(McpServer server, MasonexRunner runner) {
         ),
         'vars': JsonSchema.object(
           description: 'Variables to pass to the brick, as a JSON object. '
-              'Keys must match the brick\'s declared variables.',
+              "Keys must match the brick's declared variables.",
           properties: <String, JsonSchema>{},
           required: const <String>[],
         ),

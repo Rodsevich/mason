@@ -4,7 +4,7 @@ import 'package:mcp_dart/mcp_dart.dart';
 import 'package:mcp_masonex/src/runner/masonex_runner.dart';
 
 /// Empty JSON schema object — no properties, nothing required.
-JsonSchema emptyObjectSchema() => JsonSchema.object(
+JsonObject emptyObjectSchema() => JsonSchema.object(
       properties: <String, JsonSchema>{},
       required: const <String>[],
     );
@@ -68,8 +68,8 @@ CallToolResult callToolResultFor(
   bool? isError,
   Map<String, Object?> extra = const {},
 }) {
-  return CallToolResult.fromContent(
-    processResultContent(result, note: note, extra: extra),
+  return CallToolResult(
+    content: processResultContent(result, note: note, extra: extra),
     isError: isError ?? !result.success,
   );
 }
@@ -134,8 +134,8 @@ Duration? timeoutFromArgs(Map<String, dynamic> args) {
 /// Builds an error CallToolResult with [message]. Used for validation
 /// problems that happen before we even invoke masonex.
 CallToolResult validationError(String message) {
-  return CallToolResult.fromContent(
-    [TextContent(text: 'Validation error: $message')],
+  return CallToolResult(
+    content: [TextContent(text: 'Validation error: $message')],
     isError: true,
   );
 }

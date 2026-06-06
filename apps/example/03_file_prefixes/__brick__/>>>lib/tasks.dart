@@ -3,5 +3,5 @@
 // declarations are appended; existing ones are kept untouched.
 
 const enabledPlugins = <String>[
-  {{#plugins}}'{{.}}',{{/plugins}}
+  /*{{#plugins}}*/ '{{.}}', /*{{/plugins}}*/
 ];

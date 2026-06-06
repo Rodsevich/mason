@@ -134,7 +134,7 @@ bricks:
           path.join(
             BricksJson.rootDir.path,
             'git',
-            '''masonex_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_c744e19c23243453f568b539bb122767e6542929''',
+            '''mason_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_c744e19c23243453f568b539bb122767e6542929''',
             'bricks',
             'hooks',
           ),
@@ -145,7 +145,7 @@ bricks:
           path.join(
             BricksJson.rootDir.path,
             'git',
-            '''masonex_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_c744e19c23243453f568b539bb122767e6542929''',
+            '''mason_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_c744e19c23243453f568b539bb122767e6542929''',
             'bricks',
             'widget',
           ),

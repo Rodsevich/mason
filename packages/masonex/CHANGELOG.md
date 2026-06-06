@@ -1,3 +1,31 @@
+# 0.3.0-dev.2
+
+- **Placeholder mode for Dart bricks.** Brick authors can now write
+  `__brick__` files as *valid, analyzable Dart* and mark substitutions with
+  block-comment tags or `@pragma` annotations instead of inline Mustache —
+  so the source still parses, formats, and lints as Dart.
+  - New module `src/placeholder/`: `preprocessPlaceholderDart(source)`
+    rewrites a Dart file to its Mustache equivalent before the render
+    pipeline runs. Files without a placeholder marker are returned
+    untouched.
+  - **Inline form**: `/*{{ name.pascalCase() }}*/Stand` replaces the
+    adjacent stand-in token with the tag; sigil tags (`#`, `^`, `/`, `>`,
+    `!`, `&`, `{{{…}}}`) pass through by stripping the comment delimiters.
+  - **Pragma form**: `@pragma('masonex:header', {...})` and
+    `@pragma('masonex:replace', {...})` rewrite identifier/keyword tokens
+    within their scope. Malformed pragmas throw
+    `PlaceholderPragmaShapeError`; non-Dart input throws
+    `PlaceholderParseError`.
+  - New `masonex placeholder` command with `render <file>` (print the
+    emitted Mustache) and `check [-b <brick>]` (validate every `.dart`
+    file under `__brick__/`) subcommands.
+  - The generator runs the pre-processor automatically for `.dart` brick
+    files during rendering.
+- **Template-marker extension stripping.** A brick file named
+  `foo.dart.mustache` (or `foo.dart.masonex`) renders to `foo.dart`. The
+  convention lets authors keep raw-template files from being linted as
+  Dart while still producing the correct output path.
+
 # 0.3.0-dev.1
 
 - **v2 architecture.** masonex's pipeline pre-processor (`AiTagRewriter`,

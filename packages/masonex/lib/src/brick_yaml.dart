@@ -138,7 +138,7 @@ enum BrickVariableType {
 /// An object representing a brick variable.
 /// {@endtemplate}
 @immutable
-@JsonSerializable(anyMap: true)
+@JsonSerializable(anyMap: true, includeIfNull: false)
 class BrickVariableProperties {
   /// {@macro brick_variable_properties}
   @internal

@@ -112,7 +112,7 @@ void main() {
           p.join(
             BricksJson.rootDir.path,
             'git',
-            '''masonex_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_997bc878c93534fad17d965be7cafe948a1dbb53''',
+            '''mason_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_997bc878c93534fad17d965be7cafe948a1dbb53''',
             'bricks',
             'widget',
           ),
@@ -155,7 +155,7 @@ void main() {
           p.join(
             BricksJson.rootDir.path,
             'git',
-            '''masonex_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_997bc878c93534fad17d965be7cafe948a1dbb53''',
+            '''mason_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_997bc878c93534fad17d965be7cafe948a1dbb53''',
             'bricks',
             'widget',
           ),
@@ -227,7 +227,7 @@ void main() {
           p.join(
             BricksJson.rootDir.path,
             'git',
-            '''masonex_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_997bc878c93534fad17d965be7cafe948a1dbb53''',
+            '''mason_aHR0cHM6Ly9naXRodWIuY29tL2ZlbGFuZ2VsL21hc29u_997bc878c93534fad17d965be7cafe948a1dbb53''',
             'bricks',
             'widget',
           ),

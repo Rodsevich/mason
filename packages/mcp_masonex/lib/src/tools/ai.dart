@@ -244,7 +244,7 @@ void _registerProviderTest(McpServer server, MasonexRunner runner) {
         'return the reply. Network call, may consume tokens.',
     inputSchema: JsonSchema.object(
       properties: <String, JsonSchema>{
-        'timeoutSeconds': timeoutSchema(defaultSeconds: 120),
+        'timeoutSeconds': timeoutSchema(),
       },
       required: const <String>[],
     ),

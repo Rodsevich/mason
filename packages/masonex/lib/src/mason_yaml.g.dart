@@ -23,12 +23,20 @@ BrickLocation _$BrickLocationFromJson(Map json) => BrickLocation(
       version: json['version'] as String?,
     );
 
-Map<String, dynamic> _$BrickLocationToJson(BrickLocation instance) =>
-    <String, dynamic>{
-      'path': instance.path,
-      'git': instance.git?.toJson(),
-      'version': instance.version,
-    };
+Map<String, dynamic> _$BrickLocationToJson(BrickLocation instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('path', instance.path);
+  writeNotNull('git', instance.git?.toJson());
+  writeNotNull('version', instance.version);
+  return val;
+}
 
 GitPath _$GitPathFromJson(Map json) => GitPath(
       json['url'] as String,
@@ -36,8 +44,18 @@ GitPath _$GitPathFromJson(Map json) => GitPath(
       ref: json['ref'] as String?,
     );
 
-Map<String, dynamic> _$GitPathToJson(GitPath instance) => <String, dynamic>{
-      'url': instance.url,
-      'path': instance.path,
-      'ref': instance.ref,
-    };
+Map<String, dynamic> _$GitPathToJson(GitPath instance) {
+  final val = <String, dynamic>{
+    'url': instance.url,
+    'path': instance.path,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('ref', instance.ref);
+  return val;
+}

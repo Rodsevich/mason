@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:masonex/src/ai/integration.dart';
+import 'package:masonex/src/placeholder/preprocessor.dart';
 import 'package:masonex/src/render.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
@@ -31,7 +32,10 @@ void main() {
       addTearDown(() => tmpCache.deleteSync(recursive: true));
 
       for (final file in files) {
-        final source = await file.readAsString();
+        var source = await file.readAsString();
+        if (file.path.endsWith('.dart')) {
+          source = preprocessPlaceholderDart(source);
+        }
         final rendered = await source.render(
           const {'className': 'FooRepository', 'domain': 'orders'},
           aiOptions: AiRenderOptions(

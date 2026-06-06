@@ -44,6 +44,7 @@ class MasonexCommandRunner extends CompletionCommandRunner<int> {
     addCommand(LogoutCommand(logger: _logger));
     addCommand(MakeCommand(logger: _logger));
     addCommand(NewCommand(logger: _logger));
+    addCommand(PlaceholderCommand(logger: _logger));
     addCommand(ProviderCommand(logger: _logger));
     addCommand(PublishCommand(logger: _logger));
     addCommand(RemoveCommand(logger: _logger));

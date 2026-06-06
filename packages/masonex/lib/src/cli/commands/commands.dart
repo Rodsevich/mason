@@ -15,6 +15,7 @@ export 'login.dart';
 export 'logout.dart';
 export 'make.dart';
 export 'new.dart';
+export 'placeholder.dart';
 export 'provider.dart';
 export 'publish.dart';
 export 'remove.dart';

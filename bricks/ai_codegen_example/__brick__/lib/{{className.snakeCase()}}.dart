@@ -1,5 +1,10 @@
+@pragma('masonex:header', {
+  FooRepository: '{{className}}',
+})
+library;
+
 /// {{ "Write a one-line dartdoc for class {{className}} that handles {{domain}}." | ai(expect: line, max_chars: 120) }}
-class {{className}} {
+class FooRepository {
   /// {{ "Spanish-language tagline for the {{domain}} {{className}}." | ai(expect: sentence, max_chars: 120) }}
   static const tagline =
       '{{ "One short marketing line for the {{domain}} {{className}}" | ai(expect: line, max_chars: 80) }}';

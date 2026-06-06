@@ -1,6 +1,11 @@
+@pragma('masonex:header', {
+  Task: '{{name.pascalCase()}}',
+})
+library;
+
 /// A single unit of work in the taskflow domain.
-class {{name.pascalCase()}} {
-  const {{name.pascalCase()}}({required this.id, required this.title});
+class Task {
+  const Task({required this.id, required this.title});
 
   final String id;
   final String title;

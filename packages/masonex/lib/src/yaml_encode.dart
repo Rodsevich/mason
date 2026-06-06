@@ -2,7 +2,7 @@
 class MasonexYamlEncoder {
   /// Encodes a [Map<String, dynamic>] as `yaml` similar to `json.encode`.
   static String encode(Map<dynamic, dynamic> json, [int nestingLevel = 0]) {
-    if (json.isEmpty) return ' {}';
+    if (json.isEmpty) return '';
     return json.entries
         .map((entry) => _formatEntry(entry, nestingLevel))
         .join('\n');

@@ -124,8 +124,8 @@ void _registerUnbundle(McpServer server, MasonexRunner runner) {
         bundlePath,
       ];
       if (!confirm) {
-        return CallToolResult.fromContent(
-          [
+        return CallToolResult(
+          content: [
             TextContent(
               text: 'Dry-run: would execute `${[
                 runner.executable,
@@ -133,7 +133,6 @@ void _registerUnbundle(McpServer server, MasonexRunner runner) {
               ].join(' ')}`. Re-invoke with `confirm: true` to expand.',
             ),
           ],
-          isError: false,
         );
       }
       final result = await runner.run(cmd, workingDirectory: workspace);

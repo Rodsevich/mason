@@ -1,7 +1,12 @@
+@pragma('masonex:header', {
+  MyWidget: '{{name.pascalCase()}}',
+})
+library;
+
 import 'package:flutter/material.dart';
 
-class {{name.pascalCase()}} extends StatelessWidget {
-  const {{name.pascalCase()}}({super.key});
+class MyWidget extends StatelessWidget {
+  const MyWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

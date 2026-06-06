@@ -1,0 +1,13 @@
+# Many masonex tests are integration-style: they clone git bricks, run
+# `dart pub get`, and compile hooks. Under load these are slow, so we give
+# every test a generous default timeout to avoid false failures from CPU
+# contention when the suite runs concurrently.
+timeout: 120s
+
+tags:
+  # Tests that exercise hooks/bricks authored for the upstream `mason`
+  # package (they `import 'package:mason/mason.dart'`). masonex's hook
+  # runner emits a `package:masonex` wrapper, so these upstream artifacts
+  # cannot be compiled by the fork. Run explicitly with `-t upstream-compat`.
+  upstream-compat:
+    skip: "Requires bricks authored for upstream `mason` (package:mason hooks); incompatible with the masonex fork. Tracked separately."

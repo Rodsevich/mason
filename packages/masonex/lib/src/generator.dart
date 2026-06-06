@@ -11,6 +11,7 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:masonex/masonex.dart';
 import 'package:masonex/src/ai/integration.dart';
+import 'package:masonex/src/placeholder/preprocessor.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:pool/pool.dart';
@@ -34,6 +35,20 @@ final _lambdas = RegExp(
 
 RegExp _loopRegExp([String name = '.*?']) {
   return RegExp('({{#$name}}.*?{{{.*?}}}.*?{{/$name}})');
+}
+
+/// Strips a trailing template-marker extension (`.mustache` or `.masonex`)
+/// from a rendered destination path. The convention `foo.dart.mustache`
+/// (or `foo.dart.masonex`) lets brick authors signal "raw template, don't
+/// lint as Dart"; the rendered output is `foo.dart`.
+String _stripMustacheExt(String renderedPath) {
+  const suffixes = ['.mustache', '.masonex'];
+  for (final suffix in suffixes) {
+    if (renderedPath.endsWith(suffix)) {
+      return renderedPath.substring(0, renderedPath.length - suffix.length);
+    }
+  }
+  return renderedPath;
 }
 
 RegExp _loopValueRegExp([String name = '.*?']) {
@@ -829,7 +844,9 @@ class TemplateFile {
               onMissingVariable: onMissingVariable,
               aiOptions: aiOptions?.copyWith(relativePath: path),
             );
-        fileContents.add(FileContents(newPath, newContents));
+        fileContents.add(
+          FileContents(_stripMustacheExt(newPath), newContents),
+        );
       }
 
       return fileContents;
@@ -844,7 +861,7 @@ class TemplateFile {
         onMissingVariable: onMissingVariable,
         aiOptions: aiOptions?.copyWith(relativePath: path),
       );
-      return {FileContents(newPath, newContents)};
+      return {FileContents(_stripMustacheExt(newPath), newContents)};
     }
   }
 
@@ -855,7 +872,10 @@ class TemplateFile {
     AiRenderOptions? aiOptions,
   }) async {
     try {
-      final decoded = utf8.decode(content);
+      var decoded = utf8.decode(content);
+      if (path.endsWith('.dart')) {
+        decoded = preprocessPlaceholderDart(decoded);
+      }
       if (!decoded.contains(_delimiterRegExp)) return content;
       return await decoded.renderBytes(
         vars,

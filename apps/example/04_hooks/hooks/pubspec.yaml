@@ -6,3 +6,13 @@ environment:
 
 dependencies:
   masonex: any
+
+dependency_overrides:
+  mason_api:
+    path: ../../../../packages/mason_api
+  mason_logger:
+    path: ../../../../packages/mason_logger
+  masonex:
+    path: ../../../../packages/masonex
+  mustachex:
+    path: ../../../../packages/mustachex
